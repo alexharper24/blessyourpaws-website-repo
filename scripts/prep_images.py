@@ -19,7 +19,7 @@ os.chdir(ROOT)
 
 MUNCH = ["joshua", "eden", "havilah", "jordan", "caleb", "shiloh", "jericho"]
 DOBE = ["elowen", "malcolm", "griffin"]
-MAIN_W, WIDTHS = 2000, [320, 640, 1000, 1600]
+MAIN_W, WIDTHS = 2000, [320, 640, 1000, 1600, 2000]
 
 def md5(p):
     return hashlib.md5(open(p, "rb").read()).hexdigest()
@@ -94,17 +94,21 @@ def main():
         counts[n] = len(files)
         print(f"  {n:<9} {len(files)} puppy photos")
 
-    # ---- Dobermans, already clean, from the Kingdom originals
-    for n in DOBE:
-        files = sorted(f for f in os.listdir("source-photos/kingdom-doberman")
-                       if f.startswith(n) and f.lower().endswith(".jpg"))
-        for i, f in enumerate(files, 1):
-            derive(f"source-photos/kingdom-doberman/{f}", f"{n}-{i:02d}", "puppies")
-        counts[n] = len(files)
-        print(f"  {n:<9} {len(files)} puppy photos")
+    # ---- Dobermans from the Kingdom repo's DELIVERED renditions, not the raw
+    # Wix originals. Wix tone-corrects on delivery, so the raw files are darker
+    # and softer -- that is why the Dobermans looked shaded.
+    KFC = "../kingdomfamilycompanions-website-repo/img"
+    kfc_puppies = {"elowen": 3, "malcolm": 4, "griffin": 6}
+    for n, cnt in kfc_puppies.items():
+        for i in range(1, cnt + 1):
+            derive(f"{KFC}/puppy-{n}-{i}.jpg", f"{n}-{i:02d}", "puppies")
+        counts[n] = cnt
+        print(f"  {n:<9} {cnt} puppy photos (delivered renditions)")
 
-    # ---- Mira, the Doberman dam
-    derive("source-photos/kingdom-doberman/mira-01.jpg", "mira-01", "dogs")
+    # ---- Doberman parents: Mira, and the red-and-rust sire Joy confirmed
+    derive(f"{KFC}/dog-mira.jpg", "mira-01", "dogs")
+    derive(f"{KFC}/adult-dog-2.jpg", "doberman-sire-01", "dogs")
+    print("  Doberman parents: mira-01, doberman-sire-01 (confirmed by Joy)")
 
     json.dump(counts, open("img/photo-counts.json", "w"), indent=2)
     print(f"\ndone. {sum(counts.values())} puppy photos, 3 parent photos.")

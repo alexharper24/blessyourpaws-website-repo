@@ -29,8 +29,10 @@ img{max-width:100%;height:auto;display:block}
 
 /* Fraunces ships wonky f/g/y by default. WONK 0 turns the swashes off, which is
    the fix for the odd-looking f. SOFT rounds the terminals a little. */
-h1,h2,h3,.display,.packet-name,.price{font-family:"Fraunces",Georgia,serif;
-  font-variation-settings:"SOFT" 30,"WONK" 0;
+/* Petrona replaces Fraunces. Fraunces draws a descending, hooked lowercase f as
+   part of its design, which the WONK axis does not undo. Petrona keeps the warm
+   old-style vintage feel with a normal f. */
+h1,h2,h3,.display,.packet-name,.price{font-family:"Petrona",Georgia,serif;
   font-feature-settings:"liga" 0,"dlig" 0,"swsh" 0}
 h1,h2,h3{font-weight:600;line-height:1.14;margin:0 0 .5rem;text-wrap:balance;
   letter-spacing:-.01em}
@@ -61,7 +63,7 @@ a{color:var(--forest)}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   min-height:82px}
 .brand{display:flex;align-items:center;text-decoration:none;flex:none}
-.brand img{height:58px;width:auto}
+.brand img{height:84px;width:auto}
 .nav{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;justify-content:flex-end}
 .nav a{text-decoration:none;padding:.5rem .6rem;border-radius:3px;font-size:.94rem;
   white-space:nowrap}
@@ -75,11 +77,15 @@ a{color:var(--forest)}
 
 /* ---------- hero ---------- */
 .hero{padding:3rem 0 2.5rem}
-.hero-split{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(2rem,4vw,4rem);
+.hero-split{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(2rem,4vw,4rem);
   align-items:center}
 .framed{width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
-.hero-split .framed{aspect-ratio:4/3;object-fit:cover}
+.hero-split .framed{aspect-ratio:3/2;object-fit:cover}
+/* section imagery: give photos real presence, they are the product */
+.grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
+.grid-2.narrow-left{grid-template-columns:.8fr 1.2fr}
+.grid-2.narrow-right{grid-template-columns:1.2fr .8fr}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
   font-size:1rem;min-height:48px}
@@ -88,6 +94,14 @@ a{color:var(--forest)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
+/* a section-closing action, tied to the block above it by a rule rather than
+   floating loose underneath */
+.section-cta{display:flex;justify-content:center;align-items:center;gap:1rem;
+  margin-top:clamp(1.75rem,3vw,2.75rem);padding-top:clamp(1.5rem,2.5vw,2rem);
+  border-top:1px solid var(--rule);flex-wrap:wrap}
+.section-cta p{margin:0;color:var(--sage-deep);font-size:.95rem}
+.band-forest .section-cta{border-top-color:rgba(253,249,249,.28)}
+.band-pink .section-cta,.band-raise .section-cta{border-top-color:var(--sage-light)}
 
 .sprig{display:block;margin:0 auto;color:var(--sage)}
 
@@ -103,6 +117,11 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 /* ---------- cards ---------- */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
   gap:clamp(1.25rem,2vw,2rem)}
+/* an exact column count so a small litter spans the full width instead of
+   clustering at the left with dead space beside it */
+.pgrid.cols-3{grid-template-columns:repeat(3,1fr)}
+.pgrid.cols-4{grid-template-columns:repeat(4,1fr)}
+.pgrid.cols-7{grid-template-columns:repeat(4,1fr)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
@@ -112,6 +131,14 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .packet::before{content:"";position:absolute;inset:5px;border:1px dashed var(--sage);
   border-radius:2px;pointer-events:none}
 .packet img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:2px}
+/* parent portraits are a mix of landscape and portrait originals. a 4/5 frame
+   with a top-biased crop keeps every head in shot and makes the cards align. */
+.packet.parent img,.door.parent img{aspect-ratio:4/5;object-position:50% 22%}
+.parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
+.parent-grid .packet-body{gap:.35rem}
+.dogmeta{font-size:.86rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--sage-deep);font-weight:700;margin:0 0 .35rem}
 .packet-body{padding:1rem .6rem .5rem;display:flex;flex-direction:column;gap:.2rem;
   flex:1}
 .packet-name{font-size:1.35rem;font-weight:700;margin:0}
@@ -143,12 +170,22 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
   transform:rotate(-45deg)}
 
 /* ---------- puppy page carousel ---------- */
-.puppy-top{display:grid;grid-template-columns:1.5fr 1fr;
-  gap:clamp(1.5rem,3vw,3.5rem);align-items:start}
+.puppy-top{display:grid;grid-template-columns:1.45fr 1fr;
+  gap:clamp(1.5rem,3vw,3rem);align-items:stretch}
+.puppy-info{display:flex;flex-direction:column}
+.name-row{display:flex;align-items:baseline;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap}
+.name-row h1{margin:0}
+.name-row .price{font-size:clamp(1.6rem,2.4vw,2.1rem);white-space:nowrap}
+.puppy-info .facts{margin-bottom:1rem}
+.puppy-info .facts li{padding:.42rem 0;font-size:.94rem}
+.puppy-info .reserve{margin:1rem 0}
+.puppy-info .share-row{margin-top:auto;padding-top:1.25rem}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
 .frame img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.carousel{display:flex;flex-direction:column}
 .cnav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;
   border-radius:50%;border:1.5px solid var(--forest);background:rgba(253,249,249,.92);
   cursor:pointer;font-size:1.3rem;line-height:1;color:var(--forest);z-index:2}
@@ -224,11 +261,15 @@ textarea{min-height:8rem}
   margin:0 0 1.75rem}
 
 /* ---------- footer ---------- */
-.site-foot{background:var(--forest);color:#e9ded9;margin-top:3rem}
+/* no margin: a coloured final section must butt straight against the footer,
+   otherwise a strip of page background shows through between them */
+.site-foot{background:var(--forest);color:#e9ded9}
 .site-foot a{color:var(--pink-pale)}
 .foot-top{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:start;
   padding:3rem 0 1rem}
-.foot-brand img{height:110px;width:auto}
+.foot-brand{background:var(--paper);border-radius:6px;padding:1.1rem 1.35rem;
+  display:inline-block}
+.foot-brand img{height:132px;width:auto}
 .foot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
 .foot-grid h3{color:var(--paper);font-size:1rem}
 .foot-grid ul{list-style:none;margin:0;padding:0}
@@ -244,14 +285,14 @@ textarea{min-height:8rem}
 
 /* ---------- mobile ---------- */
 @media (max-width:1180px){
-  .nav a{font-size:.88rem;padding:.5rem .45rem}
-  .brand img{height:50px}
+  .nav a{font-size:.86rem;padding:.5rem .42rem}
+  .brand img{height:68px}
 }
 @media (max-width:900px){
   .hero{padding:2rem 0 1.5rem}
   .hero-split,.grid-2,.puppy-top,.foot-grid,.foot-top{grid-template-columns:1fr}
   .foot-top{gap:1.5rem;padding-bottom:0}
-  .foot-brand img{height:92px}
+  .foot-brand img{height:104px}
   .nav-toggle{display:block}
   .nav{position:fixed;inset:0;background:var(--paper);flex-direction:column;
     justify-content:center;gap:.3rem;display:none;z-index:50;overflow-y:auto}

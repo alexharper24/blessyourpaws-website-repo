@@ -14,12 +14,13 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 2
+V = 3
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
 SMS_HREF = "sms:5743778023"
 EMAIL = "info@blessyourpawspuppies.com"
+AREA = "Warsaw and Winona Lake, Indiana"
 COUNTS = json.load(open("img/photo-counts.json"))
 
 MUNCHKINS = [
@@ -83,8 +84,10 @@ img{max-width:100%;height:auto;display:block}
 
 /* Fraunces ships wonky f/g/y by default. WONK 0 turns the swashes off, which is
    the fix for the odd-looking f. SOFT rounds the terminals a little. */
-h1,h2,h3,.display,.packet-name,.price{font-family:"Fraunces",Georgia,serif;
-  font-variation-settings:"SOFT" 30,"WONK" 0;
+/* Petrona replaces Fraunces. Fraunces draws a descending, hooked lowercase f as
+   part of its design, which the WONK axis does not undo. Petrona keeps the warm
+   old-style vintage feel with a normal f. */
+h1,h2,h3,.display,.packet-name,.price{font-family:"Petrona",Georgia,serif;
   font-feature-settings:"liga" 0,"dlig" 0,"swsh" 0}
 h1,h2,h3{font-weight:600;line-height:1.14;margin:0 0 .5rem;text-wrap:balance;
   letter-spacing:-.01em}
@@ -115,7 +118,7 @@ a{color:var(--forest)}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   min-height:82px}
 .brand{display:flex;align-items:center;text-decoration:none;flex:none}
-.brand img{height:58px;width:auto}
+.brand img{height:84px;width:auto}
 .nav{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;justify-content:flex-end}
 .nav a{text-decoration:none;padding:.5rem .6rem;border-radius:3px;font-size:.94rem;
   white-space:nowrap}
@@ -129,11 +132,15 @@ a{color:var(--forest)}
 
 /* ---------- hero ---------- */
 .hero{padding:3rem 0 2.5rem}
-.hero-split{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(2rem,4vw,4rem);
+.hero-split{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(2rem,4vw,4rem);
   align-items:center}
 .framed{width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
-.hero-split .framed{aspect-ratio:4/3;object-fit:cover}
+.hero-split .framed{aspect-ratio:3/2;object-fit:cover}
+/* section imagery: give photos real presence, they are the product */
+.grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
+.grid-2.narrow-left{grid-template-columns:.8fr 1.2fr}
+.grid-2.narrow-right{grid-template-columns:1.2fr .8fr}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
   font-size:1rem;min-height:48px}
@@ -142,6 +149,14 @@ a{color:var(--forest)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
+/* a section-closing action, tied to the block above it by a rule rather than
+   floating loose underneath */
+.section-cta{display:flex;justify-content:center;align-items:center;gap:1rem;
+  margin-top:clamp(1.75rem,3vw,2.75rem);padding-top:clamp(1.5rem,2.5vw,2rem);
+  border-top:1px solid var(--rule);flex-wrap:wrap}
+.section-cta p{margin:0;color:var(--sage-deep);font-size:.95rem}
+.band-forest .section-cta{border-top-color:rgba(253,249,249,.28)}
+.band-pink .section-cta,.band-raise .section-cta{border-top-color:var(--sage-light)}
 
 .sprig{display:block;margin:0 auto;color:var(--sage)}
 
@@ -157,6 +172,11 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 /* ---------- cards ---------- */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
   gap:clamp(1.25rem,2vw,2rem)}
+/* an exact column count so a small litter spans the full width instead of
+   clustering at the left with dead space beside it */
+.pgrid.cols-3{grid-template-columns:repeat(3,1fr)}
+.pgrid.cols-4{grid-template-columns:repeat(4,1fr)}
+.pgrid.cols-7{grid-template-columns:repeat(4,1fr)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
@@ -166,6 +186,14 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .packet::before{content:"";position:absolute;inset:5px;border:1px dashed var(--sage);
   border-radius:2px;pointer-events:none}
 .packet img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:2px}
+/* parent portraits are a mix of landscape and portrait originals. a 4/5 frame
+   with a top-biased crop keeps every head in shot and makes the cards align. */
+.packet.parent img,.door.parent img{aspect-ratio:4/5;object-position:50% 22%}
+.parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
+.parent-grid .packet-body{gap:.35rem}
+.dogmeta{font-size:.86rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--sage-deep);font-weight:700;margin:0 0 .35rem}
 .packet-body{padding:1rem .6rem .5rem;display:flex;flex-direction:column;gap:.2rem;
   flex:1}
 .packet-name{font-size:1.35rem;font-weight:700;margin:0}
@@ -197,12 +225,22 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
   transform:rotate(-45deg)}
 
 /* ---------- puppy page carousel ---------- */
-.puppy-top{display:grid;grid-template-columns:1.5fr 1fr;
-  gap:clamp(1.5rem,3vw,3.5rem);align-items:start}
+.puppy-top{display:grid;grid-template-columns:1.45fr 1fr;
+  gap:clamp(1.5rem,3vw,3rem);align-items:stretch}
+.puppy-info{display:flex;flex-direction:column}
+.name-row{display:flex;align-items:baseline;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap}
+.name-row h1{margin:0}
+.name-row .price{font-size:clamp(1.6rem,2.4vw,2.1rem);white-space:nowrap}
+.puppy-info .facts{margin-bottom:1rem}
+.puppy-info .facts li{padding:.42rem 0;font-size:.94rem}
+.puppy-info .reserve{margin:1rem 0}
+.puppy-info .share-row{margin-top:auto;padding-top:1.25rem}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
 .frame img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.carousel{display:flex;flex-direction:column}
 .cnav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;
   border-radius:50%;border:1.5px solid var(--forest);background:rgba(253,249,249,.92);
   cursor:pointer;font-size:1.3rem;line-height:1;color:var(--forest);z-index:2}
@@ -278,11 +316,15 @@ textarea{min-height:8rem}
   margin:0 0 1.75rem}
 
 /* ---------- footer ---------- */
-.site-foot{background:var(--forest);color:#e9ded9;margin-top:3rem}
+/* no margin: a coloured final section must butt straight against the footer,
+   otherwise a strip of page background shows through between them */
+.site-foot{background:var(--forest);color:#e9ded9}
 .site-foot a{color:var(--pink-pale)}
 .foot-top{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:start;
   padding:3rem 0 1rem}
-.foot-brand img{height:110px;width:auto}
+.foot-brand{background:var(--paper);border-radius:6px;padding:1.1rem 1.35rem;
+  display:inline-block}
+.foot-brand img{height:132px;width:auto}
 .foot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
 .foot-grid h3{color:var(--paper);font-size:1rem}
 .foot-grid ul{list-style:none;margin:0;padding:0}
@@ -298,14 +340,14 @@ textarea{min-height:8rem}
 
 /* ---------- mobile ---------- */
 @media (max-width:1180px){
-  .nav a{font-size:.88rem;padding:.5rem .45rem}
-  .brand img{height:50px}
+  .nav a{font-size:.86rem;padding:.5rem .42rem}
+  .brand img{height:68px}
 }
 @media (max-width:900px){
   .hero{padding:2rem 0 1.5rem}
   .hero-split,.grid-2,.puppy-top,.foot-grid,.foot-top{grid-template-columns:1fr}
   .foot-top{gap:1.5rem;padding-bottom:0}
-  .foot-brand img{height:92px}
+  .foot-brand img{height:104px}
   .nav-toggle{display:block}
   .nav{position:fixed;inset:0;background:var(--paper);flex-direction:column;
     justify-content:center;gap:.3rem;display:none;z-index:50;overflow-y:auto}
@@ -487,7 +529,7 @@ def footer():
       <div><h3>Get in touch</h3><ul>
         <li>Call or text Hope<br><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></li>
         <li><a href="mailto:{EMAIL}">{EMAIL}</a></li>
-        <li>Northern Indiana <span class="chip chip-draft">Confirm area</span></li>
+        <li>{AREA}</li>
         <li class="fine">Visits by appointment. Our location is shared once your
           visit is scheduled.</li>
       </ul></div>
@@ -520,7 +562,7 @@ def page(path, title, desc, body, extra_head=""):
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v={V}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400..700;1,400&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v={V}">
 {extra_head}</head>
 <body>
@@ -553,6 +595,24 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False):
     parts.append(f'alt={q}{alt}{q}')
     if lazy: parts.append(f'loading={q}lazy{q}')
     return " ".join(parts) + ">"
+
+def parent_card(stem, name, role, breed, facts, note=""):
+    """Parent card with a labelled role, breed line, and facts table. Replaces the
+    run-on sentence that read badly under the photos."""
+    rows = "".join('<li><span class="k">%s</span><span class="v">%s</span></li>' % (k, v)
+                   for k, v in facts)
+    if stem.endswith(".svg"):
+        img = '<img src="img/placeholder/%s" alt="Photo of %s coming soon">' % (stem, name)
+    else:
+        img = img_tag(stem, folder="dogs", alt="%s, our %s" % (name, breed))
+    note_html = '<p class="fine" style="margin:.6rem 0 0">%s</p>' % note if note else ""
+    return ('<article class="packet parent">' + img +
+      '<div class="packet-body">'
+      '<p class="dogmeta">' + role + '</p>'
+      '<p class="packet-name">' + name + '</p>'
+      '<p class="packet-meta">' + breed + '</p>'
+      '<ul class="facts" style="margin-top:.6rem;margin-bottom:0">' + rows + '</ul>'
+      + note_html + '</div></article>')
 
 def card(slug, name, sex, colour, price, breed):
     return f"""<a class="packet-link" href="puppy-{slug}.html"><article class="packet">
@@ -587,45 +647,35 @@ def build_pages():
     m_cards = "\n".join(card(s, n, x, c, M_PRICE, "Munchkin Bernedoodle") for s, n, x, c, _ in MUNCHKINS)
     d_cards = "\n".join(card(s, n, x, c, D_PRICE, "Doberman Pinscher") for s, n, x, c, _ in DOBERMANS)
 
-    M_PARENTS = f"""
-    <article class="packet">{img_tag('troy-01', folder='dogs', alt='Troy, our Mini Multi Gen Bernedoodle dam')}
-      <div class="packet-body"><p class="packet-name">Troy</p>
-        <p class="packet-meta">Mom &middot; Mini Multi Gen Bernedoodle</p>
-        <ul class="facts" style="margin-top:.75rem;margin-bottom:0">
-          <li><span class="k">Weight</span><span class="v">21 lbs</span></li>
-          <li><span class="k">Color</span><span class="v">Blue merle parti</span></li>
-        </ul></div></article>
-    <article class="packet">{img_tag('cavalier-sire-01', folder='dogs', alt='Our ruby Cavalier King Charles Spaniel sire')}
-      <div class="packet-body"><p class="packet-name">Our Cavalier sire</p>
-        <p class="packet-meta">Dad &middot; Cavalier King Charles Spaniel, AKC</p>
-        <ul class="facts" style="margin-top:.75rem;margin-bottom:0">
-          <li><span class="k">Weight</span><span class="v">19 lbs</span></li>
-          <li><span class="k">Color</span><span class="v">Ruby</span></li>
-          <li><span class="k">Genetic testing</span><span class="v">Clear</span></li>
-        </ul></div></article>"""
-    D_PARENTS = f"""
-    <article class="packet">{img_tag('mira-01', folder='dogs', alt='Mira, our Doberman Pinscher dam')}
-      <div class="packet-body"><p class="packet-name">Mira</p>
-        <p class="packet-meta">Mom &middot; Kingdom's Miraculous Grace</p>
-        <ul class="facts" style="margin-top:.75rem;margin-bottom:0">
-          <li><span class="k">Weight</span><span class="v">70 lbs</span></li>
-          <li><span class="k">Color</span><span class="v">Black and rust</span></li>
-          <li><span class="k">Genetic panel</span><span class="v">Clear, DCM3 carrier</span></li>
-          <li><span class="k">OFA</span><span class="v">Heart and eyes</span></li>
-        </ul></div></article>
-    <article class="packet"><img src="img/placeholder/doberman-sire.svg" alt="Photo of the Doberman sire coming soon">
-      <div class="packet-body"><p class="packet-name">The sire {CHIP_PHOTO}</p>
-        <p class="packet-meta">Dad &middot; Doberman Pinscher</p>
-        <ul class="facts" style="margin-top:.75rem;margin-bottom:0">
-          <li><span class="k">Weight</span><span class="v">100 lbs</span></li>
-          <li><span class="k">Color</span><span class="v">Red and rust</span></li>
-          <li><span class="k">Genetic testing</span><span class="v">Clear</span></li>
-        </ul></div></article>"""
+    M_PARENTS = (
+      parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
+                  [("Weight", "21 lbs"), ("Color", "Blue merle parti"),
+                   ("Born", "January 21, 2024")]) +
+      parent_card("cavalier-sire-01", "Our Cavalier sire", "Dad",
+                  "Cavalier King Charles Spaniel, AKC",
+                  [("Weight", "19 lbs"), ("Color", "Ruby"),
+                   ("Genetic testing", "Clear")],
+                  "His registered name is being added. " + CHIP_DRAFT))
+    D_PARENTS = (
+      parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
+                  [("Registered", "Kingdom's Miraculous Grace"),
+                   ("Weight", "70 lbs"), ("Color", "Black and rust"),
+                   ("Genetic panel", "Clear, DCM3 carrier"),
+                   ("OFA", "Heart and eyes")]) +
+      parent_card("doberman-sire-01", "Our Doberman sire", "Dad", "Doberman Pinscher",
+                  [("Weight", "100 lbs"), ("Color", "Red and rust"),
+                   ("Genetic testing", "Clear")],
+                  "His registered name is being added. " + CHIP_DRAFT))
+
+    hp = """<div style="position:absolute;left:-9999px" aria-hidden="true">
+      <label for="{i}-hp">Leave this field empty</label>
+      <input id="{i}-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
+    """
 
     org_ld = json.dumps({"@context": "https://schema.org", "@type": "LocalBusiness",
         "name": "Bless Your Paws Puppies",
-        "description": "Family-raised Munchkin Bernedoodle and Doberman Pinscher puppies in northern Indiana.",
-        "telephone": "+1-574-377-8023", "email": EMAIL, "areaServed": "Northern Indiana",
+        "description": "Family-raised Munchkin Bernedoodle and Doberman Pinscher puppies in Warsaw and Winona Lake, Indiana.",
+        "telephone": "+1-574-377-8023", "email": EMAIL, "areaServed": AREA,
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
 
     page("index.html", "Bless Your Paws Puppies | Munchkin Bernedoodle and Doberman Puppies, Northern Indiana",
@@ -647,16 +697,19 @@ def build_pages():
 
 <section class="band-raise"><div class="wrap">
   <p class="eyebrow">Available now</p>
-  <h2>Ten puppies, two litters, both ready to meet you</h2>
-  <p class="lede">Seven Munchkin Bernedoodles going home in September, and three
-    Doberman Pinschers ready right now. A ${DEPOSIT} deposit holds your puppy.</p>
+  <h2>Puppies looking for their families</h2>
+  <p class="lede">Munchkin Bernedoodles going home in September, and Doberman
+    Pinschers ready right now. A ${DEPOSIT} deposit holds your puppy.</p>
   <div class="pgrid" style="margin-top:2rem">
 {card(*MUNCHKINS[1][:4], M_PRICE, "Munchkin Bernedoodle")}
 {card(*MUNCHKINS[2][:4], M_PRICE, "Munchkin Bernedoodle")}
 {card(*MUNCHKINS[6][:4], M_PRICE, "Munchkin Bernedoodle")}
 {card(*DOBERMANS[0][:4], D_PRICE, "Doberman Pinscher")}
   </div>
-  <div class="btn-row"><a class="btn btn-ghost" href="puppies.html">See all ten puppies</a></div>
+  <div class="section-cta">
+    <p>Every available puppy, both litters, in one place.</p>
+    <a class="btn btn-primary" href="puppies.html">See all available puppies</a>
+  </div>
 </div></section>
 
 <section><div class="wrap">
@@ -667,13 +720,13 @@ def build_pages():
       {img_tag('eden-01', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
       <div class="door-body"><h3>Munchkin Bernedoodles</h3>
       <p class="fine">A small, sweet cross of a Mini Multi Gen Bernedoodle and an
-        AKC Cavalier King Charles Spaniel. Seven available, going home in September.</p></div>
+        AKC Cavalier King Charles Spaniel. Going home in September.</p></div>
     </a>
     <a class="door" href="dobermans.html">
       {img_tag('griffin-01', alt='Griffin, a Doberman Pinscher puppy')}
       <div class="door-body"><h3>Doberman Pinschers</h3>
-      <p class="fine">Loyal, people-loving Dobermans from our health-tested dam Mira.
-        Three available and ready to go home now.</p></div>
+      <p class="fine">Loyal, people-loving Dobermans from our health-tested dam
+        Mira. Ready to go home now.</p></div>
     </a>
   </div>
 </div></section>
@@ -698,29 +751,16 @@ def build_pages():
   <h2>Health and temperament start here</h2>
   <p class="lede" style="max-width:70ch">Meet the moms and dads, with each dog's
     testing listed on their own card. Where a record exists, we link the record.</p>
-  <div class="grid-3" style="margin-top:2rem">
-    <a class="door" href="our-dogs.html">
-      {img_tag('troy-01', folder='dogs', alt='Troy, our Mini Multi Gen Bernedoodle dam')}
-      <div class="door-body"><h3>Troy</h3>
-        <p class="fine">Mini Multi Gen Bernedoodle, 21 lbs, blue merle parti. Mother
-          to the Munchkin Bernedoodle litter.</p></div>
-    </a>
-    <a class="door" href="our-dogs.html">
-      {img_tag('cavalier-sire-01', folder='dogs', alt='Our ruby Cavalier King Charles Spaniel sire')}
-      <div class="door-body"><h3>Our Cavalier sire</h3>
-        <p class="fine">AKC registered Cavalier King Charles Spaniel, 19 lbs, ruby,
-          genetically tested clear.</p></div>
-    </a>
-    <a class="door" href="our-dogs.html">
-      {img_tag('mira-01', folder='dogs', alt='Mira, our Doberman Pinscher dam')}
-      <div class="door-body"><h3>Mira</h3>
-        <p class="fine">Doberman Pinscher, 70 lbs, black and rust. OFA heart and eyes,
-          with her records linked.</p></div>
-    </a>
+  <div class="parent-grid" style="margin-top:2rem">
+{M_PARENTS}{D_PARENTS}
+  </div>
+  <div class="section-cta">
+    <p>Every test result we hold, linked to the original record.</p>
+    <a class="btn btn-primary" href="our-dogs.html">Meet our dogs</a>
   </div>
 </div></section>
 
-<section class="band-pink"><div class="wrap center">
+<section class="band-pink" style="margin-bottom:0"><div class="wrap center">
   <h2>Litters reserve quickly</h2>
   <p class="lede">One puppy from this litter went home to a waitlist family before it
     was ever listed. Join the waitlist and you hear about the next litter first.</p>
@@ -740,12 +780,12 @@ def build_pages():
 
   <h2 style="margin-top:2.5rem">Munchkin Bernedoodles &middot; ${M_PRICE:,}</h2>
   <p class="fine">Born {M_BORN}. Going home {M_HOME}. {SIZE_DRAFT}</p>
-  <div class="pgrid" style="margin-top:1.5rem">{m_cards}</div>
+  <div class="pgrid cols-4" style="margin-top:1.5rem">{m_cards}</div>
 
   <h2 style="margin-top:4rem">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
   <p class="fine">Born {D_BORN}. <strong>Ready to go home now.</strong>
     AKC registered, tails docked, dew claws removed, microchipped.</p>
-  <div class="pgrid" style="margin-top:1.5rem">{d_cards}</div>
+  <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>
 </div></section>""")
 
     page("munchkin-bernedoodles.html", "Munchkin Bernedoodle Puppies for Sale | Bless Your Paws Puppies",
@@ -753,7 +793,7 @@ def build_pages():
       f"""<section><div class="wrap">
   <p class="eyebrow">Hope's litter</p>
   <h1>Munchkin Bernedoodle puppies</h1>
-  <div class="grid-2">
+  <div class="grid-2 narrow-left">
     <div>
       <p class="lede">Seven puppies from Troy, our Mini Multi Gen Bernedoodle, and
         our AKC-registered Cavalier King Charles Spaniel sire. Born {M_BORN},
@@ -771,13 +811,16 @@ def build_pages():
     </div>
     {img_tag('jericho-01', cls='framed', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
   </div>
-  <div class="pgrid" style="margin-top:2.5rem">{m_cards}</div>
+  <div class="pgrid cols-4" style="margin-top:2.5rem">{m_cards}</div>
 </div></section>
 
 <section class="band-raise"><div class="wrap">
   <h2>Meet their parents</h2>
-  <div class="grid-2" style="margin-top:1.5rem;align-items:stretch">{M_PARENTS}</div>
-  <div class="btn-row"><a class="btn btn-ghost" href="our-dogs.html">See full health details</a></div>
+  <div class="parent-grid" style="margin-top:1.5rem">{M_PARENTS}</div>
+  <div class="section-cta">
+    <p>Every test result we hold, linked to the original record.</p>
+    <a class="btn btn-primary" href="our-dogs.html">See full health details</a>
+  </div>
 </div></section>
 
 <section class="band-pink"><div class="wrap center">
@@ -790,7 +833,7 @@ def build_pages():
       f"""<section><div class="wrap">
   <p class="eyebrow">Joy's litter</p>
   <h1>Doberman Pinscher puppies</h1>
-  <div class="grid-2">
+  <div class="grid-2 narrow-left">
     <div>
       <p class="lede">Three AKC-registered puppies from Mira, our health-tested
         Doberman dam. Born {D_BORN}, and <strong>ready to go home now</strong>.</p>
@@ -807,13 +850,16 @@ def build_pages():
     </div>
     {img_tag('elowen-01', cls='framed', alt='Elowen, a black and rust Doberman Pinscher puppy', lazy=False)}
   </div>
-  <div class="pgrid" style="margin-top:2.5rem">{d_cards}</div>
+  <div class="pgrid cols-3" style="margin-top:2.5rem">{d_cards}</div>
 </div></section>
 
 <section class="band-raise"><div class="wrap">
   <h2>Meet their parents</h2>
-  <div class="grid-2" style="margin-top:1.5rem;align-items:stretch">{D_PARENTS}</div>
-  <div class="btn-row"><a class="btn btn-ghost" href="our-dogs.html">See full health details</a></div>
+  <div class="parent-grid" style="margin-top:1.5rem">{D_PARENTS}</div>
+  <div class="section-cta">
+    <p>Every test result we hold, linked to the original record.</p>
+    <a class="btn btn-primary" href="our-dogs.html">See full health details</a>
+  </div>
 </div></section>""")
 
     faq = [
@@ -905,7 +951,7 @@ def build_pages():
 
     page("our-dogs.html", "Our Dogs and Their Health | Bless Your Paws Puppies",
       "Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, and Mira the health-tested Doberman dam, with testing listed dog by dog.",
-      f"""<section><div class="wrap">
+      f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">The parents</p>
   <h1>Our dogs, and what they are tested for</h1>
   <p class="lede" style="max-width:72ch">Health claims are easy to make and hard to
@@ -915,73 +961,44 @@ def build_pages():
 
 <section class="band-raise"><div class="wrap">
   <h2>The Munchkin Bernedoodle parents</h2>
-  <div class="grid-2" style="margin-top:2rem;align-items:start">
-    <div>
-      {img_tag('troy-01', folder='dogs', cls='framed', alt='Troy, our Mini Multi Gen Bernedoodle dam')}
-      <h3 style="margin-top:1.25rem">Troy <span class="fine" style="font-weight:400">Mom</span></h3>
-      <ul class="facts">
-        <li><span class="k">Breed</span><span class="v">Mini Multi Gen Bernedoodle</span></li>
-        <li><span class="k">Weight</span><span class="v">21 lbs</span></li>
-        <li><span class="k">Color</span><span class="v">Blue merle parti</span></li>
-        <li><span class="k">Born</span><span class="v">January 21, 2024</span></li>
-        <li><span class="k">Health testing</span><span class="v">Being compiled</span></li>
-      </ul>
-      <p class="fine">Troy's health testing documentation is being added to this page.
-        {CHIP_DRAFT}</p>
-    </div>
-    <div>
-      {img_tag('cavalier-sire-01', folder='dogs', cls='framed', alt='Our ruby Cavalier King Charles Spaniel sire')}
-      <h3 style="margin-top:1.25rem">Our Cavalier sire <span class="fine" style="font-weight:400">Dad</span></h3>
-      <ul class="facts">
-        <li><span class="k">Breed</span><span class="v">Cavalier King Charles Spaniel</span></li>
-        <li><span class="k">Registration</span><span class="v">AKC</span></li>
-        <li><span class="k">Weight</span><span class="v">19 lbs</span></li>
-        <li><span class="k">Color</span><span class="v">Ruby</span></li>
-        <li><span class="k">Born</span><span class="v">December 24, 2024</span></li>
-        <li><span class="k">Genetic testing</span><span class="v">Clear</span></li>
-      </ul>
-      <p class="fine">His name and the specific panel are being added. {CHIP_DRAFT}</p>
-    </div>
+  <p class="fine">Troy and our Cavalier sire, the mom and dad behind Hope's litter.</p>
+  <div class="parent-grid" style="margin-top:1.5rem">{M_PARENTS}</div>
+  <div class="section-cta">
+    <p>Troy's testing documentation is being compiled. {CHIP_DRAFT}</p>
+    <a class="btn btn-primary" href="munchkin-bernedoodles.html">See their puppies</a>
   </div>
 </div></section>
 
 <section><div class="wrap">
   <h2>The Doberman parents</h2>
-  <div class="grid-2" style="margin-top:2rem;align-items:start">
-    <div>
-      {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our Doberman Pinscher dam')}
-      <h3 style="margin-top:1.25rem">Mira <span class="fine" style="font-weight:400">Mom</span></h3>
-      <ul class="facts">
-        <li><span class="k">Registered name</span><span class="v">Kingdom's Miraculous Grace</span></li>
-        <li><span class="k">AKC number</span><span class="v">WS85545303</span></li>
-        <li><span class="k">Weight</span><span class="v">70 lbs</span></li>
-        <li><span class="k">Color</span><span class="v">Black and rust</span></li>
-        <li><span class="k">Genetic panel</span><span class="v">Clear, carrier for DCM3</span></li>
-        <li><span class="k">OFA heart</span><span class="v">EKG and holter</span></li>
-        <li><span class="k">OFA eyes</span><span class="v">Tested</span></li>
-      </ul>
-      <p class="fine">Read her records yourself:
-        <a href="https://ofa.org/advanced-search?appnum=2720473">OFA record</a> and
-        <a href="https://gensol2storageaccount.blob.core.windows.net/certificates/eb11a34d-fa1e-4a4b-ac2f-b5b5bcc6d48e/gensolresult534262.pdf">GenSol certificate</a>.
-        Carrier status means she carries one copy and is not affected herself. Carriers
-        are bred to clear partners so puppies cannot be affected.
-        <span class="chip chip-draft">Confirm DCM3 vs DM3</span></p>
-    </div>
-    <div>
-      <img class="framed" src="img/placeholder/doberman-sire.svg" alt="Photo of the Doberman sire coming soon">
-      <h3 style="margin-top:1.25rem">The sire <span class="fine" style="font-weight:400">Dad</span> {CHIP_PHOTO}</h3>
-      <ul class="facts">
-        <li><span class="k">Breed</span><span class="v">Doberman Pinscher</span></li>
-        <li><span class="k">Weight</span><span class="v">100 lbs</span></li>
-        <li><span class="k">Color</span><span class="v">Red and rust</span></li>
-        <li><span class="k">Genetic testing</span><span class="v">Clear</span></li>
-      </ul>
-      <p class="fine">His name, registration, and photo are being added. {CHIP_DRAFT}</p>
-    </div>
+  <p class="fine">Mira and our Doberman sire, the mom and dad behind Joy's litter.</p>
+  <div class="parent-grid" style="margin-top:1.5rem">{D_PARENTS}</div>
+  <div class="section-cta">
+    <p>Read Mira's records yourself:
+      <a href="https://ofa.org/advanced-search?appnum=2720473">OFA record</a> and
+      <a href="https://gensol2storageaccount.blob.core.windows.net/certificates/eb11a34d-fa1e-4a4b-ac2f-b5b5bcc6d48e/gensolresult534262.pdf">GenSol certificate</a>.</p>
+    <a class="btn btn-primary" href="dobermans.html">See their puppies</a>
   </div>
 </div></section>
 
-<section class="band-forest"><div class="wrap grid-2">
+<section class="band-pink"><div class="wrap">
+  <h2>What a carrier result actually means</h2>
+  <div class="grid-2 narrow-right" style="margin-top:1.5rem;align-items:center">
+    <div>
+      <p>Mira's genetic panel comes back clear on everything tested except one
+        condition, where she is a carrier. A carrier has one copy of a variant and is
+        not affected by it herself. Carriers are bred to clear partners so that no
+        puppy can be affected, which is exactly how she is paired.</p>
+      <p>An OFA heart exam is a cardiac screening performed by a veterinarian and
+        registered with the Orthopedic Foundation for Animals. Mira has been screened
+        by EKG and holter, and her eyes are tested too.
+        <span class="chip chip-draft">Confirm DCM3 vs DM3</span></p>
+    </div>
+    {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our health-tested Doberman dam')}
+  </div>
+</div></section>
+
+<section class="band-forest" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
   <div>
     <p class="eyebrow">Every puppy, before go-home</p>
     <h2>What happens before a puppy leaves us</h2>
@@ -1057,7 +1074,7 @@ def build_pages():
   <div class="grid-2">
     <p class="lede">Four steps, no pressure, and a real conversation somewhere in the
       middle. We would rather talk you out of the wrong puppy than sell you one.</p>
-    {img_tag('griffin-02', cls='framed', alt='Griffin, a Doberman Pinscher puppy', lazy=False)}
+    {img_tag('havilah-02', cls='framed', alt='Havilah, a Munchkin Bernedoodle puppy', lazy=False)}
   </div>
 </div></section>
 
@@ -1068,7 +1085,7 @@ def build_pages():
         <p class="fine">Browse the <a href="puppies.html">available puppies</a>, then
           call, text, or send the <a href="contact.html">inquiry form</a>. Tell us a
           little about your family and who caught your eye.</p></div></article>
-    <article class="packet">{img_tag('malcolm-02', alt='A Doberman Pinscher puppy')}
+    <article class="packet">{img_tag('malcolm-01', alt='A Doberman Pinscher puppy')}
       <div class="packet-body"><p class="packet-name">2. Meet the puppy</p>
         <p class="fine">We set up a visit or a video call so you can meet the puppy,
           the parents, and us. Ten minutes is usually enough to know.</p></div></article>
@@ -1123,42 +1140,61 @@ def build_pages():
   </div>
 </div></section>""")
 
-    hp = """<div style="position:absolute;left:-9999px" aria-hidden="true">
-      <label for="{i}-hp">Leave this field empty</label>
-      <input id="{i}-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
-    """
     page("contact.html", "Contact | Bless Your Paws Puppies",
       "Ask about an available puppy or plan a visit. Call or text Hope, email us, or send the inquiry form.",
-      f"""<section><div class="wrap grid-2" style="align-items:start">
-  <div>
-    <p class="eyebrow">Contact</p>
-    <h1>Say hello</h1>
-    <p class="lede">The fastest way to reach us is a call or a text.</p>
-    <ul class="facts">
-      <li><span class="k">Hope, Munchkin Bernedoodles</span>
-        <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
-      <li><span class="k">Joy, Dobermans</span>
-        <span class="v">Number coming soon</span></li>
-      <li><span class="k">Email</span>
-        <span class="v"><a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
-      <li><span class="k">Where</span><span class="v">Northern Indiana</span></li>
-    </ul>
-    <p class="fine">Visits are by appointment. Our location is shared once your
-      visit is scheduled. {CHIP_DRAFT}</p>
-    {img_tag('eden-01', cls='framed', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
+      f"""<section><div class="wrap">
+  <p class="eyebrow">Contact</p>
+  <h1>Say hello</h1>
+  <p class="lede" style="max-width:70ch">The fastest way to reach us is a call or a
+    text. Tell us which puppy caught your eye and a little about your family, and we
+    will get right back to you.</p>
+  <div class="grid-2" style="margin-top:2rem;align-items:start">
+    <div>
+      <h2>How to reach us</h2>
+      <ul class="facts">
+        <li><span class="k">Hope, Munchkin Bernedoodles</span>
+          <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
+        <li><span class="k">Joy, Dobermans</span>
+          <span class="v">Number coming soon</span></li>
+        <li><span class="k">Email</span>
+          <span class="v"><a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
+        <li><span class="k">Where</span><span class="v">{AREA}</span></li>
+        <li><span class="k">Visits</span><span class="v">By appointment</span></li>
+      </ul>
+      <p class="fine">Our exact location is shared once your visit is scheduled.
+        Video calls work well for families further away.</p>
+    </div>
+    <div>
+      <h2>Send an inquiry</h2>
+      <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST" style="max-width:none">
+      {hp.format(i="c")}<div><label for="name">Your name</label><input id="name" name="name" required></div>
+      <div><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+      <div><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
+      <div><label for="message">Which puppy caught your eye, and a little about your family</label>
+        <textarea id="message" name="message" required></textarea></div>
+      <button class="btn btn-primary" type="submit">Send inquiry</button>
+      <p class="guard-msg">The form is almost ready. For now, call or text Hope at
+        <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.</p>
+      </form>
+    </div>
   </div>
-  <div>
-    <h2>Send an inquiry</h2>
-    <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
-    {hp.format(i="c")}<div><label for="name">Your name</label><input id="name" name="name" required></div>
-    <div><label for="email">Email</label><input id="email" name="email" type="email" required></div>
-    <div><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
-    <div><label for="message">Which puppy caught your eye, and a little about your family</label>
-      <textarea id="message" name="message" required></textarea></div>
-    <button class="btn btn-primary" type="submit">Send inquiry</button>
-    <p class="guard-msg">The form is almost ready. For now, call or text Hope at
-      <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.</p>
-    </form>
+</div></section>
+
+<section class="band-raise" style="margin-bottom:0"><div class="wrap">
+  <h2 class="center">Who you would be coming to meet</h2>
+  <div class="grid-2" style="margin-top:2rem">
+    <div>
+      {img_tag('eden-01', cls='framed', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
+      <h3 style="margin-top:1rem">Munchkin Bernedoodles</h3>
+      <p class="fine">Small, soft, and lap-sized. Going home in September.
+        <a href="munchkin-bernedoodles.html">See the litter</a>.</p>
+    </div>
+    <div>
+      {img_tag('malcolm-01', cls='framed', alt='Malcolm, a black and rust Doberman Pinscher puppy')}
+      <h3 style="margin-top:1rem">Doberman Pinschers</h3>
+      <p class="fine">AKC registered, loyal, and ready to go home now.
+        <a href="dobermans.html">See the litter</a>.</p>
+    </div>
   </div>
 </div></section>""")
 
@@ -1210,10 +1246,10 @@ def build_pages():
       f"""<section><div class="wrap">
   <p class="eyebrow">Gallery</p>
   <h1>The photo album</h1>
-  <p class="lede">{len(items)} photos of the puppies who are with us right now.
-    Click any photo to meet that puppy.</p>
+  <p class="lede">Every photo of the puppies who are with us right now. Click any
+    photo to meet that puppy.</p>
   <div class="filter-row" style="margin-top:1.5rem">
-    <button class="cur" data-line="all">All {len(items)}</button>
+    <button class="cur" data-line="all">All photos</button>
     <button data-line="munchkin">Munchkin Bernedoodles</button>
     <button data-line="doberman">Dobermans</button>
   </div>
@@ -1373,11 +1409,10 @@ def build_pages():
 {thumbs}
       </div>
     </div>
-    <div>
-      <h1>{name}</h1>
+    <div class="puppy-info">
+      <div class="name-row"><h1>{name}</h1><span class="price">${price:,}</span></div>
       <p class="lede">{sex} &middot; {colour} &middot; {breed}</p>
       <ul class="facts">
-        <li><span class="k">Price</span><span class="v">${price:,}</span></li>
         <li><span class="k">Status</span><span class="v">Available</span></li>
         <li><span class="k">Sex</span><span class="v">{sex}</span></li>
         <li><span class="k">Color</span><span class="v">{colour}</span></li>
