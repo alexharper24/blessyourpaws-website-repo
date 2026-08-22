@@ -77,6 +77,9 @@ body{margin:0;background:var(--paper);color:var(--forest);
   body{background:var(--paper);color:var(--forest)}
 }
 img{max-width:100%;height:auto;display:block}
+/* img{display:block} above outranks the UA stylesheet's [hidden]{display:none},
+   which silently un-hides carousel slides and stacks every photo. restore it. */
+[hidden]{display:none !important}
 
 /* Fraunces ships wonky f/g/y by default. WONK 0 turns the swashes off, which is
    the fix for the odd-looking f. SOFT rounds the terminals a little. */
