@@ -318,6 +318,8 @@ form{display:flex;flex-direction:column;gap:1rem;max-width:36rem}
   padding:clamp(1.25rem,2vw,1.75rem)}
 .formcard form{max-width:none;gap:.9rem}
 .formcard .field{display:flex;flex-direction:column;gap:.3rem}
+.formcard .facts{margin-bottom:.75rem}
+.formcard .facts li:last-child{border-bottom:none}
 .formcard button{margin-top:.4rem;justify-content:center}
 label{font-size:.9rem;font-weight:700}
 input,select,textarea{font:inherit;padding:.7rem .8rem;
@@ -1220,7 +1222,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-forest" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
+<section class="band-pink" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
   <div>
     <p class="eyebrow">Before you ask</p>
     <h2>The questions we get most</h2>
@@ -1245,8 +1247,8 @@ def build_pages():
     text. Tell us which puppy caught your eye and a little about your family, and we
     will get right back to you.</p>
   <div class="grid-2" style="margin-top:2rem;align-items:start">
-    <div>
-      <h2>How to reach us</h2>
+    <div class="formcard">
+      <h2 style="margin-top:0">How to reach us</h2>
       <ul class="facts">
         <li><span class="k">Hope, Munchkin Bernedoodles</span>
           <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
