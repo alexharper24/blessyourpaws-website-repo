@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 5
+V = 6
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -141,16 +141,21 @@ a{color:var(--forest)}
    a mask so it fades into the paper underneath the headline instead of stopping at
    a hard edge. Copy sits above it, over plain paper, so contrast is never at risk. */
 .hero{padding:0;position:relative;overflow:hidden;isolation:isolate}
-.hero-drift{position:relative;min-height:clamp(30rem,44vw,42rem);
+/* the source is 3:2. at 1026x634 the frame was wider than that, so cover was
+   trimming the puppy top and bottom. a taller frame lands nearer 3:2 and keeps him
+   whole. */
+.hero-drift{position:relative;min-height:clamp(34rem,50vw,50rem);
   display:flex;align-items:center}
-.hero-photo{position:absolute;inset:0 0 0 28%;z-index:0;pointer-events:none}
+.hero-photo{position:absolute;inset:0 0 0 24%;z-index:0;pointer-events:none}
 .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%)}
-.hero-copy{position:relative;z-index:1;width:min(46rem,52%);
+/* a narrower measure: the headline was setting two very long lines */
+.hero-copy{position:relative;z-index:1;width:min(33rem,46%);
   padding:clamp(2.5rem,5vw,4.5rem) 0}
+.hero-copy .lede{max-width:30rem}
 .hero-copy h1{text-shadow:0 1px 0 var(--paper)}
 /* older engines without mask-image get a plain right-hand photo rather than a
    full-bleed image with copy on top of it */
@@ -165,7 +170,9 @@ a{color:var(--forest)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
 /* section imagery: give photos real presence, they are the product */
 .grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
-.grid-2.narrow-left{grid-template-columns:.62fr 1.38fr}
+/* .78/1.22 puts a feature photo near 780px in a 1339 wrap. .62/1.38 gave 894px,
+   which overwhelmed the paragraph beside it. */
+.grid-2.narrow-left{grid-template-columns:.78fr 1.22fr}
 .grid-2.narrow-right{grid-template-columns:.8fr 1.2fr}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
@@ -175,6 +182,14 @@ a{color:var(--forest)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
+/* heading on the left, action on the right, on one baseline. for sections where a
+   closing button under the grid read as parked rather than placed. */
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;
+  gap:1.5rem;flex-wrap:wrap;margin-bottom:1.75rem}
+.section-head>div{min-width:0}
+.section-head h2{margin-bottom:.25rem}
+.section-head .btn{flex:none}
+
 /* a section-closing action, tied to the block above it by a rule rather than
    floating loose underneath */
 .section-cta{display:flex;justify-content:center;align-items:center;gap:1rem;
@@ -199,10 +214,18 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
   gap:clamp(1.25rem,2vw,2rem)}
 /* an exact column count so a small litter spans the full width instead of
-   clustering at the left with dead space beside it */
-.pgrid.cols-3{grid-template-columns:repeat(3,1fr)}
-.pgrid.cols-4{grid-template-columns:repeat(4,1fr)}
-.pgrid.cols-7{grid-template-columns:repeat(4,1fr)}
+   clustering at the left with dead space beside it. these MUST be unwound on
+   narrow screens: pinned at 4 columns on a phone they force a horizontal scroll. */
+@media (min-width:1100px){
+  .pgrid.cols-3{grid-template-columns:repeat(3,1fr)}
+  .pgrid.cols-4,.pgrid.cols-7{grid-template-columns:repeat(4,1fr)}
+}
+@media (min-width:700px) and (max-width:1099px){
+  .pgrid.cols-3,.pgrid.cols-4,.pgrid.cols-7{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:699px){
+  .pgrid,.pgrid.cols-3,.pgrid.cols-4,.pgrid.cols-7{grid-template-columns:1fr}
+}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
@@ -348,7 +371,7 @@ input,select,textarea{font:inherit;padding:.7rem .8rem;
 textarea{min-height:8rem}
 
 /* ---------- numbered process steps ---------- */
-.step{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(1.5rem,3vw,3.5rem);
+.step{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3.5rem);
   align-items:center;padding:clamp(1.75rem,3vw,2.75rem) 0;
   border-bottom:1px solid var(--rule)}
 .step:last-of-type{border-bottom:none}
@@ -470,6 +493,7 @@ textarea{min-height:8rem}
   .nav a{font-size:1.25rem;padding:.7rem 1.2rem}
   .nav a.nav-cta{margin-left:0}
   .nav-close{position:absolute;top:1rem;right:1.25rem}
+  .section-head{flex-direction:column;align-items:flex-start;gap:1rem}
   .cthumbs button{width:64px;height:64px}
   .facts li{min-height:44px}
   .chat-fab{right:12px;bottom:12px}
@@ -904,16 +928,17 @@ def build_pages():
 </div></section>
 
 <section><div class="wrap">
-  <p class="eyebrow">The parents</p>
-  <h2>Health and temperament start here</h2>
-  <p class="lede" style="max-width:70ch">Meet the moms and dads, with each dog's
-    testing listed on their own card. Where a record exists, we link the record.</p>
-  <div class="parent-grid" style="margin-top:2rem">
-{M_PARENTS}{D_PARENTS}
-  </div>
-  <div class="section-cta">
-    <p>Every test result we hold, linked to the original record.</p>
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">The parents</p>
+      <h2>Health and temperament start here</h2>
+      <p class="lede" style="max-width:62ch;margin:0">Each dog's testing listed on
+        their own card. Where a record exists, we link the record.</p>
+    </div>
     <a class="btn btn-primary" href="our-dogs.html">Meet our dogs</a>
+  </div>
+  <div class="parent-grid">
+{M_PARENTS}{D_PARENTS}
   </div>
 </div></section>
 
@@ -935,13 +960,25 @@ def build_pages():
     includes the vet exam, vaccinations, and the go-home kit. A ${DEPOSIT} deposit
     holds your puppy.</p>
 
-  <h2 style="margin-top:2.5rem">Munchkin Bernedoodles &middot; ${M_PRICE:,}</h2>
-  <p class="fine">Born {M_BORN}. Going home {M_HOME}. {SIZE_DRAFT}</p>
+  <div class="section-head" style="margin-top:2.5rem">
+    <div>
+      <h2 style="margin:0">Munchkin Bernedoodles &middot; ${M_PRICE:,}</h2>
+      <p class="fine" style="margin:.35rem 0 0">Born {M_BORN}. Going home {M_HOME}.
+        {SIZE_DRAFT}</p>
+    </div>
+    <a class="btn btn-ghost" href="munchkin-bernedoodles.html">About the breed</a>
+  </div>
   <div class="pgrid cols-4" style="margin-top:1.5rem">{m_cards}</div>
 
-  <h2 style="margin-top:4rem">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
-  <p class="fine">Born {D_BORN}. <strong>Ready to go home now.</strong>
-    AKC registered, tails docked, dew claws removed, microchipped.</p>
+  <div class="section-head" style="margin-top:4rem">
+    <div>
+      <h2 style="margin:0">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
+      <p class="fine" style="margin:.35rem 0 0">Born {D_BORN}.
+        <strong>Ready to go home now.</strong> AKC registered, tails docked, dew claws
+        removed, microchipped.</p>
+    </div>
+    <a class="btn btn-ghost" href="dobermans.html">About the breed</a>
+  </div>
   <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>
 </div></section>""")
 
@@ -972,12 +1009,11 @@ def build_pages():
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <h2>Meet their parents</h2>
-  <div class="parent-grid" style="margin-top:1.5rem">{M_PARENTS}</div>
-  <div class="section-cta">
-    <p>Every test result we hold, linked to the original record.</p>
-    <a class="btn btn-primary" href="our-dogs.html">See full health details</a>
+  <div class="section-head">
+    <div><h2 style="margin:0">Meet their parents</h2></div>
+    <a class="btn btn-primary" href="our-dogs.html">Full health details</a>
   </div>
+  <div class="parent-grid">{M_PARENTS}</div>
 </div></section>
 
 <section class="band-pink"><div class="wrap center">
@@ -1011,12 +1047,11 @@ def build_pages():
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <h2>Meet their parents</h2>
-  <div class="parent-grid" style="margin-top:1.5rem">{D_PARENTS}</div>
-  <div class="section-cta">
-    <p>Every test result we hold, linked to the original record.</p>
-    <a class="btn btn-primary" href="our-dogs.html">See full health details</a>
+  <div class="section-head">
+    <div><h2 style="margin:0">Meet their parents</h2></div>
+    <a class="btn btn-primary" href="our-dogs.html">Full health details</a>
   </div>
+  <div class="parent-grid">{D_PARENTS}</div>
 </div></section>""")
 
     faq = [
