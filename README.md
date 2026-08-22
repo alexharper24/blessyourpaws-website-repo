@@ -66,9 +66,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 
 ### Blocking the build
 
-- [ ] **Build option not yet chosen** (A static / B data-driven / C admin + Stripe).
-      Determines the architecture. See the pricing analysis.
-- [ ] **Quote not yet sent or accepted.**
+- [x] **Quote tentatively accepted 2026-08-22. Phase 1 build started.** Phased plan:
+      $1,500 site now, $1,500 admin later, $500 Maltipoo line later.
 - [ ] Confirm the five swatches in `img/brand/` are the final brand palette and not
       just inspiration.
 - [ ] Logo: does one exist? If Harper Studio is designing the wordmark and floral
@@ -76,15 +75,16 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 
 ### Content from Joy and Hope
 
-- [ ] **Bernedoodle dam's name and spelling.** Transcribed as "Mura"/"Mira" — and
-      **"Mira" is already the Doberman dam on the KFC site**. Either two dogs with
-      similar names or a garbled transcription. Do not write either down until Hope
-      confirms.
+- [x] **RESOLVED: the Bernedoodle dam is TROY** (female, Mini Multi Gen Bernedoodle).
+      The "Mura/Mira" transcription was the Doberman, Mira, all along. The earlier
+      note calling Troy the Cavalier sire was wrong.
+- [ ] **The Cavalier sire's NAME is now the unknown.** AKC, 19 lbs, ruby, born
+      24 Dec 2024. Ask Hope.
 - [ ] **Doberman sire** — name, registration, health testing. No sire is listed
       anywhere on the KFC site; only dams. Two unidentified adult photos there were
       staged but never confirmed.
-- [x] **Bernedoodle sire: Troy**, Cavalier King Charles Spaniel, **AKC registered**,
-      born 24 Dec 2024, **19 lbs**, ruby.
+- [x] Parent facts on file: dam Troy (Mini Multi Gen Bernedoodle, 21 lbs) and the
+      AKC Cavalier sire (19 lbs, ruby).
 - [ ] **What Troy is actually "genetically clear" of.** Puppy Connection says the phrase
       but names no panel and links no result. Get the panel name and the certificate.
 - [ ] **The dam has no health testing published anywhere.** This is the gate on premium
@@ -98,17 +98,16 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [x] **Per-puppy records complete for all seven Munchkin Bernedoodles** — real names
       Joshua, Eden, Havilah, Jordan, Caleb, Shiloh, Jericho, with sex and colour. Born
       22 July 2026, home 16–23 September 2026. Full table in the litter dossier.
-- [ ] **Expected adult weight per puppy — missing, and the priority.** Published nowhere
-      across either marketplace's 14 listings. Parents are 19 lbs and 21 lbs; the
-      established range for the cross is 10–25 lbs. **Hope supplies the numbers. Never
-      estimate them** — this is the field that justifies the price.
+- [ ] **Expected adult weight: shown as a DRAFT estimate (15–25 lbs from the 19 and
+      21 lb parents) per Alex's direction 2026-08-22.** Marked visibly on every page it
+      appears. Hope confirms or corrects before launch.
 - [ ] Doberman per-puppy detail (Elowen, Malcolm, Griffin) — carried from the KFC build.
-- [ ] **Prices.** Munchkin Bernedoodle market range is $3,500–$6,500; Joy's Dobermans
-      list at $2,200 on KFC. Multi-site listing at varying prices is approved, so
-      confirm what *this* site shows.
+- [x] **Prices set for launch (Alex, 2026-08-22): Munchkins $2,000, Dobermans $2,200.**
+      The market case for raising the Munchkin price later stays in the audit docs.
 - [ ] **Deposit amount and refund/transfer terms.** Never guess.
-- [ ] **Health guarantee terms** and the **Purchase Agreement** — their documents,
-      attorney-reviewed. Harper Studio publishes, does not write.
+- [ ] **Health guarantee + Purchase Agreement: DRAFT pages shipped in the scaffold**
+      per Alex's direction, each carrying a visible draft banner. **Must be verified,
+      reworded by the family, and reviewed before launch. Not in effect as written.**
 - [ ] Go-home package contents (vaccinations, deworming, vet check, microchip, food,
       blanket, contract).
 - [x] **Socialisation and ENS documented** (from Pawrade's structured fields, pending
@@ -129,8 +128,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       angle is part of the brand.
 - [ ] Whether Joy has rights to reuse the Doberman puppy photos, which came off
       Amber's Wix site during the KFC build.
-- [ ] Any faith element. Do not assume either way — KFC's verse band is not a
-      template.
+- [ ] Faith element ON HOLD (Alex, 2026-08-22) pending the client questionnaire.
+      Do not add one; do not rule one out.
 - [x] **Photos pulled 2026-08-22.** 78 full-resolution originals for all seven Munchkin
       Bernedoodles, from the Puppy Connection listings with Hope's confirmation that the
       family owns the rights. Originals in gitignored `source-photos/puppy-connection/`;
@@ -144,8 +143,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       Each original was matched to its named web file by image fingerprint (MSE ≤ 0.011
       against a next-best of 0.14–1.47), not by eye. Map kept at
       `source-photos/kfc-original-map.json`.
-- [ ] **Munchkin Bernedoodle parent photos** — Troy (sire) and the dam. Neither
-      marketplace publishes a parent photo, so these come from Hope.
+- [ ] **Munchkin Bernedoodle parent photos** — Troy (the dam) and the Cavalier sire.
+      Hope is getting photos of Troy. Branded placeholders ship meanwhile.
 - [ ] The two unidentified adult Dobermans on the Kingdom site (`adult-dog-1/2.jpg`) are
       **deliberately not carried over** — never confirmed as anyone's dogs. Ask Joy.
 - [ ] The Golden Retrievers (Diamond, Scarlet) stay out. Joy co-owns the Doberman line;
