@@ -3,8 +3,9 @@
 Static website for **Bless Your Paws**, the dog-breeding business of Joy Williams and
 Hope Williams (twin sisters). Plain HTML/CSS/JS, no build step, targets GitHub Pages.
 
-**Status: scoped, not yet built.** This repo currently holds the brand swatches and
-the working conventions. See the pending list below.
+**Status: scoped, not yet built.** The repo holds the brand swatches, the logo package
+in forest and navy, and 78 photos covering all seven Munchkin Bernedoodle puppies. See
+the pending list below.
 
 **Character:** REPLACE THIS — write the one-sentence character statement before any
 CSS is written. Direction from the client is botanical / vintage-plate: flowery,
@@ -23,7 +24,7 @@ pinks, greens, vintage.
 
 | Line | Owner | Status |
 |---|---|---|
-| Munchkin Bernedoodle (Bernedoodle × Cavalier King Charles Spaniel) | Hope | Litter of 8, born ~mid-July 2026, taking reservations |
+| Munchkin Bernedoodle (Mini Multi Gen Bernedoodle × Cavalier King Charles Spaniel) | Hope | Born 22 Jul 2026. 8 whelped, 1 sold off the waitlist, **7 available**. Home 16–23 Sep 2026 |
 | Doberman Pinscher | Joy (co-owned with Amber) | 3 available: Elowen, Malcolm, Griffin |
 | Maltipoo | TBC | ~18 months out. **Deliberately not in the launch build** |
 
@@ -82,15 +83,26 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [ ] **Doberman sire** — name, registration, health testing. No sire is listed
       anywhere on the KFC site; only dams. Two unidentified adult photos there were
       staged but never confirmed.
-- [ ] Bernedoodle sire is **Troy** (Cavalier King Charles Spaniel). Need his
-      registration, health testing, and adult weight.
+- [x] **Bernedoodle sire: Troy**, Cavalier King Charles Spaniel, **AKC registered**,
+      born 24 Dec 2024, **19 lbs**, ruby.
+- [ ] **What Troy is actually "genetically clear" of.** Puppy Connection says the phrase
+      but names no panel and links no result. Get the panel name and the certificate.
+- [ ] **The dam has no health testing published anywhere.** This is the gate on premium
+      pricing: if she is tested, publish and link it; if not, say what is true and price
+      accordingly. Do not imply testing that does not exist.
 - [x] **Dam is a Mini Multi Gen Bernedoodle** (confirmed 2026-08-22). Pawrade said
       "Mini", Puppy Connection said "Multi Gen"; she is both. Multi-gen supports a more
       consistent curl and lower shedding than an F1 — still a per-puppy prediction, never
       a promise.
 - [x] **Sire is 19 lbs** (confirmed). Puppy Connection's 18 lbs is wrong.
-- [ ] Per-puppy: date of birth, go-home date, sex, colour, name, price, expected
-      adult size. **8 Munchkin Bernedoodles + 3 Dobermans.**
+- [x] **Per-puppy records complete for all seven Munchkin Bernedoodles** — real names
+      Joshua, Eden, Havilah, Jordan, Caleb, Shiloh, Jericho, with sex and colour. Born
+      22 July 2026, home 16–23 September 2026. Full table in the litter dossier.
+- [ ] **Expected adult weight per puppy — missing, and the priority.** Published nowhere
+      across either marketplace's 14 listings. Parents are 19 lbs and 21 lbs; the
+      established range for the cross is 10–25 lbs. **Hope supplies the numbers. Never
+      estimate them** — this is the field that justifies the price.
+- [ ] Doberman per-puppy detail (Elowen, Malcolm, Griffin) — carried from the KFC build.
 - [ ] **Prices.** Munchkin Bernedoodle market range is $3,500–$6,500; Joy's Dobermans
       list at $2,200 on KFC. Multi-site listing at varying prices is approved, so
       confirm what *this* site shows.
@@ -107,10 +119,9 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       collar and leash, toy.
 - [x] **Hope's phone number is 574-377-8023** (confirmed). Not the marketplace's
       574-221-0326.
-- [ ] Original socialization wording. Confirmed: raised in the home, around children, around
-      many people including a Fourth of July gathering. **Not confirmed and not to be
-      claimed:** vet/store outings, noise and surface desensitization, crate/leash
-      starts, or any named protocol (Puppy Culture, ENS, Rule of Seven).
+- [ ] **Rewrite the socialisation and puppy descriptions in Hope's own words.** The
+      wording currently on both marketplaces is theirs, not hers — reusing it would put
+      her site in competition with them on Google. Facts carry over; prose does not.
 - [ ] Reviews/testimonials — Hope has at least one on social media. Need the wording,
       the buyer's name, and **explicit permission**. Joy's are unknown. Carry none
       over from KFC.
