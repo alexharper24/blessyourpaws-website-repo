@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 4
+V = 5
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -136,8 +136,28 @@ a{color:var(--forest)}
   border-radius:3px;padding:.5rem .7rem;font:inherit;font-weight:700;
   color:var(--forest);cursor:pointer;min-height:44px}
 
-/* ---------- hero ---------- */
-.hero{padding:3rem 0 2.5rem}
+/* ---------- hero: photo drifts behind the copy ----------
+   The image is oversized and anchored right, then its left edge is dissolved with
+   a mask so it fades into the paper underneath the headline instead of stopping at
+   a hard edge. Copy sits above it, over plain paper, so contrast is never at risk. */
+.hero{padding:0;position:relative;overflow:hidden;isolation:isolate}
+.hero-drift{position:relative;min-height:clamp(30rem,44vw,42rem);
+  display:flex;align-items:center}
+.hero-photo{position:absolute;inset:0 0 0 28%;z-index:0;pointer-events:none}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
+    #000 42%,#000 100%);
+  mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
+    #000 42%,#000 100%)}
+.hero-copy{position:relative;z-index:1;width:min(46rem,52%);
+  padding:clamp(2.5rem,5vw,4.5rem) 0}
+.hero-copy h1{text-shadow:0 1px 0 var(--paper)}
+/* older engines without mask-image get a plain right-hand photo rather than a
+   full-bleed image with copy on top of it */
+@supports not ((mask-image:linear-gradient(#000,#000)) or (-webkit-mask-image:linear-gradient(#000,#000))){
+  .hero-photo{inset:0 0 0 46%}
+}
+
 .hero-split{display:grid;grid-template-columns:.68fr 1.32fr;gap:clamp(2rem,4vw,4rem);
   align-items:center}
 .framed{width:100%;border-radius:6px;border:1.5px solid var(--forest);
@@ -346,6 +366,32 @@ textarea{min-height:8rem}
   .step:nth-child(even) .step-media{order:0}
 }
 
+/* ---------- dog detail rows: photo, story, testing, QR ---------- */
+.dogrow{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(1.75rem,3.5vw,3.5rem);
+  align-items:center;padding:clamp(2rem,3.5vw,3.25rem) 0;
+  border-top:1px solid var(--rule)}
+.dogrow:first-of-type{border-top:none;padding-top:0}
+.dogrow .dog-photo{width:100%;border-radius:6px;border:1.5px solid var(--forest);
+  box-shadow:0 2px 0 var(--sage-light);aspect-ratio:4/3;object-fit:cover;
+  object-position:50% 32%}
+.dog-kicker{font-size:.76rem;font-weight:700;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--sage-deep);margin:0 0 .35rem}
+.dogrow h3{font-size:clamp(1.5rem,2.2vw,2rem);margin-bottom:.15rem}
+.reg-name{font-family:"Lora",Georgia,serif;font-style:italic;color:var(--sage-deep);
+  margin:0 0 1rem}
+.health{border-left:3px solid var(--sage);padding:.2rem 0 .2rem 1.15rem;
+  margin:1.25rem 0 0;display:grid;grid-template-columns:1fr auto;
+  gap:1.5rem;align-items:start}
+.health p{margin:0 0 .45rem;font-size:.95rem}
+.health .btn{margin-top:.55rem;padding:.55rem 1.1rem;font-size:.88rem;min-height:44px}
+.health-btns{display:flex;flex-direction:column;align-items:flex-start;gap:.1rem}
+.health-qr{margin:0;text-align:center;flex:none;width:132px}
+.health-qr img{width:132px;height:132px;border:1px solid var(--rule);
+  border-radius:4px;background:#fff}
+.health-qr figcaption{font-size:.68rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--sage-deep);margin-top:.4rem;line-height:1.35}
+.health.no-qr{grid-template-columns:1fr}
+
 /* ---------- FAQ accordion ---------- */
 .faq{max-width:60rem;margin:0 auto;border-top:1px solid var(--rule)}
 .faq details{border-bottom:1px solid var(--rule)}
@@ -402,7 +448,18 @@ textarea{min-height:8rem}
   .brand img{height:68px}
 }
 @media (max-width:900px){
-  .hero{padding:2rem 0 1.5rem}
+  /* stack the hero: the drift only works when there is width to fade across */
+  .hero-drift{min-height:0;display:block}
+  .hero-photo{position:relative;inset:auto;height:clamp(15rem,58vw,22rem);
+    margin:0 0 1.5rem}
+  .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
+    border:1.5px solid var(--forest)}
+  .hero-copy{width:auto;padding:1.75rem 0 0}
+  .hero-copy h1{text-shadow:none}
+  .dogrow{grid-template-columns:1fr;gap:1.25rem}
+  .health{grid-template-columns:1fr}
+  .health-qr{width:110px}
+  .health-qr img{width:110px;height:110px}
   .hero-split,.grid-2,.puppy-top,.foot-grid,.foot-top{grid-template-columns:1fr}
   .foot-top{gap:1.5rem;padding-bottom:0}
   .foot-brand img{height:48px}
@@ -416,6 +473,9 @@ textarea{min-height:8rem}
   .cthumbs button{width:64px;height:64px}
   .facts li{min-height:44px}
   .chat-fab{right:12px;bottom:12px}
+}
+@media (max-width:900px){
+  .hero{overflow:visible}
 }
 """
 
@@ -658,6 +718,33 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False):
     if lazy: parts.append(f'loading={q}lazy{q}')
     return " ".join(parts) + ">"
 
+def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None):
+    """Full-width dog row: big photo, story, a testing block with the real records
+    linked, and a QR to the OFA page. Mirrors the Kingdom Family Companions pattern."""
+    hp = "".join("<p><strong>%s</strong> %s</p>" % (k, v) for k, v in health)
+    btns = "".join(
+      '<a class="btn btn-ghost" href="%s" target="_blank" rel="noopener">%s</a>' % (u, t)
+      for t, u in links)
+    if qr:
+        qrfig = ('<figure class="health-qr">'
+                 '<img src="img/%s" alt="QR code linking to %s\u2019s OFA record %s" '
+                 'width="132" height="132" loading="lazy">'
+                 '<figcaption>Scan for OFA<br>%s</figcaption></figure>' % (qr, name, qr_num, qr_num))
+        hcls = "health"
+    else:
+        qrfig, hcls = "", "health no-qr"
+    reg_html = '<p class="reg-name">%s</p>' % reg if reg else ""
+    return ('<article class="dogrow">'
+      + img_tag(stem, folder="dogs", cls="dog-photo",
+                alt="%s, our %s" % (name, breed))
+      + '<div>'
+        '<p class="dog-kicker">' + breed + '</p>'
+        '<h3>' + name + '</h3>' + reg_html
+      + '<p>' + story + '</p>'
+      + '<div class="' + hcls + '"><div class="health-copy">' + hp
+      + '<div class="health-btns">' + btns + '</div></div>' + qrfig + '</div>'
+      '</div></article>')
+
 def parent_card(stem, name, role, breed, facts, note=""):
     """Parent card with a labelled role, breed line, and facts table. Replaces the
     run-on sentence that read badly under the photos."""
@@ -742,20 +829,26 @@ def build_pages():
 
     page("index.html", "Bless Your Paws Puppies | Munchkin Bernedoodle and Doberman Puppies, Northern Indiana",
       "Family-raised Munchkin Bernedoodle and Doberman Pinscher puppies from two sisters in northern Indiana. Raised in the home, around kids, with early socialization.",
-      f"""<section class="hero"><div class="wrap hero-split">
-  <div>
-    <p class="eyebrow">Family-raised in northern Indiana</p>
-    <h1>Puppies raised in the middle of real family life</h1>
-    <p class="lede">We are two sisters raising Munchkin Bernedoodles and Doberman
-      Pinschers underfoot in our homes, around our kids, the vacuum, the doorbell,
-      and everything else a family sounds like. {CHIP_SAMPLE}</p>
-    <div class="btn-row">
-      <a class="btn btn-primary" href="puppies.html">See available puppies</a>
-      <a class="btn btn-ghost" href="waitlist.html">Join the waitlist</a>
+      f"""<section class="hero">
+  <div class="hero-drift">
+    <div class="hero-photo">
+      {img_tag('havilah-01', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False)}
+    </div>
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="eyebrow">Family-raised in Warsaw and Winona Lake</p>
+        <h1>Puppies raised in the middle of real family life</h1>
+        <p class="lede">We are two sisters raising Munchkin Bernedoodles and Doberman
+          Pinschers underfoot in our homes, around our kids, the vacuum, the doorbell,
+          and everything else a family sounds like. {CHIP_SAMPLE}</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+          <a class="btn btn-ghost" href="waitlist.html">Join the waitlist</a>
+        </div>
+      </div>
     </div>
   </div>
-  {img_tag('havilah-01', cls='framed', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False)}
-</div></section>
+</section>
 
 <section class="band-raise"><div class="wrap">
   <p class="eyebrow">Available now</p>
@@ -1042,22 +1135,58 @@ def build_pages():
 </div></section>""",
       extra_head=f'<script type="application/ld+json">{faq_ld}</script>\n')
 
+    DOGROWS = (
+      dog_row("troy-01", "Troy", "Mini Multi Gen Bernedoodle", None,
+        "Troy is the mother of our Munchkin Bernedoodle litter. At 21 lbs she is a "
+        "small, easygoing girl with a blue merle parti coat, and she passes on both the "
+        "size and the temperament we breed for. " + CHIP_SAMPLE,
+        [("Weight:", "21 lbs, blue merle parti, born January 21, 2024."),
+         ("Health testing:", "documentation being compiled. " + CHIP_DRAFT)],
+        []) +
+      dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",
+        None,
+        "Our sire is an AKC-registered ruby Cavalier, 19 lbs, and the reason these "
+        "puppies are as small and as calm as they are. The Cavalier side is where the "
+        "lap-dog nature comes from. " + CHIP_SAMPLE,
+        [("Registration:", "AKC registered."),
+         ("Weight:", "19 lbs, ruby, born December 24, 2024."),
+         ("Genetic testing:", "tested clear. Panel documentation being added. " + CHIP_DRAFT)],
+        []) +
+      dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",
+        "Mira is an amazing girl. We love her sweet disposition, her love of guarding "
+        "the property, her desire to be a lapdog, and her inquisitive, intelligent "
+        "expression. She gets along beautifully with other dogs and with children, and "
+        "she makes us feel safe.",
+        [("AKC number:", "WS85545303. 70 lbs, black and rust."),
+         ("Genetic testing:", "tested through GenSol. Clear, carrier only for DCM3. "
+          + '<span class="chip chip-draft">Confirm DCM3 vs DM3</span>'),
+         ("OFA:", "certified for heart, by EKG and holter, and for eyes.")],
+        [("View Mira\u2019s GenSol Results (PDF)",
+          "https://gensol2storageaccount.blob.core.windows.net/certificates/eb11a34d-fa1e-4a4b-ac2f-b5b5bcc6d48e/gensolresult534262.pdf"),
+         ("View Mira\u2019s OFA Record", "https://ofa.org/advanced-search?appnum=2720473")],
+        qr="qr-mira.png", qr_num="2720473") +
+      dog_row("doberman-sire-01", "Our Doberman sire", "Doberman Pinscher", None,
+        "Our sire is a big, striking red and rust boy at 100 lbs, and an easy dog to "
+        "live with. He is where the Doberman puppies get their size and their steady "
+        "confidence. " + CHIP_SAMPLE,
+        [("Weight:", "100 lbs, red and rust."),
+         ("Genetic testing:", "tested clear."),
+         ("Registration:", "name and AKC number being added. " + CHIP_DRAFT)],
+        []))
+
     page("our-dogs.html", "Our Dogs and Their Health | Bless Your Paws Puppies",
-      "Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, Mira the health-tested Doberman dam, and our Doberman sire, with testing listed dog by dog.",
+      "Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, Mira the health-tested Doberman dam, and our Doberman sire, with testing and records for each.",
       f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">The parents</p>
   <h1>Our dogs, and what they are tested for</h1>
   <p class="lede" style="max-width:74ch">Health claims are easy to make and hard to
-    check, so each dog's testing sits on their own card, and where a record exists we
-    link the actual record for you to read yourself.</p>
+    check. So each dog gets their own testing listed here, and where a record exists we
+    link the record itself and put a QR beside it. Scan it with your phone and read the
+    original.</p>
 </div></section>
 
 <section><div class="wrap">
-  <div class="parent-grid row-4">{M_PARENTS}{D_PARENTS}</div>
-  <div class="section-cta">
-    <p>Troy's testing documentation is being compiled. {CHIP_DRAFT}</p>
-    <a class="btn btn-primary" href="puppies.html">See their puppies</a>
-  </div>
+{DOGROWS}
 </div></section>
 
 <section class="band-pink"><div class="wrap">
@@ -1065,17 +1194,15 @@ def build_pages():
   <h2>What a carrier result actually means</h2>
   <div class="grid-2 narrow-right" style="margin-top:1.5rem">
     <div>
-      <p>Mira's genetic panel comes back clear on everything tested except one
-        condition, where she is a carrier. A carrier has one copy of a variant and is
-        not affected by it herself. Carriers are bred to clear partners so that no
-        puppy can be affected, which is exactly how she is paired.</p>
+      <p>Mira's panel comes back clear on everything tested except one condition, where
+        she is a carrier. A carrier has one copy of a variant and is not affected by it
+        herself. Carriers are bred to clear partners so that no puppy can be affected,
+        which is exactly how she is paired.</p>
       <p>An OFA heart exam is a cardiac screening performed by a veterinarian and
-        registered with the Orthopedic Foundation for Animals. Mira has been screened
-        by EKG and holter, and her eyes are tested too.
-        <span class="chip chip-draft">Confirm DCM3 vs DM3</span></p>
-      <p class="fine">Read them yourself:
-        <a href="https://ofa.org/advanced-search?appnum=2720473">her OFA record</a> and
-        <a href="https://gensol2storageaccount.blob.core.windows.net/certificates/eb11a34d-fa1e-4a4b-ac2f-b5b5bcc6d48e/gensolresult534262.pdf">her GenSol certificate</a>.</p>
+        registered with the Orthopedic Foundation for Animals. Mira has been screened by
+        EKG and holter, and her eyes are tested too.</p>
+      <p class="fine">Do not take our word for any of it. Scan the QR beside her, or
+        follow the links, and read the records yourself.</p>
     </div>
     {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our health-tested Doberman dam')}
   </div>
