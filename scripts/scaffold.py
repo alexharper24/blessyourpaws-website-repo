@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 6
+V = 7
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -182,6 +182,12 @@ a{color:var(--forest)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
+/* a page title living inside the left column of a feature row, so the headline sits
+   beside the photo rather than stacked above the whole row */
+.col-title{margin-bottom:1.25rem}
+.col-title h1,.col-title h2{margin-bottom:.35rem}
+.col-title .eyebrow{margin-bottom:.4rem}
+
 /* heading on the left, action on the right, on one baseline. for sections where a
    closing button under the grid read as parked rather than placed. */
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;
@@ -208,6 +214,11 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .band-forest p,.band-forest li{color:#e9ded9}
 .band-forest a{color:var(--pink-pale)}
 .band-pink{background:var(--pink-pale)}
+/* a coloured band whose height is set by a tall photo reads as a big slab. this
+   trims the vertical padding so the colour hugs the content. */
+section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
+  padding-bottom:clamp(1.5rem,2.5vw,2.25rem)}
+.band-tight .grid-2{align-items:center}
 .band-raise{background:var(--paper-raise)}
 
 /* ---------- cards ---------- */
@@ -241,7 +252,14 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
 .parent-grid.row-4{grid-template-columns:repeat(4,1fr)}
-.parent-grid .packet-body{gap:.35rem}
+.parent-grid .packet-body{gap:.35rem;flex:1;display:flex;flex-direction:column}
+/* the facts table fills, the note sits on the floor of the card, so a card with
+   three rows and a card with five still line their notes up */
+.parent-grid .facts{margin:.6rem 0 0}
+.parent-grid .facts li:last-child{border-bottom:none}
+.parent-grid .pnote{margin-top:auto;padding-top:.75rem;font-size:.85rem;
+  color:var(--sage-deep);border-top:1px solid var(--rule)}
+.parent-grid .pnote:empty{display:none}
 .dogmeta{font-size:.86rem;letter-spacing:.09em;text-transform:uppercase;
   color:var(--sage-deep);font-weight:700;margin:0 0 .35rem}
 .packet-body{padding:1rem .6rem .5rem;display:flex;flex-direction:column;gap:.2rem;
@@ -311,7 +329,10 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
   overflow:hidden}
 .gal-grid a:hover{border-color:var(--forest)}
 .gal-grid img{aspect-ratio:1/1;object-fit:cover}
-.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-group{margin-bottom:1rem}
+.filter-label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sage-deep);font-weight:700;margin:0 0 .5rem}
+.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem}
 .filter-row button{font:inherit;font-size:.94rem;padding:.5rem 1.1rem;cursor:pointer;
   border:1.5px solid var(--forest);background:none;border-radius:3px;
   color:var(--forest);min-height:44px}
@@ -370,24 +391,23 @@ input,select,textarea{font:inherit;padding:.7rem .8rem;
   color:var(--forest);min-height:48px}
 textarea{min-height:8rem}
 
-/* ---------- numbered process steps ---------- */
-.step{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3.5rem);
-  align-items:center;padding:clamp(1.75rem,3vw,2.75rem) 0;
-  border-bottom:1px solid var(--rule)}
-.step:last-of-type{border-bottom:none}
-.step:nth-child(even) .step-media{order:-1}
-.step-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;
+/* ---------- process steps: five across, photo over caption ---------- */
+.steps-row{display:grid;grid-template-columns:repeat(5,1fr);
+  gap:clamp(1rem,1.6vw,1.75rem);align-items:start}
+.step{display:flex;flex-direction:column;gap:.75rem}
+.step-media img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px;
   border:1.5px solid var(--forest);box-shadow:0 2px 0 var(--sage-light)}
 .step-num{display:inline-flex;align-items:center;justify-content:center;
-  width:2.6rem;height:2.6rem;border-radius:50%;background:var(--forest);
-  color:var(--paper);font-family:"Lora",Georgia,serif;font-size:1.2rem;
-  font-weight:600;margin-bottom:.75rem}
-.step h3{font-size:clamp(1.3rem,1.9vw,1.7rem);margin-bottom:.5rem}
-.step p{margin-bottom:.6rem}
-@media (max-width:860px){
-  .step{grid-template-columns:1fr;gap:1.25rem}
-  .step:nth-child(even) .step-media{order:0}
-}
+  width:2.1rem;height:2.1rem;border-radius:50%;background:var(--forest);
+  color:var(--paper);font-family:"Lora",Georgia,serif;font-size:1rem;
+  font-weight:600;flex:none}
+.step-head{display:flex;align-items:center;gap:.6rem}
+.step h3{font-size:1.02rem;margin:0;line-height:1.25}
+.step p{margin:0 0 .45rem;font-size:.9rem}
+.step .fine{font-size:.82rem}
+@media (max-width:1100px){.steps-row{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.steps-row{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:460px){.steps-row{grid-template-columns:1fr}}
 
 /* ---------- dog detail rows: photo, story, testing, QR ---------- */
 .dogrow{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(1.75rem,3.5vw,3.5rem);
@@ -414,6 +434,24 @@ textarea{min-height:8rem}
 .health-qr figcaption{font-size:.68rem;font-weight:700;letter-spacing:.12em;
   text-transform:uppercase;color:var(--sage-deep);margin-top:.4rem;line-height:1.35}
 .health.no-qr{grid-template-columns:1fr}
+
+/* ---------- three-column centred list ---------- */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.25rem,2.5vw,2.5rem);
+  max-width:64rem;margin:0 auto}
+.tri>div{background:var(--card,#fff);border:1px solid var(--rule);border-radius:5px;
+  padding:1.35rem 1.5rem}
+.tri h3{margin:0 0 .75rem;font-size:1.05rem}
+.tri .checklist li{font-size:.93rem}
+@media (max-width:900px){.tri{grid-template-columns:1fr;max-width:34rem}}
+
+/* ---------- closing call to action ---------- */
+.closing{background:var(--paper-raise);border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule)}
+.closing .inner{max-width:44rem;margin:0 auto;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:.85rem}
+.closing h2{margin:0}
+.closing .contact-line{font-size:1.05rem;color:var(--forest-soft);margin:0}
+.closing .btn-row{margin:.35rem 0 0;justify-content:center}
 
 /* ---------- FAQ accordion ---------- */
 .faq{max-width:60rem;margin:0 auto;border-top:1px solid var(--rule)}
@@ -574,19 +612,53 @@ JS = """// Bless Your Paws Puppies - v2
     }
   });
 
-  // ---- gallery filter
-  var filters = document.querySelectorAll('.filter-row button');
-  if (filters.length){
-    filters.forEach(function(b){
-      b.addEventListener('click', function(){
-        filters.forEach(function(x){ x.classList.remove('cur'); });
-        b.classList.add('cur');
-        var want = b.getAttribute('data-line');
-        document.querySelectorAll('.gal-grid a').forEach(function(item){
-          item.style.display = (want === 'all' || item.getAttribute('data-line') === want) ? '' : 'none';
+  // ---- gallery: two independent filters, by litter and by puppy
+  var galGrid = document.querySelector('.gal-grid');
+  if (galGrid){
+    var fstate = { line: 'all', pup: 'all' };
+    var countEl = document.getElementById('gal-count');
+    function applyFilters(){
+      var shown = 0;
+      galGrid.querySelectorAll('a').forEach(function(it){
+        var okLine = fstate.line === 'all' || it.getAttribute('data-line') === fstate.line;
+        var okPup  = fstate.pup  === 'all' || it.getAttribute('data-pup')  === fstate.pup;
+        var vis = okLine && okPup;
+        it.style.display = vis ? '' : 'none';
+        if (vis) shown++;
+      });
+      if (countEl) countEl.textContent =
+        shown === 1 ? 'Showing 1 photo' : 'Showing ' + shown + ' photos';
+    }
+    function reset(sel, attr){
+      document.querySelectorAll(sel).forEach(function(x){
+        x.classList.toggle('cur', x.getAttribute(attr) === 'all');
+      });
+    }
+    document.querySelectorAll('.filter-row').forEach(function(row){
+      var isPup = row.hasAttribute('data-pupfilter');
+      row.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click', function(){
+          row.querySelectorAll('button').forEach(function(x){ x.classList.remove('cur'); });
+          b.classList.add('cur');
+          if (isPup){
+            fstate.pup = b.getAttribute('data-pup');
+            // choosing one puppy clears the litter narrowing, so the pick always resolves
+            if (fstate.pup !== 'all'){
+              fstate.line = 'all';
+              reset('.filter-row:not([data-pupfilter]) button', 'data-line');
+            }
+          } else {
+            fstate.line = b.getAttribute('data-line');
+            if (fstate.line !== 'all'){
+              fstate.pup = 'all';
+              reset('.filter-row[data-pupfilter] button', 'data-pup');
+            }
+          }
+          applyFilters();
         });
       });
     });
+    applyFilters();
   }
 
   // ---- let's chat launcher, on every page
@@ -985,10 +1057,12 @@ def build_pages():
     page("munchkin-bernedoodles.html", "Munchkin Bernedoodle Puppies for Sale | Bless Your Paws Puppies",
       f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle dam and an AKC Cavalier sire. Born {M_BORN}, home in September. ${M_PRICE:,} with a ${DEPOSIT} deposit.",
       f"""<section><div class="wrap">
-  <p class="eyebrow">Hope's litter</p>
-  <h1>Munchkin Bernedoodle puppies</h1>
   <div class="grid-2 narrow-left">
     <div>
+      <div class="col-title">
+        <p class="eyebrow">Hope's litter</p>
+        <h1>Munchkin Bernedoodle puppies</h1>
+      </div>
       <p class="lede">Seven puppies from Troy, our Mini Multi Gen Bernedoodle, and
         our AKC-registered Cavalier King Charles Spaniel sire. Born {M_BORN},
         going home {M_HOME}.</p>
@@ -1024,10 +1098,12 @@ def build_pages():
     page("dobermans.html", "Doberman Pinscher Puppies for Sale | Bless Your Paws Puppies",
       f"AKC Doberman Pinscher puppies, ready to go home now. From our health-tested dam Mira. ${D_PRICE:,} with a ${DEPOSIT} deposit.",
       f"""<section><div class="wrap">
-  <p class="eyebrow">Joy's litter</p>
-  <h1>Doberman Pinscher puppies</h1>
   <div class="grid-2 narrow-left">
     <div>
+      <div class="col-title">
+        <p class="eyebrow">Joy's litter</p>
+        <h1>Doberman Pinscher puppies</h1>
+      </div>
       <p class="lede">Three AKC-registered puppies from Mira, our health-tested
         Doberman dam. Born {D_BORN}, and <strong>ready to go home now</strong>.</p>
       <ul class="facts">
@@ -1097,21 +1173,25 @@ def build_pages():
     page("what-is-a-munchkin-bernedoodle.html", "What Is a Munchkin Bernedoodle? | Bless Your Paws Puppies",
       "A plain-language guide to the Munchkin Bernedoodle: the cross, the size, the coat, and the temperament, from a family that breeds them.",
       f"""<section><div class="wrap">
-  <p class="eyebrow">Breed guide</p>
-  <h1>What is a Munchkin Bernedoodle?</h1>
   <div class="grid-2 narrow-left">
-    <p class="lede">A Munchkin Bernedoodle is an intentionally small Bernedoodle cross.
+    <div>
+      <div class="col-title">
+        <p class="eyebrow">Breed guide</p>
+        <h1>What is a Munchkin Bernedoodle?</h1>
+      </div>
+      <p class="lede">A Munchkin Bernedoodle is an intentionally small Bernedoodle cross.
       Ours come from a Mini Multi Gen Bernedoodle mom and an AKC Cavalier King Charles
       Spaniel dad, which brings the size down naturally and adds the Cavalier's
       famously gentle temperament.</p>
+    </div>
     {img_tag('shiloh-01', cls='framed', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False)}
   </div>
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <h2>Where the small size comes from</h2>
-  <div class="grid-2 narrow-left" style="margin-top:1.5rem">
+  <div class="grid-2 narrow-left">
     <div>
+      <div class="col-title"><h2>Where the small size comes from</h2></div>
       <p>The name confuses people, so here is the honest version. "Munchkin"
         describes small overall size, not short legs. There is no dwarf gene
         involved. A Munchkin Bernedoodle is a normally proportioned little dog that
@@ -1226,11 +1306,13 @@ def build_pages():
 {DOGROWS}
 </div></section>
 
-<section class="band-pink"><div class="wrap">
-  <p class="eyebrow">Reading a genetic panel</p>
-  <h2>What a carrier result actually means</h2>
-  <div class="grid-2 narrow-right" style="margin-top:1.5rem">
+<section class="band-pink band-tight"><div class="wrap">
+  <div class="grid-2 narrow-right">
     <div>
+      <div class="col-title">
+        <p class="eyebrow">Reading a genetic panel</p>
+        <h2>What a carrier result actually means</h2>
+      </div>
       <p>Mira's panel comes back clear on everything tested except one condition, where
         she is a carrier. A carrier has one copy of a variant and is not affected by it
         herself. Carriers are bred to clear partners so that no puppy can be affected,
@@ -1266,10 +1348,12 @@ def build_pages():
     page("about.html", "About Hope and Joy | Bless Your Paws Puppies",
       "Two sisters raising Munchkin Bernedoodles and Doberman Pinschers in their northern Indiana homes.",
       f"""<section><div class="wrap">
-  <p class="eyebrow">About us</p>
-  <h1>Two sisters, one standard</h1>
   <div class="grid-2 narrow-left">
     <div>
+      <div class="col-title">
+        <p class="eyebrow">About us</p>
+        <h1>Two sisters, one standard</h1>
+      </div>
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
         northern Indiana homes. Hope raises the Munchkin Bernedoodles and Joy raises
         the Doberman Pinschers, and every litter is raised the same way: in the house,
@@ -1304,14 +1388,24 @@ def build_pages():
   </div>
 </div></section>
 
-<section><div class="wrap center">
-  {SPRIG}
-  <h2 style="margin-top:1rem">Come meet them</h2>
-  <p class="lede">Call or text Hope at <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a>,
-    or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
-  <div class="btn-row" style="justify-content:center">
-    <a class="btn btn-primary" href="puppies.html">See the puppies</a></div>
+<section class="closing" style="margin-bottom:0"><div class="wrap">
+  <div class="inner">
+    <p class="eyebrow" style="margin:0">Visits by appointment</p>
+    <h2>Come and meet them</h2>
+    <p class="contact-line">Call or text Hope on
+      <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a>, or email
+      <a href="mailto:{EMAIL}">{EMAIL}</a>. Video calls work well if you are
+      further away.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+      <a class="btn btn-ghost" href="contact.html">Send an inquiry</a>
+    </div>
+  </div>
 </div></section>""")
+
+    SHARED_KIT = [k for k in M_KIT if k in D_KIT]
+    M_ONLY_KIT = [k for k in M_KIT if k not in D_KIT]
+    D_ONLY_KIT = [k for k in D_KIT if k not in M_KIT]
 
     steps = [
       ("Say hello", "havilah-02",
@@ -1342,15 +1436,12 @@ def build_pages():
        f'Pickup is by appointment. Delivery options are being finalised. {CHIP_DRAFT}'),
     ]
     steps_html = "\n".join(
-      f'''  <article class="step">
-    <div>
-      <span class="step-num">{i}</span>
-      <h3>{title}</h3>
+      f'''    <article class="step">
+      <div class="step-media">{img_tag(stem, alt=title, sizes="(max-width:460px) 92vw, (max-width:760px) 46vw, (max-width:1100px) 30vw, 19vw")}</div>
+      <div class="step-head"><span class="step-num">{i}</span><h3>{title}</h3></div>
       <p>{body}</p>
       <p class="fine">{note}</p>
-    </div>
-    <div class="step-media">{img_tag(stem, alt=title)}</div>
-  </article>'''
+    </article>'''
       for i, (title, stem, body, note) in enumerate(steps, 1))
 
     page("process.html", "How It Works | Bless Your Paws Puppies",
@@ -1364,20 +1455,28 @@ def build_pages():
 </div></section>
 
 <section><div class="wrap">
+  <div class="steps-row">
 {steps_html}
+  </div>
 </div></section>
 
 <section class="band-raise"><div class="wrap">
   <p class="eyebrow center">In the go-home bag</p>
   <h2 class="center">What comes home with your puppy</h2>
-  <div class="grid-2" style="margin-top:2rem;align-items:start">
+  <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">Both litters
+    leave with their paperwork, their food, and something that smells like home.</p>
+  <div class="tri">
+    <div>
+      <h3>Every puppy</h3>
+      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in SHARED_KIT)}</ul>
+    </div>
     <div>
       <h3>Munchkin Bernedoodles</h3>
-      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in M_KIT)}</ul>
+      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in M_ONLY_KIT) or '<li>The shared list above</li>'}</ul>
     </div>
     <div>
       <h3>Doberman Pinschers</h3>
-      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in D_KIT)}</ul>
+      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in D_ONLY_KIT)}</ul>
     </div>
   </div>
   <div class="section-cta">
@@ -1425,6 +1524,7 @@ def build_pages():
       </ul>
       <p class="fine">Our exact location is shared once your visit is scheduled.
         Video calls work well for families further away.</p>
+      {img_tag('jordan-01', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
     </div>
     <div class="formcard">
       <h2 style="margin-top:0">Send an inquiry</h2>
@@ -1503,8 +1603,10 @@ def build_pages():
     for s, n, _, c, _ in DOBERMANS:
         for i in range(1, COUNTS[s] + 1):
             items.append((f"{s}-{i:02d}", n, "doberman", s))
-    gal = "\n".join(f'<a data-line="{line}" href="puppy-{slug}.html">'
+    gal = "\n".join(f'<a data-line="{line}" data-pup="{slug}" href="puppy-{slug}.html">'
                     f'{img_tag(stem, alt=name)}</a>' for stem, name, line, slug in items)
+    pup_btns = "\n".join(f'      <button data-pup="{sl}">{nm}</button>'
+                         for sl, nm, *_ in list(MUNCHKINS) + list(DOBERMANS))
     page("gallery.html", "Photo Gallery | Bless Your Paws Puppies",
       "Every photo of our Munchkin Bernedoodle and Doberman Pinscher puppies.",
       f"""<section><div class="wrap">
@@ -1512,22 +1614,35 @@ def build_pages():
   <h1>The photo album</h1>
   <p class="lede">Every photo of the puppies who are with us right now. Click any
     photo to meet that puppy.</p>
-  <div class="filter-row" style="margin-top:1.5rem">
-    <button class="cur" data-line="all">All photos</button>
-    <button data-line="munchkin">Munchkin Bernedoodles</button>
-    <button data-line="doberman">Dobermans</button>
+  <div class="filter-group" style="margin-top:1.5rem">
+    <p class="filter-label">By litter</p>
+    <div class="filter-row">
+      <button class="cur" data-line="all">All photos</button>
+      <button data-line="munchkin">Munchkin Bernedoodles</button>
+      <button data-line="doberman">Dobermans</button>
+    </div>
   </div>
+  <div class="filter-group">
+    <p class="filter-label">By puppy</p>
+    <div class="filter-row" data-pupfilter>
+      <button class="cur" data-pup="all">Every puppy</button>
+{pup_btns}
+    </div>
+  </div>
+  <p class="fine" id="gal-count" aria-live="polite" style="margin:.25rem 0 1.25rem"></p>
   <div class="gal-grid">{gal}</div>
 </div></section>""")
 
     page("reviews.html", "Reviews | Bless Your Paws Puppies",
       "What families say about their Bless Your Paws puppies.",
       f"""<section><div class="wrap">
-  <p class="eyebrow">Reviews</p>
-  <h1>From our families</h1>
-  <p>{CHIP_SAMPLE}</p>
-  <div class="grid-2" style="margin-top:2rem;align-items:start">
+  <div class="grid-2 narrow-left" style="align-items:start">
     <div>
+      <div class="col-title">
+        <p class="eyebrow">Reviews</p>
+        <h1>From our families</h1>
+        <p class="fine" style="margin:0">{CHIP_SAMPLE}</p>
+      </div>
       <blockquote class="lede" style="border-left:3px solid var(--sage);padding-left:1.25rem;margin:0 0 1.5rem">
         "Our puppy came home confident, snuggly, and already used to kids. You can
         tell she was raised in the middle of a family."

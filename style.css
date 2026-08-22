@@ -121,6 +121,12 @@ a{color:var(--forest)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
+/* a page title living inside the left column of a feature row, so the headline sits
+   beside the photo rather than stacked above the whole row */
+.col-title{margin-bottom:1.25rem}
+.col-title h1,.col-title h2{margin-bottom:.35rem}
+.col-title .eyebrow{margin-bottom:.4rem}
+
 /* heading on the left, action on the right, on one baseline. for sections where a
    closing button under the grid read as parked rather than placed. */
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;
@@ -147,6 +153,11 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .band-forest p,.band-forest li{color:#e9ded9}
 .band-forest a{color:var(--pink-pale)}
 .band-pink{background:var(--pink-pale)}
+/* a coloured band whose height is set by a tall photo reads as a big slab. this
+   trims the vertical padding so the colour hugs the content. */
+section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
+  padding-bottom:clamp(1.5rem,2.5vw,2.25rem)}
+.band-tight .grid-2{align-items:center}
 .band-raise{background:var(--paper-raise)}
 
 /* ---------- cards ---------- */
@@ -180,7 +191,14 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
 .parent-grid.row-4{grid-template-columns:repeat(4,1fr)}
-.parent-grid .packet-body{gap:.35rem}
+.parent-grid .packet-body{gap:.35rem;flex:1;display:flex;flex-direction:column}
+/* the facts table fills, the note sits on the floor of the card, so a card with
+   three rows and a card with five still line their notes up */
+.parent-grid .facts{margin:.6rem 0 0}
+.parent-grid .facts li:last-child{border-bottom:none}
+.parent-grid .pnote{margin-top:auto;padding-top:.75rem;font-size:.85rem;
+  color:var(--sage-deep);border-top:1px solid var(--rule)}
+.parent-grid .pnote:empty{display:none}
 .dogmeta{font-size:.86rem;letter-spacing:.09em;text-transform:uppercase;
   color:var(--sage-deep);font-weight:700;margin:0 0 .35rem}
 .packet-body{padding:1rem .6rem .5rem;display:flex;flex-direction:column;gap:.2rem;
@@ -250,7 +268,10 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
   overflow:hidden}
 .gal-grid a:hover{border-color:var(--forest)}
 .gal-grid img{aspect-ratio:1/1;object-fit:cover}
-.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-group{margin-bottom:1rem}
+.filter-label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sage-deep);font-weight:700;margin:0 0 .5rem}
+.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem}
 .filter-row button{font:inherit;font-size:.94rem;padding:.5rem 1.1rem;cursor:pointer;
   border:1.5px solid var(--forest);background:none;border-radius:3px;
   color:var(--forest);min-height:44px}
@@ -309,24 +330,23 @@ input,select,textarea{font:inherit;padding:.7rem .8rem;
   color:var(--forest);min-height:48px}
 textarea{min-height:8rem}
 
-/* ---------- numbered process steps ---------- */
-.step{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3.5rem);
-  align-items:center;padding:clamp(1.75rem,3vw,2.75rem) 0;
-  border-bottom:1px solid var(--rule)}
-.step:last-of-type{border-bottom:none}
-.step:nth-child(even) .step-media{order:-1}
-.step-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;
+/* ---------- process steps: five across, photo over caption ---------- */
+.steps-row{display:grid;grid-template-columns:repeat(5,1fr);
+  gap:clamp(1rem,1.6vw,1.75rem);align-items:start}
+.step{display:flex;flex-direction:column;gap:.75rem}
+.step-media img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px;
   border:1.5px solid var(--forest);box-shadow:0 2px 0 var(--sage-light)}
 .step-num{display:inline-flex;align-items:center;justify-content:center;
-  width:2.6rem;height:2.6rem;border-radius:50%;background:var(--forest);
-  color:var(--paper);font-family:"Lora",Georgia,serif;font-size:1.2rem;
-  font-weight:600;margin-bottom:.75rem}
-.step h3{font-size:clamp(1.3rem,1.9vw,1.7rem);margin-bottom:.5rem}
-.step p{margin-bottom:.6rem}
-@media (max-width:860px){
-  .step{grid-template-columns:1fr;gap:1.25rem}
-  .step:nth-child(even) .step-media{order:0}
-}
+  width:2.1rem;height:2.1rem;border-radius:50%;background:var(--forest);
+  color:var(--paper);font-family:"Lora",Georgia,serif;font-size:1rem;
+  font-weight:600;flex:none}
+.step-head{display:flex;align-items:center;gap:.6rem}
+.step h3{font-size:1.02rem;margin:0;line-height:1.25}
+.step p{margin:0 0 .45rem;font-size:.9rem}
+.step .fine{font-size:.82rem}
+@media (max-width:1100px){.steps-row{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.steps-row{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:460px){.steps-row{grid-template-columns:1fr}}
 
 /* ---------- dog detail rows: photo, story, testing, QR ---------- */
 .dogrow{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(1.75rem,3.5vw,3.5rem);
@@ -353,6 +373,24 @@ textarea{min-height:8rem}
 .health-qr figcaption{font-size:.68rem;font-weight:700;letter-spacing:.12em;
   text-transform:uppercase;color:var(--sage-deep);margin-top:.4rem;line-height:1.35}
 .health.no-qr{grid-template-columns:1fr}
+
+/* ---------- three-column centred list ---------- */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.25rem,2.5vw,2.5rem);
+  max-width:64rem;margin:0 auto}
+.tri>div{background:var(--card,#fff);border:1px solid var(--rule);border-radius:5px;
+  padding:1.35rem 1.5rem}
+.tri h3{margin:0 0 .75rem;font-size:1.05rem}
+.tri .checklist li{font-size:.93rem}
+@media (max-width:900px){.tri{grid-template-columns:1fr;max-width:34rem}}
+
+/* ---------- closing call to action ---------- */
+.closing{background:var(--paper-raise);border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule)}
+.closing .inner{max-width:44rem;margin:0 auto;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:.85rem}
+.closing h2{margin:0}
+.closing .contact-line{font-size:1.05rem;color:var(--forest-soft);margin:0}
+.closing .btn-row{margin:.35rem 0 0;justify-content:center}
 
 /* ---------- FAQ accordion ---------- */
 .faq{max-width:60rem;margin:0 auto;border-top:1px solid var(--rule)}

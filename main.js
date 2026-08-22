@@ -69,19 +69,53 @@
     }
   });
 
-  // ---- gallery filter
-  var filters = document.querySelectorAll('.filter-row button');
-  if (filters.length){
-    filters.forEach(function(b){
-      b.addEventListener('click', function(){
-        filters.forEach(function(x){ x.classList.remove('cur'); });
-        b.classList.add('cur');
-        var want = b.getAttribute('data-line');
-        document.querySelectorAll('.gal-grid a').forEach(function(item){
-          item.style.display = (want === 'all' || item.getAttribute('data-line') === want) ? '' : 'none';
+  // ---- gallery: two independent filters, by litter and by puppy
+  var galGrid = document.querySelector('.gal-grid');
+  if (galGrid){
+    var fstate = { line: 'all', pup: 'all' };
+    var countEl = document.getElementById('gal-count');
+    function applyFilters(){
+      var shown = 0;
+      galGrid.querySelectorAll('a').forEach(function(it){
+        var okLine = fstate.line === 'all' || it.getAttribute('data-line') === fstate.line;
+        var okPup  = fstate.pup  === 'all' || it.getAttribute('data-pup')  === fstate.pup;
+        var vis = okLine && okPup;
+        it.style.display = vis ? '' : 'none';
+        if (vis) shown++;
+      });
+      if (countEl) countEl.textContent =
+        shown === 1 ? 'Showing 1 photo' : 'Showing ' + shown + ' photos';
+    }
+    function reset(sel, attr){
+      document.querySelectorAll(sel).forEach(function(x){
+        x.classList.toggle('cur', x.getAttribute(attr) === 'all');
+      });
+    }
+    document.querySelectorAll('.filter-row').forEach(function(row){
+      var isPup = row.hasAttribute('data-pupfilter');
+      row.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click', function(){
+          row.querySelectorAll('button').forEach(function(x){ x.classList.remove('cur'); });
+          b.classList.add('cur');
+          if (isPup){
+            fstate.pup = b.getAttribute('data-pup');
+            // choosing one puppy clears the litter narrowing, so the pick always resolves
+            if (fstate.pup !== 'all'){
+              fstate.line = 'all';
+              reset('.filter-row:not([data-pupfilter]) button', 'data-line');
+            }
+          } else {
+            fstate.line = b.getAttribute('data-line');
+            if (fstate.line !== 'all'){
+              fstate.pup = 'all';
+              reset('.filter-row[data-pupfilter] button', 'data-pup');
+            }
+          }
+          applyFilters();
         });
       });
     });
+    applyFilters();
   }
 
   // ---- let's chat launcher, on every page
