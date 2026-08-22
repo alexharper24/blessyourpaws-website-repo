@@ -1448,7 +1448,7 @@ def build_pages():
 
 <section class="band-raise"><div class="wrap">
   <h2>{name}'s parents</h2>
-  <div class="grid-2" style="margin-top:1.5rem;align-items:stretch">{parents_html}</div>
+  <div class="parent-grid" style="margin-top:1.5rem">{parents_html}</div>
   <div class="btn-row"><a class="btn btn-ghost" href="our-dogs.html">Full health details</a></div>
 </div></section>
 

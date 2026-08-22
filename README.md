@@ -151,6 +151,7 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       **deliberately not carried over** — never confirmed as anyone's dogs. Ask Joy.
 - [ ] The Golden Retrievers (Diamond, Scarlet) stay out. Joy co-owns the Doberman line;
       working assumption is the Goldens are Amber's.
+- [x] **Service area: Warsaw and Winona Lake, Indiana** (confirmed 2026-08-22).
 - [ ] Confirm both are comfortable with faces and first names on a public site.
 
 ### Technical
