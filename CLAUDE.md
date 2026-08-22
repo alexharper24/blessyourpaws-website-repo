@@ -42,6 +42,43 @@ light sage 5.65. White on forest 11.85. Rose on forest 7.08. Pale pink on forest
 Unlike `marysbakingcorner`, this palette needs **no documented WCAG departures**.
 Keep it that way.
 
+## Logo package — and the navy vs forest conflict
+
+`img/brand/` holds a seven-file logo package. Full business name is
+**Bless Your Paws Puppies**. Alpha is clean on all of them (no opaque-background
+trap). Alex did not generate these; he is adapting them.
+
+| File | What it is |
+|---|---|
+| `logo-horizontal-color.png` | Primary horizontal lockup, 1672x941 |
+| `logo-stacked-color.png` | Stacked lockup, 1122x1402 |
+| `logo-badge-color.png` | Circular badge/seal with a cream ground baked in |
+| `mark-heart-puppy-color.png` | Heart + puppy mark, no text |
+| `mark-paw-heart.png` | **Pink paw print with a heart. Use this for favicon and nav** |
+| `logo-horizontal-navy-mono.png` | Monochrome navy line-art version |
+| `logo-horizontal-navy-alt.png` | Second navy horizontal variant |
+
+**The logo ink is navy `#00183c`, not forest `#223d2c`.** The supplied swatches and
+the supplied logo are two different brand directions, and mixing navy ink with green
+ink on one site reads as a mistake. **This is Hope's decision, not ours.** Three
+workable resolutions:
+
+1. **Recolor the navy to `--forest`** so the logo agrees with the swatches. The mono
+   version recolors cleanly; on the full-colour lockups replace the navy RGB and keep
+   alpha (never re-trace). The illustrated puppy's fur stays as-is — it is realistic
+   colour, not brand colour.
+2. **Keep navy as the ink** and demote the greens to supporting tones. Navy is a fine
+   ink at 15.16:1 on white. But Hope explicitly asked for greens, so do not choose
+   this for her.
+3. **Navy ink plus sage as the secondary accent.** Works, and keeps both.
+
+Until she decides, do not build the header.
+
+**The script lockup will not read at nav size.** Fine script plus an illustrated
+puppy disappears at 34px, and the badge has a cream ground that will not sit on a
+tinted section. `mark-paw-heart.png` is the small-size answer; the full lockup is for
+hero and About placements only. Favicon needs stroke dilation per the standing rule.
+
 ## Character and direction
 
 Client brief from Hope: **flowery, pinks, greens, vintage.** Direction is botanical /
