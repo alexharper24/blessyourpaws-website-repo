@@ -173,7 +173,7 @@ scheduled."
 ## Run locally
 
 ```bash
-python -m http.server 8155 --directory blessyourpaws-website-repo
+python -m http.server 8199 --directory blessyourpaws-website-repo
 ```
 
 Or `preview_start({name: "blessyourpaws"})` from the root launch.json.
