@@ -137,9 +137,19 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       web JPEGs at 1400px in `img/puppies/` plus a 240/600/1100 WebP set in `img/r/`.
       Counts: joshua 10, eden 11, havilah 13, jordan 10, caleb 9, shiloh 11, jericho 14.
       Spot-verified that filing matches recorded colour.
-- [ ] Doberman photos — still to source. Joy's three are on the Kingdom site but those
-      are Amber's files; ask Joy for her own.
-- [ ] Parent photos (sire and dam) — not yet pulled.
+- [x] **Doberman photos in, 2026-08-22.** Joy confirmed the Doberman photography and
+      Mira are hers. Pulled from the Kingdom build's gitignored originals rather than
+      re-scraping: Elowen 3, Malcolm 4, Griffin 6, plus Mira in `img/dogs/`. Most are
+      6000x4000 camera originals, so far better than the 1800px web copies on that site.
+      Each original was matched to its named web file by image fingerprint (MSE ≤ 0.011
+      against a next-best of 0.14–1.47), not by eye. Map kept at
+      `source-photos/kfc-original-map.json`.
+- [ ] **Munchkin Bernedoodle parent photos** — Troy (sire) and the dam. Neither
+      marketplace publishes a parent photo, so these come from Hope.
+- [ ] The two unidentified adult Dobermans on the Kingdom site (`adult-dog-1/2.jpg`) are
+      **deliberately not carried over** — never confirmed as anyone's dogs. Ask Joy.
+- [ ] The Golden Retrievers (Diamond, Scarlet) stay out. Joy co-owns the Doberman line;
+      working assumption is the Goldens are Amber's.
 - [ ] Confirm both are comfortable with faces and first names on a public site.
 
 ### Technical
