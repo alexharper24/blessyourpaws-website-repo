@@ -1,0 +1,4 @@
+# Draft mode: closed until launch. At launch switch to Allow: / and
+# remove the noindex meta from every page.
+User-agent: *
+Disallow: /
