@@ -58,21 +58,36 @@ trap). Alex did not generate these; he is adapting them.
 | `logo-horizontal-navy-mono.png` | Monochrome navy line-art version |
 | `logo-horizontal-navy-alt.png` | Second navy horizontal variant |
 
-**The logo ink is navy `#00183c`, not forest `#223d2c`.** The supplied swatches and
-the supplied logo are two different brand directions, and mixing navy ink with green
-ink on one site reads as a mistake. **This is Hope's decision, not ours.** Three
-workable resolutions:
+**RESOLVED 2026-08-22 (Alex): recolour the navy to forest and keep the greens.**
 
-1. **Recolor the navy to `--forest`** so the logo agrees with the swatches. The mono
-   version recolors cleanly; on the full-colour lockups replace the navy RGB and keep
-   alpha (never re-trace). The illustrated puppy's fur stays as-is — it is realistic
-   colour, not brand colour.
-2. **Keep navy as the ink** and demote the greens to supporting tones. Navy is a fine
-   ink at 15.16:1 on white. But Hope explicitly asked for greens, so do not choose
-   this for her.
-3. **Navy ink plus sage as the secondary accent.** Works, and keeps both.
+The supplied logo inked in navy `#00183c` while the supplied swatches are forest green
+and pinks — two different brand directions. Alex chose to keep the greens, so the navy
+was recoloured to `--forest`.
 
-Until she decides, do not build the header.
+Recoloured files sit **alongside** the navy originals, which stay tracked (never delete
+a logo variant):
+
+| Forest version | From |
+|---|---|
+| `logo-horizontal-forest.png` | `logo-horizontal-color.png` |
+| `logo-stacked-forest.png` | `logo-stacked-color.png` |
+| `logo-badge-forest.png` | `logo-badge-color.png` |
+| `logo-horizontal-forest-mono.png` | `logo-horizontal-navy-mono.png` |
+| `logo-horizontal-forest-alt.png` | `logo-horizontal-navy-alt.png` |
+
+**How it was done, so it can be repeated consistently.** Navy is HSV(216.0, 1.00,
+0.235) and forest is HSV(142.2, 0.443, 0.239) — the two are within 0.004 of the same
+*lightness*. So the recolour shifts hue by −73.8° and damps saturation to 0.443 while
+**keeping value and alpha untouched**, which preserves every antialiased edge. No
+re-tracing, per the standing rule.
+
+The mask is deliberately narrow — hue 195–262°, saturation > 0.15, alpha > 0.02 — so it
+catches the navy script and leaves alone the puppy's black and tan fur (near-neutral,
+low saturation) and the pink heart and paw (opposite hue). Verified visually on the
+horizontal and mono versions: fur and pinks are intact.
+
+`mark-heart-puppy-color.png` and `mark-paw-heart.png` contain no navy and needed no
+recolour.
 
 **The script lockup will not read at nav size.** Fine script plus an illustrated
 puppy disappears at 34px, and the badge has a cream ground that will not sit on a
