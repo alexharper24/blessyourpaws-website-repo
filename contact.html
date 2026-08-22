@@ -13,13 +13,13 @@
 <meta property="og:description" content="Ask about an available puppy or plan a visit. Call or text Hope, email us, or send the inquiry form.">
 <meta property="og:image" content="https://alexharper24.github.io/blessyourpaws-website-repo/img/og-card.png">
 <meta property="og:type" content="website">
-<link rel="icon" href="favicon.ico?v=3" sizes="any">
-<link rel="icon" href="img/favicon.png?v=3" type="image/png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=3">
+<link rel="icon" href="favicon.ico?v=4" sizes="any">
+<link rel="icon" href="img/favicon.png?v=4" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400..700;1,400&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..600&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header class="site-head"><div class="wrap head-row">
@@ -62,16 +62,16 @@
       <p class="fine">Our exact location is shared once your visit is scheduled.
         Video calls work well for families further away.</p>
     </div>
-    <div>
-      <h2>Send an inquiry</h2>
-      <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST" style="max-width:none">
+    <div class="formcard">
+      <h2 style="margin-top:0">Send an inquiry</h2>
+      <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
       <div style="position:absolute;left:-9999px" aria-hidden="true">
       <label for="c-hp">Leave this field empty</label>
       <input id="c-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
-    <div><label for="name">Your name</label><input id="name" name="name" required></div>
-      <div><label for="email">Email</label><input id="email" name="email" type="email" required></div>
-      <div><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
-      <div><label for="message">Which puppy caught your eye, and a little about your family</label>
+    <div class="field"><label for="name">Your name</label><input id="name" name="name" required></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+      <div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
+      <div class="field"><label for="message">Which puppy caught your eye, and a little about your family</label>
         <textarea id="message" name="message" required></textarea></div>
       <button class="btn btn-primary" type="submit">Send inquiry</button>
       <p class="guard-msg">The form is almost ready. For now, call or text Hope at
@@ -91,7 +91,7 @@
         <a href="munchkin-bernedoodles.html">See the litter</a>.</p>
     </div>
     <div>
-      <img class="framed" srcset="img/r/malcolm-01-320.webp 320w, img/r/malcolm-01-640.webp 640w, img/r/malcolm-01-1000.webp 1000w, img/r/malcolm-01-1600.webp 1600w" sizes="(max-width:900px) 94vw, 45vw" src="img/puppies/malcolm-01.jpg" alt="Malcolm, a black and rust Doberman Pinscher puppy" loading="lazy">
+      <img class="framed" srcset="img/r/malcolm-02-320.webp 320w, img/r/malcolm-02-640.webp 640w, img/r/malcolm-02-1000.webp 1000w, img/r/malcolm-02-1600.webp 1600w" sizes="(max-width:900px) 94vw, 45vw" src="img/puppies/malcolm-02.jpg" alt="Malcolm, a black and rust Doberman Pinscher puppy" loading="lazy">
       <h3 style="margin-top:1rem">Doberman Pinschers</h3>
       <p class="fine">AKC registered, loyal, and ready to go home now.
         <a href="dobermans.html">See the litter</a>.</p>
@@ -101,7 +101,11 @@
 </main>
 <footer class="site-foot"><div class="wrap">
   <div class="foot-top">
-    <div class="foot-brand"><img src="img/brand/logo-stacked-forest.png" alt="Bless Your Paws Puppies"></div>
+    <div class="foot-brand">
+      <img src="img/brand/mark-paw-heart.png" alt="">
+      <span><span class="fb-name">Bless Your Paws</span>
+        <span class="fb-sub">Puppies</span></span>
+    </div>
     <div class="foot-grid">
       <div><h3>Our puppies</h3><ul>
         <li><a href="puppies.html">All available puppies</a></li>
@@ -133,6 +137,6 @@
     <span><a href="privacy-policy.html">Privacy</a></span>
   </div>
 </div></footer>
-<script src="main.js?v=3"></script>
+<script src="main.js?v=4"></script>
 </body>
 </html>

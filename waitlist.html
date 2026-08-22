@@ -13,13 +13,13 @@
 <meta property="og:description" content="Hear about new litters before they are listed. Waitlist families get first pick.">
 <meta property="og:image" content="https://alexharper24.github.io/blessyourpaws-website-repo/img/og-card.png">
 <meta property="og:type" content="website">
-<link rel="icon" href="favicon.ico?v=3" sizes="any">
-<link rel="icon" href="img/favicon.png?v=3" type="image/png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=3">
+<link rel="icon" href="favicon.ico?v=4" sizes="any">
+<link rel="icon" href="img/favicon.png?v=4" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400..700;1,400&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..600&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header class="site-head"><div class="wrap head-row">
@@ -40,10 +40,11 @@
 </nav>
 </div></header>
 <main>
-<section><div class="wrap grid-2" style="align-items:start">
+<section><div class="wrap">
+  <p class="eyebrow">The waitlist</p>
+  <h1>Hear about litters first</h1>
+  <div class="grid-2" style="align-items:start;margin-top:1.25rem">
   <div>
-    <p class="eyebrow">The waitlist</p>
-    <h1>Hear about litters first</h1>
     <p class="lede">Our litters tend to reserve quickly. One puppy from the current
       litter went home to a waitlist family before it was ever listed publicly.</p>
     <p>Joining costs nothing and commits you to nothing. When a new litter arrives,
@@ -51,33 +52,38 @@
       reserve.</p>
     <img class="framed" srcset="img/r/jordan-02-320.webp 320w, img/r/jordan-02-640.webp 640w, img/r/jordan-02-1000.webp 1000w, img/r/jordan-02-1600.webp 1600w" sizes="(max-width:900px) 94vw, 45vw" src="img/puppies/jordan-02.jpg" alt="Jordan, a blue merle parti Munchkin Bernedoodle puppy" loading="lazy">
   </div>
-  <div>
-    <h2>Add your name</h2>
+  <div class="formcard">
+    <h2 style="margin-top:0">Add your name</h2>
     <form data-guard action="https://formspree.io/f/REPLACE_WAITLIST_ID" method="POST">
     <div style="position:absolute;left:-9999px" aria-hidden="true">
       <label for="w-hp">Leave this field empty</label>
       <input id="w-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
-    <div><label for="wname">Your name</label><input id="wname" name="name" required></div>
-    <div><label for="wemail">Email</label><input id="wemail" name="email" type="email" required></div>
-    <div><label for="wphone">Phone (optional)</label><input id="wphone" name="phone"></div>
-    <div><label for="wline">Which puppies are you hoping for?</label>
+    <div class="field"><label for="wname">Your name</label><input id="wname" name="name" required></div>
+    <div class="field"><label for="wemail">Email</label><input id="wemail" name="email" type="email" required></div>
+    <div class="field"><label for="wphone">Phone (optional)</label><input id="wphone" name="phone"></div>
+    <div class="field"><label for="wline">Which puppies are you hoping for?</label>
       <select id="wline" name="line">
         <option>Munchkin Bernedoodles</option>
         <option>Doberman Pinschers</option>
         <option>Either, tell me about both</option>
       </select></div>
-    <div><label for="wwhen">When are you hoping to bring a puppy home?</label>
+    <div class="field"><label for="wwhen">When are you hoping to bring a puppy home?</label>
       <input id="wwhen" name="timing" placeholder="This year, next spring, whenever the right one comes"></div>
     <button class="btn btn-primary" type="submit">Join the waitlist</button>
     <p class="guard-msg">The form is almost ready. For now, text Hope at
       <a href="sms:5743778023">(574) 377-8023</a> with the word WAITLIST and your name.</p>
     </form>
   </div>
+  </div>
 </div></section>
 </main>
 <footer class="site-foot"><div class="wrap">
   <div class="foot-top">
-    <div class="foot-brand"><img src="img/brand/logo-stacked-forest.png" alt="Bless Your Paws Puppies"></div>
+    <div class="foot-brand">
+      <img src="img/brand/mark-paw-heart.png" alt="">
+      <span><span class="fb-name">Bless Your Paws</span>
+        <span class="fb-sub">Puppies</span></span>
+    </div>
     <div class="foot-grid">
       <div><h3>Our puppies</h3><ul>
         <li><a href="puppies.html">All available puppies</a></li>
@@ -109,6 +115,6 @@
     <span><a href="privacy-policy.html">Privacy</a></span>
   </div>
 </div></footer>
-<script src="main.js?v=3"></script>
+<script src="main.js?v=4"></script>
 </body>
 </html>

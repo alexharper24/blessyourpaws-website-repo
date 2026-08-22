@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 3
+V = 4
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -22,6 +22,12 @@ SMS_HREF = "sms:5743778023"
 EMAIL = "info@blessyourpawspuppies.com"
 AREA = "Warsaw and Winona Lake, Indiana"
 COUNTS = json.load(open("img/photo-counts.json"))
+# a puppy whose best head-on shot is not the first file in the gallery
+PRIMARY = {"malcolm": 2}
+
+def lead(slug):
+    """Gallery stem to use as the card and hero image for a puppy."""
+    return "%s-%02d" % (slug, PRIMARY.get(slug, 1))
 
 MUNCHKINS = [
     ("joshua",  "Joshua",  "Boy",  "Red and white parti", ""),
@@ -84,11 +90,11 @@ img{max-width:100%;height:auto;display:block}
 
 /* Fraunces ships wonky f/g/y by default. WONK 0 turns the swashes off, which is
    the fix for the odd-looking f. SOFT rounds the terminals a little. */
-/* Petrona replaces Fraunces. Fraunces draws a descending, hooked lowercase f as
-   part of its design, which the WONK axis does not undo. Petrona keeps the warm
-   old-style vintage feel with a normal f. */
-h1,h2,h3,.display,.packet-name,.price{font-family:"Petrona",Georgia,serif;
-  font-feature-settings:"liga" 0,"dlig" 0,"swsh" 0}
+/* Third display face. Fraunces draws a hooked descending f; Petrona has an
+   unconventional J. Lora is a transitional serif with entirely normal f, g, j, y
+   and J, which is what this client needs. Ligatures and swashes off as well. */
+h1,h2,h3,.display,.packet-name,.price,.q-btn{font-family:"Lora",Georgia,serif;
+  font-feature-settings:"liga" 0,"dlig" 0,"swsh" 0,"calt" 0}
 h1,h2,h3{font-weight:600;line-height:1.14;margin:0 0 .5rem;text-wrap:balance;
   letter-spacing:-.01em}
 h1{font-size:clamp(2rem,3.6vw,3.1rem)}
@@ -132,15 +138,15 @@ a{color:var(--forest)}
 
 /* ---------- hero ---------- */
 .hero{padding:3rem 0 2.5rem}
-.hero-split{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(2rem,4vw,4rem);
+.hero-split{display:grid;grid-template-columns:.68fr 1.32fr;gap:clamp(2rem,4vw,4rem);
   align-items:center}
 .framed{width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
 /* section imagery: give photos real presence, they are the product */
 .grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
-.grid-2.narrow-left{grid-template-columns:.8fr 1.2fr}
-.grid-2.narrow-right{grid-template-columns:1.2fr .8fr}
+.grid-2.narrow-left{grid-template-columns:.62fr 1.38fr}
+.grid-2.narrow-right{grid-template-columns:.8fr 1.2fr}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
   font-size:1rem;min-height:48px}
@@ -186,11 +192,12 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .packet::before{content:"";position:absolute;inset:5px;border:1px dashed var(--sage);
   border-radius:2px;pointer-events:none}
 .packet img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:2px}
-/* parent portraits are a mix of landscape and portrait originals. a 4/5 frame
-   with a top-biased crop keeps every head in shot and makes the cards align. */
-.packet.parent img,.door.parent img{aspect-ratio:4/5;object-position:50% 22%}
-.parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+/* parent originals run from 0.75 to 1.42 aspect. a square frame crops both
+   orientations gently, where a 4/5 frame gutted the landscape ones. */
+.packet.parent img{aspect-ratio:1/1;object-position:50% 30%}
+.parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
+.parent-grid.row-4{grid-template-columns:repeat(4,1fr)}
 .parent-grid .packet-body{gap:.35rem}
 .dogmeta{font-size:.86rem;letter-spacing:.09em;text-transform:uppercase;
   color:var(--sage-deep);font-weight:700;margin:0 0 .35rem}
@@ -305,11 +312,55 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
 
 /* ---------- forms ---------- */
 form{display:flex;flex-direction:column;gap:1rem;max-width:36rem}
+/* a bordered card keeps the form visually anchored beside a facts column instead
+   of floating as loose fields */
+.formcard{background:var(--card,#fff);border:1.5px solid var(--rule);border-radius:5px;
+  padding:clamp(1.25rem,2vw,1.75rem)}
+.formcard form{max-width:none;gap:.9rem}
+.formcard .field{display:flex;flex-direction:column;gap:.3rem}
+.formcard button{margin-top:.4rem;justify-content:center}
 label{font-size:.9rem;font-weight:700}
 input,select,textarea{font:inherit;padding:.7rem .8rem;
   border:1.5px solid var(--sage-deep);border-radius:3px;background:#fff;width:100%;
   color:var(--forest);min-height:48px}
 textarea{min-height:8rem}
+
+/* ---------- numbered process steps ---------- */
+.step{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(1.5rem,3vw,3.5rem);
+  align-items:center;padding:clamp(1.75rem,3vw,2.75rem) 0;
+  border-bottom:1px solid var(--rule)}
+.step:last-of-type{border-bottom:none}
+.step:nth-child(even) .step-media{order:-1}
+.step-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;
+  border:1.5px solid var(--forest);box-shadow:0 2px 0 var(--sage-light)}
+.step-num{display:inline-flex;align-items:center;justify-content:center;
+  width:2.6rem;height:2.6rem;border-radius:50%;background:var(--forest);
+  color:var(--paper);font-family:"Lora",Georgia,serif;font-size:1.2rem;
+  font-weight:600;margin-bottom:.75rem}
+.step h3{font-size:clamp(1.3rem,1.9vw,1.7rem);margin-bottom:.5rem}
+.step p{margin-bottom:.6rem}
+@media (max-width:860px){
+  .step{grid-template-columns:1fr;gap:1.25rem}
+  .step:nth-child(even) .step-media{order:0}
+}
+
+/* ---------- FAQ accordion ---------- */
+.faq{max-width:60rem;margin:0 auto;border-top:1px solid var(--rule)}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{list-style:none;cursor:pointer;padding:1.1rem 3rem 1.1rem 0;
+  position:relative;font-family:"Lora",Georgia,serif;font-size:1.08rem;
+  font-weight:600;min-height:48px;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";position:absolute;right:.9rem;top:1.5rem;width:11px;
+  height:11px;border-right:2px solid var(--sage-deep);
+  border-bottom:2px solid var(--sage-deep);transform:rotate(45deg);
+  transition:transform .18s ease}
+.faq details[open] summary::after{transform:rotate(-135deg)}
+.faq summary:hover{color:var(--forest-soft)}
+.faq .ans{padding:0 3rem 1.2rem 0;color:var(--forest-soft)}
+.faq .ans p{margin:0 0 .7rem}
+.faq .ans p:last-child{margin:0}
+@media (prefers-reduced-motion: reduce){.faq summary::after{transition:none}}
 
 .draft-banner{background:var(--draft-bg);border:1.5px dashed var(--draft);
   color:var(--draft);border-radius:4px;padding:1.1rem 1.35rem;font-weight:700;
@@ -322,9 +373,14 @@ textarea{min-height:8rem}
 .site-foot a{color:var(--pink-pale)}
 .foot-top{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:start;
   padding:3rem 0 1rem}
-.foot-brand{background:var(--paper);border-radius:6px;padding:1.1rem 1.35rem;
-  display:inline-block}
-.foot-brand img{height:132px;width:auto}
+/* a cream panel around a colour logo reads as a sticker on the footer. instead:
+   the pink paw mark, which already sits well on green, with the name typeset. */
+.foot-brand{display:flex;align-items:center;gap:.9rem}
+.foot-brand img{height:56px;width:auto}
+.foot-brand .fb-name{font-family:"Lora",Georgia,serif;font-size:1.35rem;
+  font-weight:600;color:var(--paper);line-height:1.15;display:block}
+.foot-brand .fb-sub{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--rose);display:block;margin-top:.15rem}
 .foot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
 .foot-grid h3{color:var(--paper);font-size:1rem}
 .foot-grid ul{list-style:none;margin:0;padding:0}
@@ -347,7 +403,7 @@ textarea{min-height:8rem}
   .hero{padding:2rem 0 1.5rem}
   .hero-split,.grid-2,.puppy-top,.foot-grid,.foot-top{grid-template-columns:1fr}
   .foot-top{gap:1.5rem;padding-bottom:0}
-  .foot-brand img{height:104px}
+  .foot-brand img{height:48px}
   .nav-toggle{display:block}
   .nav{position:fixed;inset:0;background:var(--paper);flex-direction:column;
     justify-content:center;gap:.3rem;display:none;z-index:50;overflow-y:auto}
@@ -508,7 +564,11 @@ def header():
 def footer():
     return f"""<footer class="site-foot"><div class="wrap">
   <div class="foot-top">
-    <div class="foot-brand"><img src="img/brand/logo-stacked-forest.png" alt="Bless Your Paws Puppies"></div>
+    <div class="foot-brand">
+      <img src="img/brand/mark-paw-heart.png" alt="">
+      <span><span class="fb-name">Bless Your Paws</span>
+        <span class="fb-sub">Puppies</span></span>
+    </div>
     <div class="foot-grid">
       <div><h3>Our puppies</h3><ul>
         <li><a href="puppies.html">All available puppies</a></li>
@@ -562,7 +622,7 @@ def page(path, title, desc, body, extra_head=""):
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v={V}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400..700;1,400&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..600&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v={V}">
 {extra_head}</head>
 <body>
@@ -616,7 +676,7 @@ def parent_card(stem, name, role, breed, facts, note=""):
 
 def card(slug, name, sex, colour, price, breed):
     return f"""<a class="packet-link" href="puppy-{slug}.html"><article class="packet">
-  {img_tag(slug+'-01', alt=f'{name}, a {colour.lower()} {breed} puppy')}
+  {img_tag(lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy')}
   <div class="packet-body">
     <p class="packet-name">{name}</p>
     <p class="packet-meta">{sex} &middot; {colour}</p>
@@ -864,26 +924,50 @@ def build_pages():
 
     faq = [
       ("How big does a Munchkin Bernedoodle get?",
-       "Most mature between 10 and 25 lbs. Our current litter is expected at 15 to 25 lbs full grown, based on the 21 lb mom and 19 lb dad. Size varies puppy to puppy, so ask us about the one you love."),
-      ("Do Munchkin Bernedoodles shed?",
-       "Coats vary by puppy. Many are wavy to curly and lower-shedding, but we will never promise a non-shedding or hypoallergenic coat. Ask us about the specific puppy and we will tell you honestly what we see."),
+       "Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at 15 to 25 lbs full grown, based on the 21 lb mom and 19 lb dad. Size varies puppy to puppy, so ask us about the one you love."),
       ("Is a Munchkin Bernedoodle a dwarf breed?",
-       "No. The small size comes from crossing in a naturally smaller parent breed, not from a short-legged gene. These are simply small, normally proportioned dogs."),
-      ("What is the temperament like?",
-       "The Cavalier side tends to bring a calm, affectionate, lap-loving nature, and the Bernedoodle side brings playfulness and clever, trainable energy. Every puppy is an individual, which is why we socialize them early and match carefully."),
+       "No. The small size comes from breeding down through generations and crossing in a naturally smaller parent breed, not from a short-legged or dwarfism gene. These are normally proportioned little dogs."),
+      ("How is this different from a Mini or Micro Bernedoodle?",
+       "A Mini or Micro Bernedoodle usually gets small by crossing to a smaller Poodle. A Munchkin adds Cavalier King Charles Spaniel, which brings the size down and brings the Cavalier's calm, affectionate temperament with it."),
+      ("Do they shed? Are they hypoallergenic?",
+       "No dog is truly hypoallergenic, and we will never tell you otherwise. Coats vary by puppy even inside one litter. Many are wavy to curly and shed lightly, and curlier coats generally shed least. Ask us what we see in the coat of the puppy you are considering."),
+      ("How much grooming do they need?",
+       "Plan on brushing a few times a week and a professional groom every six to eight weeks. Ask your groomer whether they are comfortable with doodle coats, because it is a different clip. Puppy coats often change texture between six and twelve months, so grooming needs go up for a while during that change."),
+      ("How long do they live?",
+       "Small doodles commonly live twelve to fifteen years, and smaller dogs generally live longer than large ones. Good care, healthy weight and regular vet visits matter more than size."),
+      ("What is their temperament like?",
+       "The Cavalier side tends to bring a calm, affectionate, lap-loving nature. The Bernedoodle side brings playfulness and clever, trainable energy. Every puppy is an individual, which is why we socialise them early and match carefully rather than first come first served."),
       ("Are they good with children and other dogs?",
-       "Ours are raised around both from day one. Our puppies grow up with our kids and our other dogs, so they arrive already used to busy family life."),
+       "Ours are raised around both from day one, with our own kids and our own dogs. We still ask families with very young children to supervise, mostly to protect the puppy."),
+      ("Will one be happy in an apartment?",
+       "Usually yes. At this size they fit most weight limits, and thirty to sixty minutes of activity a day plus company is enough. What they do not do well is long stretches alone; this is a breed that wants to be with people."),
+      ("How much exercise do they need?",
+       "Thirty to sixty minutes a day of walks, play, or training games. They are smart, so mental work tires them out as much as running does."),
+      ("Are they easy to train?",
+       "Both sides of the cross are bright and eager to please, which makes training genuinely enjoyable. Keep sessions short and positive. Ours start on crate and potty training before they leave us."),
+      ("Do they bark a lot?",
+       "Not usually. They are social rather than guardy, so they tend to greet rather than warn. Any dog will bark if it is bored or left alone too long."),
+      ("Are they good for a first-time owner?",
+       "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
+      ("What health testing do the parents have?",
+       "Our Cavalier sire is AKC registered and genetically tested clear. Troy's testing documentation is being compiled and will be published here as soon as we have it. On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records."),
+      ("What comes home with the puppy?",
+       "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, and a toy. Doberman puppies also come with AKC registration, a one year genetic health guarantee, microchipping, tail docked and dew claws removed."),
+      ("How do I reserve one, and is the deposit refundable?",
+       "A $500 deposit reserves your puppy. It applies to your balance and is transferable to another available puppy if your plans change. Our refund terms are being finalised, so ask us before you put a deposit down and we will tell you plainly."),
     ]
     faq_ld = json.dumps({"@context": "https://schema.org", "@type": "FAQPage",
       "mainEntity": [{"@type": "Question", "name": q,
         "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]})
-    faq_html = "\n".join(f"<h3>{q}</h3><p>{a}</p>" for q, a in faq)
+    faq_html = "\n".join(
+      f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
+      for q, a in faq)
     page("what-is-a-munchkin-bernedoodle.html", "What Is a Munchkin Bernedoodle? | Bless Your Paws Puppies",
       "A plain-language guide to the Munchkin Bernedoodle: the cross, the size, the coat, and the temperament, from a family that breeds them.",
       f"""<section><div class="wrap">
   <p class="eyebrow">Breed guide</p>
   <h1>What is a Munchkin Bernedoodle?</h1>
-  <div class="grid-2">
+  <div class="grid-2 narrow-left">
     <p class="lede">A Munchkin Bernedoodle is an intentionally small Bernedoodle cross.
       Ours come from a Mini Multi Gen Bernedoodle mom and an AKC Cavalier King Charles
       Spaniel dad, which brings the size down naturally and adds the Cavalier's
@@ -894,7 +978,7 @@ def build_pages():
 
 <section class="band-raise"><div class="wrap">
   <h2>Where the small size comes from</h2>
-  <div class="grid-2" style="margin-top:1.5rem">
+  <div class="grid-2 narrow-left" style="margin-top:1.5rem">
     <div>
       <p>The name confuses people, so here is the honest version. "Munchkin"
         describes small overall size, not short legs. There is no dwarf gene
@@ -927,7 +1011,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-forest"><div class="wrap grid-2">
+<section class="band-forest"><div class="wrap grid-2 narrow-left">
   <div>
     <h2>Honest words about the coat</h2>
     <p>Doodle coats vary by individual puppy, even within one litter. Many are wavy
@@ -939,10 +1023,17 @@ def build_pages():
   {img_tag('havilah-03', cls='framed', alt='Close view of a Munchkin Bernedoodle puppy coat')}
 </div></section>
 
-<section><div class="wrap prose">
-  <h2>Common questions</h2>
-  {faq_html}
-  <div class="btn-row">
+<section style="margin-bottom:0"><div class="wrap">
+  <p class="eyebrow center">Common questions</p>
+  <h2 class="center">Everything families ask us</h2>
+  <p class="lede center" style="max-width:62ch;margin:0 auto 2rem">Tap any question.
+    If yours is not here, call or text and ask; we would rather answer twice than
+    have you guess.</p>
+  <div class="faq">
+{faq_html}
+  </div>
+  <div class="section-cta">
+    <p>Still deciding? Meet them on a visit or a video call first.</p>
     <a class="btn btn-primary" href="munchkin-bernedoodles.html">See available puppies</a>
     <a class="btn btn-ghost" href="waitlist.html">Join the waitlist</a>
   </div>
@@ -950,40 +1041,27 @@ def build_pages():
       extra_head=f'<script type="application/ld+json">{faq_ld}</script>\n')
 
     page("our-dogs.html", "Our Dogs and Their Health | Bless Your Paws Puppies",
-      "Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, and Mira the health-tested Doberman dam, with testing listed dog by dog.",
+      "Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, Mira the health-tested Doberman dam, and our Doberman sire, with testing listed dog by dog.",
       f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">The parents</p>
   <h1>Our dogs, and what they are tested for</h1>
-  <p class="lede" style="max-width:72ch">Health claims are easy to make and hard to
+  <p class="lede" style="max-width:74ch">Health claims are easy to make and hard to
     check, so each dog's testing sits on their own card, and where a record exists we
     link the actual record for you to read yourself.</p>
 </div></section>
 
-<section class="band-raise"><div class="wrap">
-  <h2>The Munchkin Bernedoodle parents</h2>
-  <p class="fine">Troy and our Cavalier sire, the mom and dad behind Hope's litter.</p>
-  <div class="parent-grid" style="margin-top:1.5rem">{M_PARENTS}</div>
+<section><div class="wrap">
+  <div class="parent-grid row-4">{M_PARENTS}{D_PARENTS}</div>
   <div class="section-cta">
     <p>Troy's testing documentation is being compiled. {CHIP_DRAFT}</p>
-    <a class="btn btn-primary" href="munchkin-bernedoodles.html">See their puppies</a>
-  </div>
-</div></section>
-
-<section><div class="wrap">
-  <h2>The Doberman parents</h2>
-  <p class="fine">Mira and our Doberman sire, the mom and dad behind Joy's litter.</p>
-  <div class="parent-grid" style="margin-top:1.5rem">{D_PARENTS}</div>
-  <div class="section-cta">
-    <p>Read Mira's records yourself:
-      <a href="https://ofa.org/advanced-search?appnum=2720473">OFA record</a> and
-      <a href="https://gensol2storageaccount.blob.core.windows.net/certificates/eb11a34d-fa1e-4a4b-ac2f-b5b5bcc6d48e/gensolresult534262.pdf">GenSol certificate</a>.</p>
-    <a class="btn btn-primary" href="dobermans.html">See their puppies</a>
+    <a class="btn btn-primary" href="puppies.html">See their puppies</a>
   </div>
 </div></section>
 
 <section class="band-pink"><div class="wrap">
+  <p class="eyebrow">Reading a genetic panel</p>
   <h2>What a carrier result actually means</h2>
-  <div class="grid-2 narrow-right" style="margin-top:1.5rem;align-items:center">
+  <div class="grid-2 narrow-right" style="margin-top:1.5rem">
     <div>
       <p>Mira's genetic panel comes back clear on everything tested except one
         condition, where she is a carrier. A carrier has one copy of a variant and is
@@ -993,12 +1071,15 @@ def build_pages():
         registered with the Orthopedic Foundation for Animals. Mira has been screened
         by EKG and holter, and her eyes are tested too.
         <span class="chip chip-draft">Confirm DCM3 vs DM3</span></p>
+      <p class="fine">Read them yourself:
+        <a href="https://ofa.org/advanced-search?appnum=2720473">her OFA record</a> and
+        <a href="https://gensol2storageaccount.blob.core.windows.net/certificates/eb11a34d-fa1e-4a4b-ac2f-b5b5bcc6d48e/gensolresult534262.pdf">her GenSol certificate</a>.</p>
     </div>
     {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our health-tested Doberman dam')}
   </div>
 </div></section>
 
-<section class="band-forest" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
+<section class="band-raise" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
   <div>
     <p class="eyebrow">Every puppy, before go-home</p>
     <h2>What happens before a puppy leaves us</h2>
@@ -1010,7 +1091,7 @@ def build_pages():
       <li>A written health guarantee</li>
     </ul>
     <div class="btn-row">
-      <a class="btn btn-ghost" href="health-guarantee.html">Read the health guarantee</a>
+      <a class="btn btn-primary" href="health-guarantee.html">Read the health guarantee</a>
     </div>
   </div>
   {img_tag('eden-02', cls='framed', alt='A Munchkin Bernedoodle puppy being held')}
@@ -1021,7 +1102,7 @@ def build_pages():
       f"""<section><div class="wrap">
   <p class="eyebrow">About us</p>
   <h1>Two sisters, one standard</h1>
-  <div class="grid-2">
+  <div class="grid-2 narrow-left">
     <div>
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
         northern Indiana homes. Hope raises the Munchkin Bernedoodles and Joy raises
@@ -1044,7 +1125,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise"><div class="wrap grid-2">
+<section class="band-raise"><div class="wrap grid-2 narrow-right">
   {img_tag('joshua-02', cls='framed', alt='A Munchkin Bernedoodle puppy in the grass')}
   <div>
     <h2>Why we do it this way</h2>
@@ -1066,43 +1147,62 @@ def build_pages():
     <a class="btn btn-primary" href="puppies.html">See the puppies</a></div>
 </div></section>""")
 
+    steps = [
+      ("Say hello", "havilah-02",
+       "Browse the available puppies, then call, text, or send the inquiry form. Tell us "
+       "a little about your family and who caught your eye. There is no application fee "
+       "and no pressure.",
+       'Most families text a photo of the puppy they like and go from there. '
+       '<a href="puppies.html">See who is available</a>.'),
+      ("Meet the puppy", "malcolm-02",
+       "We set up a visit or a video call so you can meet the puppy, meet the parents, "
+       "and meet us. Ten minutes is usually enough to know. We would rather talk you out "
+       "of the wrong puppy than sell you one.",
+       "Visits are by appointment. Our exact location is shared once your visit is booked."),
+      ("Reserve with a deposit", "caleb-01",
+       f"A ${DEPOSIT} deposit holds your puppy while they finish growing up with us. It "
+       "applies to your balance, and it is transferable to another available puppy if "
+       "your plans change.",
+       f'Refund terms are being finalised. {CHIP_DRAFT}'),
+      ("Watch them grow", "jericho-02",
+       "We send photos and updates right up to go-home day, and you can ask for more "
+       "any time. Plenty of families end up on a first-name basis with us before they "
+       "ever pick the puppy up.",
+       "Ask us anything in between. We would rather over-communicate."),
+      ("Go-home day", "shiloh-02",
+       "Puppies go home from eight weeks, after their final vet check. You leave with the "
+       "health records, the paperwork, and a puppy who already knows what a family sounds "
+       "like.",
+       f'Pickup is by appointment. Delivery options are being finalised. {CHIP_DRAFT}'),
+    ]
+    steps_html = "\n".join(
+      f'''  <article class="step">
+    <div>
+      <span class="step-num">{i}</span>
+      <h3>{title}</h3>
+      <p>{body}</p>
+      <p class="fine">{note}</p>
+    </div>
+    <div class="step-media">{img_tag(stem, alt=title)}</div>
+  </article>'''
+      for i, (title, stem, body, note) in enumerate(steps, 1))
+
     page("process.html", "How It Works | Bless Your Paws Puppies",
-      f"From first hello to go-home day: inquire, meet the puppy, reserve with a ${DEPOSIT} deposit, and take your puppy home.",
-      f"""<section><div class="wrap">
+      f"From first hello to go-home day: inquire, meet the puppy, reserve with a ${DEPOSIT} deposit, watch them grow, and take your puppy home.",
+      f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">How it works</p>
   <h1>From first hello to go-home day</h1>
-  <div class="grid-2">
-    <p class="lede">Four steps, no pressure, and a real conversation somewhere in the
-      middle. We would rather talk you out of the wrong puppy than sell you one.</p>
-    {img_tag('havilah-02', cls='framed', alt='Havilah, a Munchkin Bernedoodle puppy', lazy=False)}
-  </div>
-</div></section>
-
-<section class="band-raise"><div class="wrap">
-  <div class="grid-3">
-    <article class="packet">{img_tag('jericho-02', alt='A Munchkin Bernedoodle puppy')}
-      <div class="packet-body"><p class="packet-name">1. Say hello</p>
-        <p class="fine">Browse the <a href="puppies.html">available puppies</a>, then
-          call, text, or send the <a href="contact.html">inquiry form</a>. Tell us a
-          little about your family and who caught your eye.</p></div></article>
-    <article class="packet">{img_tag('malcolm-01', alt='A Doberman Pinscher puppy')}
-      <div class="packet-body"><p class="packet-name">2. Meet the puppy</p>
-        <p class="fine">We set up a visit or a video call so you can meet the puppy,
-          the parents, and us. Ten minutes is usually enough to know.</p></div></article>
-    <article class="packet">{img_tag('caleb-01', alt='A Munchkin Bernedoodle puppy')}
-      <div class="packet-body"><p class="packet-name">3. Reserve</p>
-        <p class="fine">A ${DEPOSIT} deposit holds your puppy while they finish growing
-          up with us. The deposit applies to your balance and is transferable to
-          another available puppy if plans change. {CHIP_DRAFT}</p></div></article>
-    <article class="packet">{img_tag('shiloh-02', alt='A Munchkin Bernedoodle puppy')}
-      <div class="packet-body"><p class="packet-name">4. Go-home day</p>
-        <p class="fine">Puppies go home from 8 weeks, after their final vet check.
-          Pickup is by appointment; delivery options are being finalized.
-          {CHIP_DRAFT}</p></div></article>
-  </div>
+  <p class="lede" style="max-width:68ch">Five steps, no pressure, and a real
+    conversation somewhere in the middle. Here is exactly what happens, so nothing
+    about buying a puppy from us is a surprise.</p>
 </div></section>
 
 <section><div class="wrap">
+{steps_html}
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <p class="eyebrow center">In the go-home bag</p>
   <h2 class="center">What comes home with your puppy</h2>
   <div class="grid-2" style="margin-top:2rem;align-items:start">
     <div>
@@ -1114,30 +1214,26 @@ def build_pages():
       <ul class="checklist">{''.join(f'<li>{i}</li>' for i in D_KIT)}</ul>
     </div>
   </div>
+  <div class="section-cta">
+    <p>Both litters come with a written health guarantee.</p>
+    <a class="btn btn-primary" href="health-guarantee.html">Read the guarantee</a>
+  </div>
 </div></section>
 
-<section class="band-forest"><div class="wrap">
-  <h2>Questions families ask us</h2>
-  <div class="grid-2" style="margin-top:1.5rem;align-items:start">
-    <div>
-      <h3>How do payments work?</h3>
-      <p>The ${DEPOSIT} deposit reserves your puppy online. The balance is due before
-        or at pickup; most families pay the balance by check or bank transfer.
-        {CHIP_DRAFT}</p>
-      <h3>Can we visit first?</h3>
-      <p>Yes, and we encourage it. Visits are by appointment, and our location is
-        shared once your visit is scheduled.</p>
-    </div>
-    <div>
-      <h3>Do the puppies come with a guarantee?</h3>
-      <p>Yes. Read the <a href="health-guarantee.html">health guarantee</a> and the
-        <a href="purchase-agreement.html">purchase agreement</a> so there are no
-        surprises on either side.</p>
-      <h3>Will my puppy shed?</h3>
-      <p>It varies by puppy, even in one litter. Ask us about the puppy you love and
-        we will tell you what we see. We never promise a non-shedding coat.</p>
-    </div>
+<section class="band-forest" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
+  <div>
+    <p class="eyebrow">Before you ask</p>
+    <h2>The questions we get most</h2>
+    <p><strong>How do payments work?</strong> The ${DEPOSIT} deposit reserves your puppy
+      online. The balance is due before or at pickup, and most families pay it by check
+      or bank transfer. {CHIP_DRAFT}</p>
+    <p><strong>Can we visit first?</strong> Yes, and we encourage it. Video calls work
+      well for families further away.</p>
+    <p><strong>Will my puppy shed?</strong> It varies by puppy, even in one litter. We
+      never promise a non-shedding coat.
+      <a href="what-is-a-munchkin-bernedoodle.html">More on coats</a>.</p>
   </div>
+  {img_tag('eden-03', cls='framed', alt='A Munchkin Bernedoodle puppy')}
 </div></section>""")
 
     page("contact.html", "Contact | Bless Your Paws Puppies",
@@ -1164,13 +1260,13 @@ def build_pages():
       <p class="fine">Our exact location is shared once your visit is scheduled.
         Video calls work well for families further away.</p>
     </div>
-    <div>
-      <h2>Send an inquiry</h2>
-      <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST" style="max-width:none">
-      {hp.format(i="c")}<div><label for="name">Your name</label><input id="name" name="name" required></div>
-      <div><label for="email">Email</label><input id="email" name="email" type="email" required></div>
-      <div><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
-      <div><label for="message">Which puppy caught your eye, and a little about your family</label>
+    <div class="formcard">
+      <h2 style="margin-top:0">Send an inquiry</h2>
+      <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
+      {hp.format(i="c")}<div class="field"><label for="name">Your name</label><input id="name" name="name" required></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+      <div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
+      <div class="field"><label for="message">Which puppy caught your eye, and a little about your family</label>
         <textarea id="message" name="message" required></textarea></div>
       <button class="btn btn-primary" type="submit">Send inquiry</button>
       <p class="guard-msg">The form is almost ready. For now, call or text Hope at
@@ -1190,7 +1286,7 @@ def build_pages():
         <a href="munchkin-bernedoodles.html">See the litter</a>.</p>
     </div>
     <div>
-      {img_tag('malcolm-01', cls='framed', alt='Malcolm, a black and rust Doberman Pinscher puppy')}
+      {img_tag('malcolm-02', cls='framed', alt='Malcolm, a black and rust Doberman Pinscher puppy')}
       <h3 style="margin-top:1rem">Doberman Pinschers</h3>
       <p class="fine">AKC registered, loyal, and ready to go home now.
         <a href="dobermans.html">See the litter</a>.</p>
@@ -1200,10 +1296,11 @@ def build_pages():
 
     page("waitlist.html", "Join the Waitlist | Bless Your Paws Puppies",
       "Hear about new litters before they are listed. Waitlist families get first pick.",
-      f"""<section><div class="wrap grid-2" style="align-items:start">
+      f"""<section><div class="wrap">
+  <p class="eyebrow">The waitlist</p>
+  <h1>Hear about litters first</h1>
+  <div class="grid-2" style="align-items:start;margin-top:1.25rem">
   <div>
-    <p class="eyebrow">The waitlist</p>
-    <h1>Hear about litters first</h1>
     <p class="lede">Our litters tend to reserve quickly. One puppy from the current
       litter went home to a waitlist family before it was ever listed publicly.</p>
     <p>Joining costs nothing and commits you to nothing. When a new litter arrives,
@@ -1211,24 +1308,25 @@ def build_pages():
       reserve.</p>
     {img_tag('jordan-02', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy')}
   </div>
-  <div>
-    <h2>Add your name</h2>
+  <div class="formcard">
+    <h2 style="margin-top:0">Add your name</h2>
     <form data-guard action="https://formspree.io/f/REPLACE_WAITLIST_ID" method="POST">
-    {hp.format(i="w")}<div><label for="wname">Your name</label><input id="wname" name="name" required></div>
-    <div><label for="wemail">Email</label><input id="wemail" name="email" type="email" required></div>
-    <div><label for="wphone">Phone (optional)</label><input id="wphone" name="phone"></div>
-    <div><label for="wline">Which puppies are you hoping for?</label>
+    {hp.format(i="w")}<div class="field"><label for="wname">Your name</label><input id="wname" name="name" required></div>
+    <div class="field"><label for="wemail">Email</label><input id="wemail" name="email" type="email" required></div>
+    <div class="field"><label for="wphone">Phone (optional)</label><input id="wphone" name="phone"></div>
+    <div class="field"><label for="wline">Which puppies are you hoping for?</label>
       <select id="wline" name="line">
         <option>Munchkin Bernedoodles</option>
         <option>Doberman Pinschers</option>
         <option>Either, tell me about both</option>
       </select></div>
-    <div><label for="wwhen">When are you hoping to bring a puppy home?</label>
+    <div class="field"><label for="wwhen">When are you hoping to bring a puppy home?</label>
       <input id="wwhen" name="timing" placeholder="This year, next spring, whenever the right one comes"></div>
     <button class="btn btn-primary" type="submit">Join the waitlist</button>
     <p class="guard-msg">The form is almost ready. For now, text Hope at
       <a href="{SMS_HREF}">{PHONE_DISPLAY}</a> with the word WAITLIST and your name.</p>
     </form>
+  </div>
   </div>
 </div></section>""")
 
@@ -1375,20 +1473,22 @@ def build_pages():
                    parents_html, extra_facts):
         him = "him" if sex == "Boy" else "her"
         cnt = COUNTS[slug]
+        first = PRIMARY.get(slug, 1)
+        order = [first] + [i for i in range(1, cnt + 1) if i != first]
         slides = "\n".join(
-            "        " + img_tag(f"{slug}-{i:02d}", alt=f"{name}, photo {i}",
-                                 lazy=(i > 1), hidden=(i > 1))
-            for i in range(1, cnt + 1))
+            "        " + img_tag(f"{slug}-{i:02d}", alt=f"{name}, photo {k+1}",
+                                 lazy=(k > 0), hidden=(k > 0))
+            for k, i in enumerate(order))
         thumbs = "\n".join(
-            f'        <button aria-current="{"true" if i==1 else "false"}" '
-            f'aria-label="Photo {i}"><img src="img/r/{slug}-{i:02d}-320.webp" alt="" '
-            f'loading="lazy"></button>' for i in range(1, cnt + 1))
+            f'        <button aria-current="{"true" if k==0 else "false"}" '
+            f'aria-label="Photo {k+1}"><img src="img/r/{slug}-{i:02d}-320.webp" alt="" '
+            f'loading="lazy"></button>' for k, i in enumerate(order))
         sibs = MUNCHKINS if breed.startswith("Munchkin") else DOBERMANS
         sib = " &middot; ".join(f'<a href="puppy-{s}.html">{n}</a>'
                                for s, n, *_ in sibs if s != slug)
         breed_page = 'munchkin-bernedoodles' if breed.startswith('Munchkin') else 'dobermans'
         ld = json.dumps({"@context": "https://schema.org", "@type": "Product",
-            "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{slug}-01.jpg",
+            "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{lead(slug)}.jpg",
             "description": f"{name} is a {colour.lower()} {breed} puppy, available now.",
             "offers": {"@type": "Offer", "priceCurrency": "USD", "price": str(price),
                        "availability": "https://schema.org/InStock"}})
@@ -1441,7 +1541,7 @@ def build_pages():
         every day, around kids and other dogs, with early neurological stimulation
         from the first weeks. Ask us anything about {him}; we are happy to send more
         photos or hop on a video call.</p>
-      {share_row(name, f'puppy-{slug}.html', f'img/puppies/{slug}-01.jpg')}
+      {share_row(name, f'puppy-{slug}.html', f'img/puppies/{lead(slug)}.jpg')}
     </div>
   </div>
 </div></section>
