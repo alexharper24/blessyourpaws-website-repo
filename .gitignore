@@ -1,0 +1,32 @@
+# Large source media — only web-optimized derivatives in img/ get committed.
+# Write this file FIRST, then verify with `git add -An .` before any real add.
+source-photos/
+*.HEIC
+*.heic
+*.heif
+*.dng
+*.DNG
+*.raw
+*.psd
+*.ai
+*.mov
+*.MOV
+*.mp4
+
+# Secrets — never commit, never print into a transcript
+.env
+.env.*
+.dev.vars
+local.settings.json
+wrangler.toml.local
+
+# Worker / admin layer local state (Phase 2)
+node_modules/
+.wrangler/
+dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
