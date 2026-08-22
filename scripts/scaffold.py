@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 7
+V = 8
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -144,23 +144,24 @@ a{color:var(--forest)}
 /* the source is 3:2. at 1026x634 the frame was wider than that, so cover was
    trimming the puppy top and bottom. a taller frame lands nearer 3:2 and keeps him
    whole. */
-.hero-drift{position:relative;min-height:clamp(34rem,50vw,50rem);
-  display:flex;align-items:center}
-.hero-photo{position:absolute;inset:0 0 0 24%;z-index:0;pointer-events:none}
-.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;
+.hero-drift{position:relative;display:grid;align-items:center;
+  min-height:clamp(26rem,38vw,34rem)}
+.hero-photo{grid-area:1/1;justify-self:end;align-self:center;width:76%;
+  aspect-ratio:3/2;z-index:0;pointer-events:none}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 34%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%)}
 /* a narrower measure: the headline was setting two very long lines */
-.hero-copy{position:relative;z-index:1;width:min(33rem,46%);
-  padding:clamp(2.5rem,5vw,4.5rem) 0}
+.hero-copy{grid-area:1/1;position:relative;z-index:1;width:min(33rem,46%);
+  padding:clamp(2.5rem,5vw,4.5rem) 0;justify-self:start}
 .hero-copy .lede{max-width:30rem}
 .hero-copy h1{text-shadow:0 1px 0 var(--paper)}
 /* older engines without mask-image get a plain right-hand photo rather than a
    full-bleed image with copy on top of it */
 @supports not ((mask-image:linear-gradient(#000,#000)) or (-webkit-mask-image:linear-gradient(#000,#000))){
-  .hero-photo{inset:0 0 0 46%}
+  .hero-photo{width:54%}
 }
 
 .hero-split{display:grid;grid-template-columns:.68fr 1.32fr;gap:clamp(2rem,4vw,4rem);
@@ -170,6 +171,9 @@ a{color:var(--forest)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
 /* section imagery: give photos real presence, they are the product */
 .grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
+/* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
+   3:2 cuts off either their heads or their torsos. */
+.framed.portrait{aspect-ratio:3/4;object-fit:cover;object-position:50% 26%}
 /* .78/1.22 puts a feature photo near 780px in a 1339 wrap. .62/1.38 gave 894px,
    which overwhelmed the paragraph beside it. */
 .grid-2.narrow-left{grid-template-columns:.78fr 1.22fr}
@@ -252,13 +256,18 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 .parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
 .parent-grid.row-4{grid-template-columns:repeat(4,1fr)}
-.parent-grid .packet-body{gap:.35rem;flex:1;display:flex;flex-direction:column}
+.parent-grid .packet-body{gap:.2rem;flex:1;display:flex;flex-direction:column;
+  padding:.9rem .7rem .55rem}
 /* the facts table fills, the note sits on the floor of the card, so a card with
    three rows and a card with five still line their notes up */
-.parent-grid .facts{margin:.6rem 0 0}
+.parent-grid .facts{margin:.5rem 0 0}
+.parent-grid .facts li{padding:.3rem 0;font-size:.9rem}
 .parent-grid .facts li:last-child{border-bottom:none}
-.parent-grid .pnote{margin-top:auto;padding-top:.75rem;font-size:.85rem;
-  color:var(--sage-deep);border-top:1px solid var(--rule)}
+.parent-grid .packet-name{margin-bottom:.1rem}
+.parent-grid .packet-meta{margin-bottom:.15rem}
+.parent-grid .dogmeta{margin-bottom:.2rem}
+.parent-grid .pnote{margin-top:auto;padding-top:.6rem;font-size:.83rem;
+  line-height:1.45;color:var(--sage-deep);border-top:1px solid var(--rule)}
 .parent-grid .pnote:empty{display:none}
 .dogmeta{font-size:.86rem;letter-spacing:.09em;text-transform:uppercase;
   color:var(--sage-deep);font-weight:700;margin:0 0 .35rem}
@@ -409,14 +418,15 @@ textarea{min-height:8rem}
 @media (max-width:760px){.steps-row{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:460px){.steps-row{grid-template-columns:1fr}}
 
-/* ---------- dog detail rows: photo, story, testing, QR ---------- */
-.dogrow{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(1.75rem,3.5vw,3.5rem);
-  align-items:center;padding:clamp(2rem,3.5vw,3.25rem) 0;
-  border-top:1px solid var(--rule)}
-.dogrow:first-of-type{border-top:none;padding-top:0}
+/* ---------- dog cards: two per row, photo over the detail ---------- */
+.dogpair{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,2.75rem);
+  align-items:start;margin-bottom:clamp(2rem,3.5vw,3rem)}
+.dogpair:last-of-type{margin-bottom:0}
+.dogrow{display:flex;flex-direction:column;gap:1rem}
 .dogrow .dog-photo{width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light);aspect-ratio:4/3;object-fit:cover;
-  object-position:50% 32%}
+  object-position:50% 30%}
+@media (max-width:860px){.dogpair{grid-template-columns:1fr}}
 .dog-kicker{font-size:.76rem;font-weight:700;letter-spacing:.19em;
   text-transform:uppercase;color:var(--sage-deep);margin:0 0 .35rem}
 .dogrow h3{font-size:clamp(1.5rem,2.2vw,2rem);margin-bottom:.15rem}
@@ -509,13 +519,15 @@ textarea{min-height:8rem}
   .brand img{height:68px}
 }
 @media (max-width:900px){
+  .dogpair{grid-template-columns:1fr}
   /* stack the hero: the drift only works when there is width to fade across */
   .hero-drift{min-height:0;display:block}
-  .hero-photo{position:relative;inset:auto;height:clamp(15rem,58vw,22rem);
+  .hero-drift{display:block;min-height:0}
+  .hero-photo{grid-area:auto;width:auto;justify-self:auto;aspect-ratio:3/2;
     margin:0 0 1.5rem}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
-  .hero-copy{width:auto;padding:1.75rem 0 0}
+  .hero-copy{grid-area:auto;width:auto;padding:1.75rem 0 0}
   .hero-copy h1{text-shadow:none}
   .dogrow{grid-template-columns:1fr;gap:1.25rem}
   .health{grid-template-columns:1fr}
@@ -1189,7 +1201,8 @@ def build_pages():
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <div class="grid-2 narrow-left">
+  <div class="grid-2 narrow-right">
+    {img_tag('troy-01', folder='dogs', cls='framed', alt='Troy, our 21 lb Mini Multi Gen Bernedoodle dam')}
     <div>
       <div class="col-title"><h2>Where the small size comes from</h2></div>
       <p>The name confuses people, so here is the honest version. "Munchkin"
@@ -1200,7 +1213,6 @@ def build_pages():
       <p>Ours get there the natural way: a small mom at 21 lbs bred to a small dad at
         19 lbs. No trick, no trait, just two small parents.</p>
     </div>
-    {img_tag('troy-01', folder='dogs', cls='framed', alt='Troy, our 21 lb Mini Multi Gen Bernedoodle dam')}
   </div>
 </div></section>
 
@@ -1252,7 +1264,7 @@ def build_pages():
 </div></section>""",
       extra_head=f'<script type="application/ld+json">{faq_ld}</script>\n')
 
-    DOGROWS = (
+    M_DOGS = (
       dog_row("troy-01", "Troy", "Mini Multi Gen Bernedoodle", None,
         "Troy is the mother of our Munchkin Bernedoodle litter. At 21 lbs she is a "
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
@@ -1268,7 +1280,8 @@ def build_pages():
         [("Registration:", "AKC registered."),
          ("Weight:", "19 lbs, ruby, born December 24, 2024."),
          ("Genetic testing:", "tested clear. Panel documentation being added. " + CHIP_DRAFT)],
-        []) +
+        []))
+    D_DOGS = (
       dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",
         "Mira is an amazing girl. We love her sweet disposition, her love of guarding "
         "the property, her desire to be a lapdog, and her inquisitive, intelligent "
@@ -1303,11 +1316,13 @@ def build_pages():
 </div></section>
 
 <section><div class="wrap">
-{DOGROWS}
+  <div class="dogpair">{M_DOGS}</div>
+  <div class="dogpair">{D_DOGS}</div>
 </div></section>
 
 <section class="band-pink band-tight"><div class="wrap">
-  <div class="grid-2 narrow-right">
+  <div class="grid-2 narrow-left">
+    {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our health-tested Doberman dam')}
     <div>
       <div class="col-title">
         <p class="eyebrow">Reading a genetic panel</p>
@@ -1323,7 +1338,6 @@ def build_pages():
       <p class="fine">Do not take our word for any of it. Scan the QR beside her, or
         follow the links, and read the records yourself.</p>
     </div>
-    {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our health-tested Doberman dam')}
   </div>
 </div></section>
 
@@ -1368,9 +1382,11 @@ def build_pages():
       </div>
     </div>
     <div>
-      <img class="framed" src="img/placeholder/hope-and-joy.svg" alt="Photo of Hope and Joy coming soon">
-      <p class="fine center" style="margin-top:.75rem">A photo of Hope and Joy goes
-        here. {CHIP_PHOTO}</p>
+      <img class="framed portrait" src="img/hope-and-joy.jpg?v={V}"
+        srcset="img/r/hope-and-joy-320.webp 320w, img/r/hope-and-joy-640.webp 640w"
+        sizes="(max-width:900px) 92vw, 40vw"
+        alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
+        width="768" height="1024" decoding="async">
     </div>
   </div>
 </div></section>
