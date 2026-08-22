@@ -173,7 +173,10 @@ a{color:var(--forest)}
 .grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
 /* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
    3:2 cuts off either their heads or their torsos. */
-.framed.portrait{aspect-ratio:3/4;object-fit:cover;object-position:50% 26%}
+/* capped at the source width: the original is 768px, so a wider slot would upscale
+   it and render soft. it also reads better at this size than filling the column. */
+.framed.portrait{aspect-ratio:3/4;object-fit:cover;object-position:50% 26%;
+  max-width:29rem;width:100%;justify-self:center;margin:0 auto;display:block}
 /* .78/1.22 puts a feature photo near 780px in a 1339 wrap. .62/1.38 gave 894px,
    which overwhelmed the paragraph beside it. */
 .grid-2.narrow-left{grid-template-columns:.78fr 1.22fr}
@@ -1383,8 +1386,8 @@ def build_pages():
     </div>
     <div>
       <img class="framed portrait" src="img/hope-and-joy.jpg?v={V}"
-        srcset="img/r/hope-and-joy-320.webp 320w, img/r/hope-and-joy-640.webp 640w"
-        sizes="(max-width:900px) 92vw, 40vw"
+        srcset="img/r/hope-and-joy-320.webp 320w, img/r/hope-and-joy-640.webp 640w, img/r/hope-and-joy-768.webp 768w"
+        sizes="(max-width:900px) 92vw, 29rem"
         alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
         width="768" height="1024" decoding="async">
     </div>
