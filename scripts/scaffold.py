@@ -700,7 +700,8 @@ def page(path, title, desc, body, extra_head=""):
     assert "—" not in html, f"em dash slipped into {path}"
     open(path, "w", encoding="utf-8").write(html)
 
-def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False):
+def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
+            sizes="(max-width:900px) 94vw, 45vw"):
     q = chr(34)
     parts = ["<img"]
     if hidden: parts.append("hidden")
@@ -712,7 +713,7 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False):
     if have:
         parts.append("srcset=" + q + ", ".join(
             f"img/r/{stem}-{w}.webp {w}w" for w in have) + q)
-    parts.append(f'sizes={q}(max-width:900px) 94vw, 45vw{q}')
+    parts.append(f'sizes={q}{sizes}{q}')
     parts.append(f'src={q}img/{folder}/{stem}.jpg{q}')
     parts.append(f'alt={q}{alt}{q}')
     if lazy: parts.append(f'loading={q}lazy{q}')
@@ -736,7 +737,8 @@ def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None):
     reg_html = '<p class="reg-name">%s</p>' % reg if reg else ""
     return ('<article class="dogrow">'
       + img_tag(stem, folder="dogs", cls="dog-photo",
-                alt="%s, our %s" % (name, breed))
+                alt="%s, our %s" % (name, breed),
+                sizes="(max-width:900px) 94vw, 56vw")
       + '<div>'
         '<p class="dog-kicker">' + breed + '</p>'
         '<h3>' + name + '</h3>' + reg_html
@@ -832,7 +834,7 @@ def build_pages():
       f"""<section class="hero">
   <div class="hero-drift">
     <div class="hero-photo">
-      {img_tag('havilah-01', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False)}
+      {img_tag('havilah-01', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, sizes='(max-width:900px) 96vw, 74vw')}
     </div>
     <div class="wrap">
       <div class="hero-copy">
