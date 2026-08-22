@@ -84,8 +84,11 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       staged but never confirmed.
 - [ ] Bernedoodle sire is **Troy** (Cavalier King Charles Spaniel). Need his
       registration, health testing, and adult weight.
-- [ ] Bernedoodle dam's generation (F1 / F1b / multigen) — drives the coat and size
-      questions buyers ask.
+- [x] **Dam is a Mini Multi Gen Bernedoodle** (confirmed 2026-08-22). Pawrade said
+      "Mini", Puppy Connection said "Multi Gen"; she is both. Multi-gen supports a more
+      consistent curl and lower shedding than an F1 — still a per-puppy prediction, never
+      a promise.
+- [x] **Sire is 19 lbs** (confirmed). Puppy Connection's 18 lbs is wrong.
 - [ ] Per-puppy: date of birth, go-home date, sex, colour, name, price, expected
       adult size. **8 Munchkin Bernedoodles + 3 Dobermans.**
 - [ ] **Prices.** Munchkin Bernedoodle market range is $3,500–$6,500; Joy's Dobermans
@@ -96,7 +99,15 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       attorney-reviewed. Harper Studio publishes, does not write.
 - [ ] Go-home package contents (vaccinations, deworming, vet check, microchip, food,
       blanket, contract).
-- [ ] Socialization specifics. Confirmed: raised in the home, around children, around
+- [x] **Socialisation and ENS documented** (from Pawrade's structured fields, pending
+      Hope's confirmation): grass potty training; socialised with other animals, small
+      dogs, large dogs, older kids and younger kids; ENS via Bio-Sensor, doorbell, loud
+      music/TV, pots and pans, vacuum cleaner.
+- [x] **Go-home kit:** vaccination and health record, vet examination, small bag of food,
+      collar and leash, toy.
+- [x] **Hope's phone number is 574-377-8023** (confirmed). Not the marketplace's
+      574-221-0326.
+- [ ] Original socialization wording. Confirmed: raised in the home, around children, around
       many people including a Fourth of July gathering. **Not confirmed and not to be
       claimed:** vet/store outings, noise and surface desensitization, crate/leash
       starts, or any named protocol (Puppy Culture, ENS, Rule of Seven).
@@ -109,7 +120,15 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       Amber's Wix site during the KFC build.
 - [ ] Any faith element. Do not assume either way — KFC's verse band is not a
       template.
-- [ ] Original photos, not screenshots and not re-compressed from Facebook.
+- [x] **Photos pulled 2026-08-22.** 78 full-resolution originals for all seven Munchkin
+      Bernedoodles, from the Puppy Connection listings with Hope's confirmation that the
+      family owns the rights. Originals in gitignored `source-photos/puppy-connection/`;
+      web JPEGs at 1400px in `img/puppies/` plus a 240/600/1100 WebP set in `img/r/`.
+      Counts: joshua 10, eden 11, havilah 13, jordan 10, caleb 9, shiloh 11, jericho 14.
+      Spot-verified that filing matches recorded colour.
+- [ ] Doberman photos — still to source. Joy's three are on the Kingdom site but those
+      are Amber's files; ask Joy for her own.
+- [ ] Parent photos (sire and dam) — not yet pulled.
 - [ ] Confirm both are comfortable with faces and first names on a public site.
 
 ### Technical
