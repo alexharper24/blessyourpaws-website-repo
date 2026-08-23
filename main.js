@@ -33,18 +33,57 @@
     var i = 0;
     function show(n){
       i = (n + slides.length) % slides.length;
-      slides.forEach(function(s,k){ s.hidden = k !== i; });
+      slides.forEach(function(s,k){
+        s.hidden = false;                       // stacked, so fade rather than pop
+        s.classList.toggle('is-on', k === i);
+        s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+      });
       thumbs.forEach(function(t,k){ t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
       if (counter) counter.textContent = (i+1) + ' / ' + slides.length;
     }
-    car.querySelector('.cprev').addEventListener('click', function(){ show(i-1); });
-    car.querySelector('.cnext').addEventListener('click', function(){ show(i+1); });
-    thumbs.forEach(function(t,k){ t.addEventListener('click', function(){ show(k); }); });
+    // ---- autoplay with a crossfade, so a visitor sees the whole set without
+    // clicking. Pauses on hover, focus, and when the tab or page is out of view,
+    // and does not run at all for anyone who asked for reduced motion.
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var DWELL = 4000;
+    var timer = null, paused = false, inView = true;
+    function stop(){ if (timer){ clearInterval(timer); timer = null; } }
+    function canPlay(){
+      return !reduce.matches && !paused && inView && !document.hidden;
+    }
+    function start(){
+      if (timer || !canPlay()) return;
+      timer = setInterval(function(){ show(i+1); }, DWELL);
+    }
+    // one place decides, so every signal (hover, focus, tab switch, scrolling the
+    // carousel out of view) is re-evaluated the same way instead of racing
+    function sync(){ canPlay() ? start() : stop(); }
+    function restart(){ stop(); start(); }
+
+    car.querySelector('.cprev').addEventListener('click', function(){ show(i-1); restart(); });
+    car.querySelector('.cnext').addEventListener('click', function(){ show(i+1); restart(); });
+    thumbs.forEach(function(t,k){
+      t.addEventListener('click', function(){ show(k); restart(); }); });
     car.addEventListener('keydown', function(e){
-      if (e.key === 'ArrowLeft') show(i-1);
-      if (e.key === 'ArrowRight') show(i+1);
+      if (e.key === 'ArrowLeft'){ show(i-1); restart(); }
+      if (e.key === 'ArrowRight'){ show(i+1); restart(); }
     });
+    ['mouseenter','focusin'].forEach(function(ev){
+      car.addEventListener(ev, function(){ paused = true; sync(); }); });
+    ['mouseleave','focusout'].forEach(function(ev){
+      car.addEventListener(ev, function(){ paused = false; sync(); }); });
+    document.addEventListener('visibilitychange', sync);
+    reduce.addEventListener('change', sync);
+
     show(0);
+    // only cycle while the carousel is actually on screen
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver(function(entries){
+        inView = entries[0].isIntersecting;
+        sync();
+      }, { threshold: 0.35 }).observe(car);
+    }
+    sync();
   });
 
   // ---- guard: payment links stay friendly until the real Stripe links exist
@@ -91,30 +130,31 @@
         x.classList.toggle('cur', x.getAttribute(attr) === 'all');
       });
     }
-    document.querySelectorAll('.filter-row').forEach(function(row){
-      var isPup = row.hasAttribute('data-pupfilter');
-      row.querySelectorAll('button').forEach(function(b){
-        b.addEventListener('click', function(){
-          row.querySelectorAll('button').forEach(function(x){ x.classList.remove('cur'); });
-          b.classList.add('cur');
-          if (isPup){
-            fstate.pup = b.getAttribute('data-pup');
-            // choosing one puppy clears the litter narrowing, so the pick always resolves
-            if (fstate.pup !== 'all'){
-              fstate.line = 'all';
-              reset('.filter-row:not([data-pupfilter]) button', 'data-line');
-            }
-          } else {
-            fstate.line = b.getAttribute('data-line');
-            if (fstate.line !== 'all'){
-              fstate.pup = 'all';
-              reset('.filter-row[data-pupfilter] button', 'data-pup');
-            }
-          }
-          applyFilters();
-        });
+    var pupSel = document.getElementById('pup-select');
+    document.querySelectorAll('.filter-row button').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.querySelectorAll('.filter-row button').forEach(function(x){
+          x.classList.remove('cur'); });
+        b.classList.add('cur');
+        fstate.line = b.getAttribute('data-line');
+        // a litter choice clears the puppy dropdown, so the two never fight
+        if (pupSel){ pupSel.value = 'all'; pupSel.parentElement.classList.remove('on'); }
+        fstate.pup = 'all';
+        applyFilters();
       });
     });
+    if (pupSel){
+      pupSel.addEventListener('change', function(){
+        fstate.pup = pupSel.value;
+        pupSel.parentElement.classList.toggle('on', pupSel.value !== 'all');
+        // and a puppy choice clears the litter buttons back to All
+        if (pupSel.value !== 'all'){
+          fstate.line = 'all';
+          reset('.filter-row button', 'data-line');
+        }
+        applyFilters();
+      });
+    }
     applyFilters();
   }
 

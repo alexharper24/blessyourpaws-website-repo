@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 9
+V = 10
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -154,9 +154,13 @@ a{color:var(--forest)}
    fixed rem cap broke the drift at wide viewports: the photo pinned right while the
    copy stayed in the centred wrap, and the two separated. 160vh at 3:2 keeps the
    height near a viewport so it cannot run away vertically either. */
+/* 16:9 rather than the source 3:2. Cover does crop the IMAGE by 16% of its height,
+   but the height it loses is blanket and background, not the puppy: checked against
+   the source, she stays whole at object-position 50% 40%. That buys a hero roughly
+   a sixth shorter at the same width, with the fade intact. */
 .hero-photo{justify-self:end;align-self:center;
-  width:min(74%,160vh);aspect-ratio:3/2;z-index:0;pointer-events:none}
-.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 34%;
+  width:min(74%,178vh);aspect-ratio:16/9;z-index:0;pointer-events:none}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
@@ -329,7 +333,16 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
-.frame img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.frame img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+/* stacked slides, crossfaded. the first keeps position:relative so the frame still
+   derives its height from a real image rather than collapsing. */
+.frame img{position:absolute;inset:0;height:100%;opacity:0;
+  transition:opacity .7s ease-in-out}
+.frame img:first-of-type{position:relative}
+.frame img.is-on{opacity:1;z-index:1}
+@media (prefers-reduced-motion: reduce){
+  .frame img{transition:none}
+}
 .carousel{display:flex;flex-direction:column}
 .cnav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;
   border-radius:50%;border:1.5px solid var(--forest);background:rgba(253,249,249,.92);
@@ -351,10 +364,24 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
   overflow:hidden}
 .gal-grid a:hover{border-color:var(--forest)}
 .gal-grid img{aspect-ratio:1/1;object-fit:cover}
-.filter-group{margin-bottom:1rem}
-.filter-label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--sage-deep);font-weight:700;margin:0 0 .5rem}
-.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem}
+.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem;
+  align-items:stretch}
+/* the select is styled to match the buttons beside it exactly, so the row reads as
+   one control group rather than a dropdown bolted on */
+.filter-select{position:relative;display:inline-flex}
+.filter-select select{font:inherit;font-size:.94rem;padding:.5rem 2.4rem .5rem 1.1rem;
+  border:1.5px solid var(--forest);background:none;border-radius:3px;
+  color:var(--forest);min-height:44px;cursor:pointer;appearance:none;
+  -webkit-appearance:none}
+.filter-select::after{content:"";position:absolute;right:1rem;top:50%;
+  width:8px;height:8px;margin-top:-6px;pointer-events:none;
+  border-right:2px solid var(--forest);border-bottom:2px solid var(--forest);
+  transform:rotate(45deg)}
+.filter-select select:focus-visible{outline:3px solid var(--sage);outline-offset:2px}
+.filter-select.on select{background:var(--forest);color:var(--paper)}
+.filter-select.on::after{border-color:var(--paper)}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap}
 .filter-row button{font:inherit;font-size:.94rem;padding:.5rem 1.1rem;cursor:pointer;
   border:1.5px solid var(--forest);background:none;border-radius:3px;
   color:var(--forest);min-height:44px}
@@ -475,17 +502,21 @@ textarea{min-height:8rem}
 .closing h2{margin:0}
 .closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0;
   max-width:44ch}
-.contact-pair{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;width:100%;
-  margin:.35rem 0 .25rem}
+/* auto columns, centred: equal 1fr columns left dead space beside the shorter
+   value, which read as a stray gap */
+.contact-pair{display:grid;grid-template-columns:repeat(2,auto);gap:.85rem;
+  justify-content:center;margin:.35rem 0 .25rem}
 .contact-tile{display:flex;flex-direction:column;gap:.2rem;text-decoration:none;
   background:var(--paper);border:1.5px solid var(--rule);border-radius:5px;
   padding:.9rem 1.1rem;text-align:left;min-height:44px}
 .contact-tile:hover{border-color:var(--forest)}
+/* letter-spacing adds a trailing gap after the final character. the negative
+   margin removes it so the label sits flush with the value below it. */
 .ct-label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--sage-deep);font-weight:700}
+  color:var(--sage-deep);font-weight:700;margin-right:-.14em}
 .ct-value{font-family:"Lora",Georgia,serif;font-size:1.02rem;font-weight:600;
   overflow-wrap:anywhere}
-@media (max-width:620px){.contact-pair{grid-template-columns:1fr}}
+@media (max-width:620px){.contact-pair{grid-template-columns:1fr;justify-content:stretch}}
 .closing .btn-row{margin:.35rem 0 0;justify-content:center}
 
 /* ---------- FAQ accordion ---------- */
@@ -549,7 +580,7 @@ textarea{min-height:8rem}
   .hero-drift{min-height:0;display:block}
   .hero-drift{display:block;min-height:0}
   .hero-drift>*{grid-area:auto}
-  .hero-photo{width:auto;justify-self:auto;aspect-ratio:3/2;margin:0 0 1.5rem}
+  .hero-photo{width:auto;justify-self:auto;aspect-ratio:16/9;margin:0 0 1.5rem}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
   .hero-copy{width:auto;padding:1.75rem 0 0}
@@ -613,18 +644,57 @@ JS = """// Bless Your Paws Puppies - v2
     var i = 0;
     function show(n){
       i = (n + slides.length) % slides.length;
-      slides.forEach(function(s,k){ s.hidden = k !== i; });
+      slides.forEach(function(s,k){
+        s.hidden = false;                       // stacked, so fade rather than pop
+        s.classList.toggle('is-on', k === i);
+        s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+      });
       thumbs.forEach(function(t,k){ t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
       if (counter) counter.textContent = (i+1) + ' / ' + slides.length;
     }
-    car.querySelector('.cprev').addEventListener('click', function(){ show(i-1); });
-    car.querySelector('.cnext').addEventListener('click', function(){ show(i+1); });
-    thumbs.forEach(function(t,k){ t.addEventListener('click', function(){ show(k); }); });
+    // ---- autoplay with a crossfade, so a visitor sees the whole set without
+    // clicking. Pauses on hover, focus, and when the tab or page is out of view,
+    // and does not run at all for anyone who asked for reduced motion.
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var DWELL = 4000;
+    var timer = null, paused = false, inView = true;
+    function stop(){ if (timer){ clearInterval(timer); timer = null; } }
+    function canPlay(){
+      return !reduce.matches && !paused && inView && !document.hidden;
+    }
+    function start(){
+      if (timer || !canPlay()) return;
+      timer = setInterval(function(){ show(i+1); }, DWELL);
+    }
+    // one place decides, so every signal (hover, focus, tab switch, scrolling the
+    // carousel out of view) is re-evaluated the same way instead of racing
+    function sync(){ canPlay() ? start() : stop(); }
+    function restart(){ stop(); start(); }
+
+    car.querySelector('.cprev').addEventListener('click', function(){ show(i-1); restart(); });
+    car.querySelector('.cnext').addEventListener('click', function(){ show(i+1); restart(); });
+    thumbs.forEach(function(t,k){
+      t.addEventListener('click', function(){ show(k); restart(); }); });
     car.addEventListener('keydown', function(e){
-      if (e.key === 'ArrowLeft') show(i-1);
-      if (e.key === 'ArrowRight') show(i+1);
+      if (e.key === 'ArrowLeft'){ show(i-1); restart(); }
+      if (e.key === 'ArrowRight'){ show(i+1); restart(); }
     });
+    ['mouseenter','focusin'].forEach(function(ev){
+      car.addEventListener(ev, function(){ paused = true; sync(); }); });
+    ['mouseleave','focusout'].forEach(function(ev){
+      car.addEventListener(ev, function(){ paused = false; sync(); }); });
+    document.addEventListener('visibilitychange', sync);
+    reduce.addEventListener('change', sync);
+
     show(0);
+    // only cycle while the carousel is actually on screen
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver(function(entries){
+        inView = entries[0].isIntersecting;
+        sync();
+      }, { threshold: 0.35 }).observe(car);
+    }
+    sync();
   });
 
   // ---- guard: payment links stay friendly until the real Stripe links exist
@@ -671,30 +741,31 @@ JS = """// Bless Your Paws Puppies - v2
         x.classList.toggle('cur', x.getAttribute(attr) === 'all');
       });
     }
-    document.querySelectorAll('.filter-row').forEach(function(row){
-      var isPup = row.hasAttribute('data-pupfilter');
-      row.querySelectorAll('button').forEach(function(b){
-        b.addEventListener('click', function(){
-          row.querySelectorAll('button').forEach(function(x){ x.classList.remove('cur'); });
-          b.classList.add('cur');
-          if (isPup){
-            fstate.pup = b.getAttribute('data-pup');
-            // choosing one puppy clears the litter narrowing, so the pick always resolves
-            if (fstate.pup !== 'all'){
-              fstate.line = 'all';
-              reset('.filter-row:not([data-pupfilter]) button', 'data-line');
-            }
-          } else {
-            fstate.line = b.getAttribute('data-line');
-            if (fstate.line !== 'all'){
-              fstate.pup = 'all';
-              reset('.filter-row[data-pupfilter] button', 'data-pup');
-            }
-          }
-          applyFilters();
-        });
+    var pupSel = document.getElementById('pup-select');
+    document.querySelectorAll('.filter-row button').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.querySelectorAll('.filter-row button').forEach(function(x){
+          x.classList.remove('cur'); });
+        b.classList.add('cur');
+        fstate.line = b.getAttribute('data-line');
+        // a litter choice clears the puppy dropdown, so the two never fight
+        if (pupSel){ pupSel.value = 'all'; pupSel.parentElement.classList.remove('on'); }
+        fstate.pup = 'all';
+        applyFilters();
       });
     });
+    if (pupSel){
+      pupSel.addEventListener('change', function(){
+        fstate.pup = pupSel.value;
+        pupSel.parentElement.classList.toggle('on', pupSel.value !== 'all');
+        // and a puppy choice clears the litter buttons back to All
+        if (pupSel.value !== 'all'){
+          fstate.line = 'all';
+          reset('.filter-row button', 'data-line');
+        }
+        applyFilters();
+      });
+    }
     applyFilters();
   }
 
@@ -1347,7 +1418,7 @@ def build_pages():
 
 <section class="band-pink band-tight"><div class="wrap">
   <div class="grid-2 narrow-right">
-    {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our health-tested Doberman dam')}
+    {img_tag('griffin-01', cls='framed', alt='Griffin, a black and rust Doberman Pinscher puppy')}
     <div>
       <div class="col-title">
         <p class="eyebrow">Reading a genetic panel</p>
@@ -1653,7 +1724,7 @@ def build_pages():
             items.append((f"{s}-{i:02d}", n, "doberman", s))
     gal = "\n".join(f'<a data-line="{line}" data-pup="{slug}" href="puppy-{slug}.html">'
                     f'{img_tag(stem, alt=name)}</a>' for stem, name, line, slug in items)
-    pup_btns = "\n".join(f'      <button data-pup="{sl}">{nm}</button>'
+    pup_opts = "\n".join(f'        <option value="{sl}">{nm}</option>'
                          for sl, nm, *_ in list(MUNCHKINS) + list(DOBERMANS))
     page("gallery.html", "Photo Gallery | Bless Your Paws Puppies",
       "Every photo of our Munchkin Bernedoodle and Doberman Pinscher puppies.",
@@ -1662,20 +1733,17 @@ def build_pages():
   <h1>The photo album</h1>
   <p class="lede">Every photo of the puppies who are with us right now. Click any
     photo to meet that puppy.</p>
-  <div class="filter-group" style="margin-top:1.5rem">
-    <p class="filter-label">By litter</p>
-    <div class="filter-row">
-      <button class="cur" data-line="all">All photos</button>
-      <button data-line="munchkin">Munchkin Bernedoodles</button>
-      <button data-line="doberman">Dobermans</button>
-    </div>
-  </div>
-  <div class="filter-group">
-    <p class="filter-label">By puppy</p>
-    <div class="filter-row" data-pupfilter>
-      <button class="cur" data-pup="all">Every puppy</button>
-{pup_btns}
-    </div>
+  <div class="filter-row" style="margin-top:1.5rem">
+    <button class="cur" data-line="all">All photos</button>
+    <button data-line="munchkin">Munchkin Bernedoodles</button>
+    <button data-line="doberman">Dobermans</button>
+    <label class="filter-select">
+      <span class="visually-hidden">Filter by puppy</span>
+      <select id="pup-select">
+        <option value="all">By puppy</option>
+{pup_opts}
+      </select>
+    </label>
   </div>
   <p class="fine" id="gal-count" aria-live="polite" style="margin:.25rem 0 1.25rem"></p>
   <div class="gal-grid">{gal}</div>

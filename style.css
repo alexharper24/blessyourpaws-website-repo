@@ -93,9 +93,13 @@ a{color:var(--forest)}
    fixed rem cap broke the drift at wide viewports: the photo pinned right while the
    copy stayed in the centred wrap, and the two separated. 160vh at 3:2 keeps the
    height near a viewport so it cannot run away vertically either. */
+/* 16:9 rather than the source 3:2. Cover does crop the IMAGE by 16% of its height,
+   but the height it loses is blanket and background, not the puppy: checked against
+   the source, she stays whole at object-position 50% 40%. That buys a hero roughly
+   a sixth shorter at the same width, with the fade intact. */
 .hero-photo{justify-self:end;align-self:center;
-  width:min(74%,160vh);aspect-ratio:3/2;z-index:0;pointer-events:none}
-.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 34%;
+  width:min(74%,178vh);aspect-ratio:16/9;z-index:0;pointer-events:none}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
@@ -268,7 +272,16 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
-.frame img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.frame img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+/* stacked slides, crossfaded. the first keeps position:relative so the frame still
+   derives its height from a real image rather than collapsing. */
+.frame img{position:absolute;inset:0;height:100%;opacity:0;
+  transition:opacity .7s ease-in-out}
+.frame img:first-of-type{position:relative}
+.frame img.is-on{opacity:1;z-index:1}
+@media (prefers-reduced-motion: reduce){
+  .frame img{transition:none}
+}
 .carousel{display:flex;flex-direction:column}
 .cnav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;
   border-radius:50%;border:1.5px solid var(--forest);background:rgba(253,249,249,.92);
@@ -290,10 +303,24 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
   overflow:hidden}
 .gal-grid a:hover{border-color:var(--forest)}
 .gal-grid img{aspect-ratio:1/1;object-fit:cover}
-.filter-group{margin-bottom:1rem}
-.filter-label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--sage-deep);font-weight:700;margin:0 0 .5rem}
-.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem}
+.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem;
+  align-items:stretch}
+/* the select is styled to match the buttons beside it exactly, so the row reads as
+   one control group rather than a dropdown bolted on */
+.filter-select{position:relative;display:inline-flex}
+.filter-select select{font:inherit;font-size:.94rem;padding:.5rem 2.4rem .5rem 1.1rem;
+  border:1.5px solid var(--forest);background:none;border-radius:3px;
+  color:var(--forest);min-height:44px;cursor:pointer;appearance:none;
+  -webkit-appearance:none}
+.filter-select::after{content:"";position:absolute;right:1rem;top:50%;
+  width:8px;height:8px;margin-top:-6px;pointer-events:none;
+  border-right:2px solid var(--forest);border-bottom:2px solid var(--forest);
+  transform:rotate(45deg)}
+.filter-select select:focus-visible{outline:3px solid var(--sage);outline-offset:2px}
+.filter-select.on select{background:var(--forest);color:var(--paper)}
+.filter-select.on::after{border-color:var(--paper)}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap}
 .filter-row button{font:inherit;font-size:.94rem;padding:.5rem 1.1rem;cursor:pointer;
   border:1.5px solid var(--forest);background:none;border-radius:3px;
   color:var(--forest);min-height:44px}
@@ -414,17 +441,21 @@ textarea{min-height:8rem}
 .closing h2{margin:0}
 .closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0;
   max-width:44ch}
-.contact-pair{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;width:100%;
-  margin:.35rem 0 .25rem}
+/* auto columns, centred: equal 1fr columns left dead space beside the shorter
+   value, which read as a stray gap */
+.contact-pair{display:grid;grid-template-columns:repeat(2,auto);gap:.85rem;
+  justify-content:center;margin:.35rem 0 .25rem}
 .contact-tile{display:flex;flex-direction:column;gap:.2rem;text-decoration:none;
   background:var(--paper);border:1.5px solid var(--rule);border-radius:5px;
   padding:.9rem 1.1rem;text-align:left;min-height:44px}
 .contact-tile:hover{border-color:var(--forest)}
+/* letter-spacing adds a trailing gap after the final character. the negative
+   margin removes it so the label sits flush with the value below it. */
 .ct-label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--sage-deep);font-weight:700}
+  color:var(--sage-deep);font-weight:700;margin-right:-.14em}
 .ct-value{font-family:"Lora",Georgia,serif;font-size:1.02rem;font-weight:600;
   overflow-wrap:anywhere}
-@media (max-width:620px){.contact-pair{grid-template-columns:1fr}}
+@media (max-width:620px){.contact-pair{grid-template-columns:1fr;justify-content:stretch}}
 .closing .btn-row{margin:.35rem 0 0;justify-content:center}
 
 /* ---------- FAQ accordion ---------- */
@@ -488,7 +519,7 @@ textarea{min-height:8rem}
   .hero-drift{min-height:0;display:block}
   .hero-drift{display:block;min-height:0}
   .hero-drift>*{grid-area:auto}
-  .hero-photo{width:auto;justify-self:auto;aspect-ratio:3/2;margin:0 0 1.5rem}
+  .hero-photo{width:auto;justify-self:auto;aspect-ratio:16/9;margin:0 0 1.5rem}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
   .hero-copy{width:auto;padding:1.75rem 0 0}

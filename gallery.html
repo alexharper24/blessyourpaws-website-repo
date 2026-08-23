@@ -13,13 +13,13 @@
 <meta property="og:description" content="Every photo of our Munchkin Bernedoodle and Doberman Pinscher puppies.">
 <meta property="og:image" content="https://alexharper24.github.io/blessyourpaws-website-repo/img/og-card.png">
 <meta property="og:type" content="website">
-<link rel="icon" href="favicon.ico?v=9" sizes="any">
-<link rel="icon" href="img/favicon.png?v=9" type="image/png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=9">
+<link rel="icon" href="favicon.ico?v=10" sizes="any">
+<link rel="icon" href="img/favicon.png?v=10" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..600&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 <header class="site-head"><div class="wrap head-row">
@@ -45,29 +45,26 @@
   <h1>The photo album</h1>
   <p class="lede">Every photo of the puppies who are with us right now. Click any
     photo to meet that puppy.</p>
-  <div class="filter-group" style="margin-top:1.5rem">
-    <p class="filter-label">By litter</p>
-    <div class="filter-row">
-      <button class="cur" data-line="all">All photos</button>
-      <button data-line="munchkin">Munchkin Bernedoodles</button>
-      <button data-line="doberman">Dobermans</button>
-    </div>
-  </div>
-  <div class="filter-group">
-    <p class="filter-label">By puppy</p>
-    <div class="filter-row" data-pupfilter>
-      <button class="cur" data-pup="all">Every puppy</button>
-      <button data-pup="joshua">Joshua</button>
-      <button data-pup="eden">Eden</button>
-      <button data-pup="havilah">Havilah</button>
-      <button data-pup="jordan">Jordan</button>
-      <button data-pup="caleb">Caleb</button>
-      <button data-pup="shiloh">Shiloh</button>
-      <button data-pup="jericho">Jericho</button>
-      <button data-pup="elowen">Elowen</button>
-      <button data-pup="malcolm">Malcolm</button>
-      <button data-pup="griffin">Griffin</button>
-    </div>
+  <div class="filter-row" style="margin-top:1.5rem">
+    <button class="cur" data-line="all">All photos</button>
+    <button data-line="munchkin">Munchkin Bernedoodles</button>
+    <button data-line="doberman">Dobermans</button>
+    <label class="filter-select">
+      <span class="visually-hidden">Filter by puppy</span>
+      <select id="pup-select">
+        <option value="all">By puppy</option>
+        <option value="joshua">Joshua</option>
+        <option value="eden">Eden</option>
+        <option value="havilah">Havilah</option>
+        <option value="jordan">Jordan</option>
+        <option value="caleb">Caleb</option>
+        <option value="shiloh">Shiloh</option>
+        <option value="jericho">Jericho</option>
+        <option value="elowen">Elowen</option>
+        <option value="malcolm">Malcolm</option>
+        <option value="griffin">Griffin</option>
+      </select>
+    </label>
   </div>
   <p class="fine" id="gal-count" aria-live="polite" style="margin:.25rem 0 1.25rem"></p>
   <div class="gal-grid"><a data-line="munchkin" data-pup="joshua" href="puppy-joshua.html"><img srcset="img/r/joshua-01-320.webp 320w, img/r/joshua-01-640.webp 640w, img/r/joshua-01-1000.webp 1000w, img/r/joshua-01-1600.webp 1600w" sizes="(max-width:900px) 94vw, 45vw" src="img/puppies/joshua-01.jpg" alt="Joshua" loading="lazy"></a>
@@ -187,6 +184,6 @@
     <span><a href="privacy-policy.html">Privacy</a></span>
   </div>
 </div></footer>
-<script src="main.js?v=9"></script>
+<script src="main.js?v=10"></script>
 </body>
 </html>
