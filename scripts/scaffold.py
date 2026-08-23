@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 11
+V = 12
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -435,7 +435,24 @@ form{display:flex;flex-direction:column;gap:1rem;max-width:36rem}
 .formcard .field{display:flex;flex-direction:column;gap:.3rem}
 .formcard .facts{margin-bottom:.75rem}
 /* a column that stacks a card above a photo needs its own rhythm */
-.grid-2>div>.formcard+.framed,.grid-2>div>.formcard+picture{margin-top:1.25rem}
+.grid-2>div>.formcard+.framed,.grid-2>div>.formcard+picture,
+.contact-grid>div>.formcard+.framed,.contact-grid>div>.formcard+picture{margin-top:1.25rem}
+
+/* contact: two explicit rows so the right column starts level with the lede rather
+   than with the page title above it */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;
+  gap:0 clamp(1.5rem,3vw,3rem);align-items:start}
+.cg-head{grid-column:1;grid-row:1;margin-bottom:1.25rem}
+.cg-gap{grid-column:2;grid-row:1}
+.contact-grid>div:nth-of-type(3){grid-column:1;grid-row:2}
+.contact-grid>div:nth-of-type(4){grid-column:2;grid-row:2}
+@media (max-width:900px){
+  .contact-grid{grid-template-columns:1fr;gap:0}
+  .cg-gap{display:none}
+  .contact-grid>div:nth-of-type(3),.contact-grid>div:nth-of-type(4){
+    grid-column:1;grid-row:auto}
+  .contact-grid>div:nth-of-type(4){margin-top:1.5rem}
+}
 .formcard .facts li:last-child{border-bottom:none}
 .formcard button{margin-top:.4rem;justify-content:center}
 label{font-size:.9rem;font-weight:700}
@@ -1630,15 +1647,16 @@ def build_pages():
     page("contact.html", "Contact | Bless Your Paws Puppies",
       "Ask about an available puppy or plan a visit. Call or text Hope, email us, or send the inquiry form.",
       f"""<section><div class="wrap">
-  <div class="grid-2" style="align-items:start">
+  <div class="contact-grid">
+    <div class="cg-head">
+      <p class="eyebrow">Contact</p>
+      <h1 style="margin-bottom:0">Say hello</h1>
+    </div>
+    <div class="cg-gap" aria-hidden="true"></div>
     <div>
-      <div class="col-title">
-        <p class="eyebrow">Contact</p>
-        <h1>Say hello</h1>
-        <p class="lede" style="margin:0">The fastest way to reach us is a call or a
-          text. Tell us which puppy caught your eye and a little about your family,
-          and we will get right back to you.</p>
-      </div>
+      <p class="lede" style="margin:0 0 1.25rem">The fastest way to reach us is a call
+        or a text. Tell us which puppy caught your eye and a little about your family,
+        and we will get right back to you.</p>
       <div class="formcard">
         <h2 style="margin-top:0">Send an inquiry</h2>
         <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
