@@ -13,6 +13,7 @@
       nav.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       document.body.style.overflow = open ? 'hidden' : '';
+      document.body.classList.toggle('nav-open', open);
     }
     toggle.addEventListener('click', function(){ setOpen(!nav.classList.contains('open')); });
     close.addEventListener('click', function(){ setOpen(false); });
@@ -159,10 +160,14 @@
   }
 
   // ---- let's chat launcher, on every page
+  /* a page that already carries the inquiry form does not need a launcher for it,
+     and on a phone the fixed button lands squarely on top of a form field. */
+  if (!document.querySelector('form[data-guard]')) {
   var fab = document.createElement('button');
   fab.className = 'chat-fab';
   fab.setAttribute('aria-expanded','false');
-  fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Let\u2019s Chat';
+  fab.setAttribute('aria-label', 'Chat with us');
+  fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="fab-label">Let\u2019s Chat</span>';
   var panel = document.createElement('div');
   panel.className = 'chat-panel';
   panel.innerHTML = '<h3>Talk puppies with us</h3>'
@@ -181,4 +186,5 @@
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape'){ panel.classList.remove('open'); fab.setAttribute('aria-expanded','false'); }
   });
+  }
 })();

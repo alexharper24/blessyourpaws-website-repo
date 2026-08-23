@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 14
+V = 15
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -182,7 +182,7 @@ a{color:var(--forest)}
 
 .hero-split{display:grid;grid-template-columns:.68fr 1.32fr;gap:clamp(2rem,4vw,4rem);
   align-items:center}
-.framed{width:100%;border-radius:6px;border:1.5px solid var(--forest);
+.framed{width:100%;max-width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
 /* section imagery: give photos real presence, they are the product */
@@ -206,6 +206,7 @@ a{color:var(--forest)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
+.btn-row>.btn{text-align:center}
 /* a page title living inside the left column of a feature row, so the headline sits
    beside the photo rather than stacked above the whole row */
 .col-title{margin-bottom:1.25rem}
@@ -261,6 +262,7 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 @media (max-width:699px){
   .pgrid,.pgrid.cols-3,.pgrid.cols-4,.pgrid.cols-7{grid-template-columns:1fr}
 }
+.grid-2>*{min-width:0}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
@@ -313,8 +315,13 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
 .facts{list-style:none;margin:0 0 1.25rem;padding:0;border-top:1px solid var(--rule)}
 .facts li{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;
   border-bottom:1px solid var(--rule);font-size:.97rem}
+/* flex and grid children default to min-width:auto, so an unbreakable value with no
+   break opportunity in it sets the min-content width of whatever column it sits in.
+   The email address did exactly that and pushed the contact page 48px wider than a
+   320px screen, dragging the photo beside it out with the column. */
+.facts li{min-width:0}
 .facts .k{color:var(--sage-deep)}
-.facts .v{text-align:right;font-weight:700}
+.facts .v{text-align:right;font-weight:700;min-width:0;overflow-wrap:anywhere}
 .checklist{list-style:none;margin:0;padding:0}
 .checklist li{padding:.4rem 0 .4rem 1.7rem;position:relative;font-size:.97rem}
 .checklist li::before{content:"";position:absolute;left:0;top:.8em;width:11px;
@@ -624,7 +631,48 @@ textarea{min-height:8rem}
   .section-head{flex-direction:column;align-items:flex-start;gap:1rem}
   .cthumbs button{width:64px;height:64px}
   .facts li{min-height:44px}
-  .chat-fab{right:12px;bottom:12px}
+
+  /* ---- the compound-selector trap this repo's CLAUDE.md already warns about, hit
+     anyway. `.grid-2` above is specificity (0,1,0); `.grid-2.narrow-left` is (0,2,0),
+     so the two narrow variants kept their desktop columns on a phone and squeezed
+     the copy into a third of the screen on eight pages. Name every variant. */
+  .grid-2.narrow-left,.grid-2.narrow-right{grid-template-columns:1fr}
+  .parent-grid.row-4{grid-template-columns:1fr}
+
+  /* ---- call to action rows. flex-grow on a wrapping row does both halves of the
+     rule: buttons that fit sit side by side, a button that wraps fills its line. */
+  .btn-row,.pay-row{gap:.6rem}
+  .btn-row>.btn,.pay-row>.btn{flex:1 1 auto;justify-content:center}
+  /* section-cta turns to a column, so growth would go vertical. stretch instead. */
+  .section-cta{flex-direction:column;align-items:stretch;text-align:center;gap:.85rem}
+  .section-cta>.btn{justify-content:center}
+
+  /* ---- share row: five icons plus a label wrapped to two lines and left the last
+     icon orphaned. Label on its own row, icons in five equal columns, fits at 390. */
+  .share-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;
+    align-items:center}
+  .share-lbl{grid-column:1 / -1;margin-bottom:.1rem}
+  .share-row a{width:auto;min-width:0}
+
+  /* ---- the chat launcher measured 147px, 38% of the screen, and sat on top of
+     real content including a form field on the waitlist page. Icon only here. */
+  .chat-fab{right:12px;bottom:12px;padding:0;width:54px;height:54px;
+    border-radius:50%;justify-content:center;gap:0}
+  .chat-fab .fab-label{display:none}
+  /* z-index 60 put it above the z-index 50 nav overlay, so it floated over the
+     open menu */
+  body.nav-open .chat-fab{display:none}
+  /* and it must not come to rest on the last line of a page */
+  main{padding-bottom:4.5rem}
+
+  /* ---- a slimmer bar gives a phone back some screen */
+  .head-row{min-height:68px}
+  .brand img{height:52px}
+}
+@media (max-width:400px){
+  /* below this a key beside its value leaves each about 130px, so stack them */
+  .facts li{flex-direction:column;gap:.15rem}
+  .facts .v{text-align:left}
 }
 @media (max-width:900px){
   .hero{overflow:visible}
@@ -646,6 +694,7 @@ JS = """// Bless Your Paws Puppies - v2
       nav.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       document.body.style.overflow = open ? 'hidden' : '';
+      document.body.classList.toggle('nav-open', open);
     }
     toggle.addEventListener('click', function(){ setOpen(!nav.classList.contains('open')); });
     close.addEventListener('click', function(){ setOpen(false); });
@@ -792,10 +841,14 @@ JS = """// Bless Your Paws Puppies - v2
   }
 
   // ---- let's chat launcher, on every page
+  /* a page that already carries the inquiry form does not need a launcher for it,
+     and on a phone the fixed button lands squarely on top of a form field. */
+  if (!document.querySelector('form[data-guard]')) {
   var fab = document.createElement('button');
   fab.className = 'chat-fab';
   fab.setAttribute('aria-expanded','false');
-  fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Let\\u2019s Chat';
+  fab.setAttribute('aria-label', 'Chat with us');
+  fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="fab-label">Let\\u2019s Chat</span>';
   var panel = document.createElement('div');
   panel.className = 'chat-panel';
   panel.innerHTML = '<h3>Talk puppies with us</h3>'
@@ -814,6 +867,7 @@ JS = """// Bless Your Paws Puppies - v2
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape'){ panel.classList.remove('open'); fab.setAttribute('aria-expanded','false'); }
   });
+  }
 })();
 """
 JS = (JS.replace("__PHONE_HREF__", PHONE_HREF)
