@@ -165,7 +165,12 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       moving DNS; enable Enforce HTTPS after the cert issues.
 - [ ] Publish in **draft mode** (noindex on every page + closed robots.txt) so it is
       shareable before launch.
-- [ ] GitHub repo + first push.
+- [x] **Published 2026-08-22** to
+      https://github.com/alexharper24/blessyourpaws-website-repo
+      Live preview: **https://alexharper24.github.io/blessyourpaws-website-repo/**
+      Pages serves from `main` / root, HTTPS enforced. Still in **draft mode**
+      (noindex on all 26 pages + `robots.txt` closed), so the link is shareable but
+      not indexable.
 - [ ] Google Business Profile + Search Console after launch.
 - [ ] Phase 2 only: Cloudflare Worker + D1 admin, two logins, photo upload, and the
       **Stripe webhook that auto-marks a puppy reserved when a deposit clears**.
