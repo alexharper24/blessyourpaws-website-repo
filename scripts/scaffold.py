@@ -150,8 +150,12 @@ a{color:var(--forest)}
    .hero-copy, so targeting .hero-copy left the .wrap auto-placed into row 2 and
    stacked the copy underneath the photo. */
 .hero-drift>*{grid-area:1/1}
+/* width stays proportional so the photo always reaches back behind the copy. a
+   fixed rem cap broke the drift at wide viewports: the photo pinned right while the
+   copy stayed in the centred wrap, and the two separated. 160vh at 3:2 keeps the
+   height near a viewport so it cannot run away vertically either. */
 .hero-photo{justify-self:end;align-self:center;
-  width:min(74%,58rem);aspect-ratio:3/2;z-index:0;pointer-events:none}
+  width:min(74%,160vh);aspect-ratio:3/2;z-index:0;pointer-events:none}
 .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 34%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
@@ -183,7 +187,10 @@ a{color:var(--forest)}
 /* .78/1.22 puts a feature photo near 780px in a 1339 wrap. .62/1.38 gave 894px,
    which overwhelmed the paragraph beside it. */
 .grid-2.narrow-left{grid-template-columns:.78fr 1.22fr}
-.grid-2.narrow-right{grid-template-columns:.8fr 1.2fr}
+/* narrow-RIGHT means the right column is the narrow one, so the photo-left rows
+   get the wide half. It had been left identical to narrow-left, which is why the
+   inverted rows put their photo in the small column. */
+.grid-2.narrow-right{grid-template-columns:1.22fr .78fr}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
   font-size:1rem;min-height:48px}
@@ -1339,7 +1346,7 @@ def build_pages():
 </div></section>
 
 <section class="band-pink band-tight"><div class="wrap">
-  <div class="grid-2 narrow-left">
+  <div class="grid-2 narrow-right">
     {img_tag('mira-01', folder='dogs', cls='framed', alt='Mira, our health-tested Doberman dam')}
     <div>
       <div class="col-title">
@@ -1409,7 +1416,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise"><div class="wrap grid-2 narrow-left">
+<section class="band-raise"><div class="wrap grid-2 narrow-right">
   {img_tag('joshua-02', cls='framed', alt='A Munchkin Bernedoodle puppy in the grass', sizes='(max-width:900px) 94vw, 56vw')}
   <div>
     <h2>Why we do it this way</h2>
