@@ -228,7 +228,11 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
    `.hic` at (0,1,0) loses and every item was vertically centred in its row, which is
    what pushed a heading away from its own paragraph. Compound selector to win. */
 .grid-2.hic{align-items:start}
-.hic>.hic-head,.hic>.hic-copy,.hic>.hic-photo{align-self:start}
+/* the copy blocks sit at the top of their own content-sized rows; the photo centres
+   itself across the full span, which is what matters when the TEXT is the taller side
+   and the spacer rows have collapsed to zero */
+.hic>.hic-head,.hic>.hic-copy{align-self:start}
+.hic>.hic-photo{align-self:center}
 @media (min-width:901px){
   /* Four rows: a flexible spacer, the heading, the copy, another flexible spacer. The
      two 1fr rows split the leftover height of the spanning photo evenly, which centres
@@ -510,13 +514,16 @@ textarea{min-height:8rem}
 .health.no-qr{grid-template-columns:1fr}
 
 /* ---------- three-column centred list ---------- */
-.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.25rem,2.5vw,2.5rem);
-  max-width:64rem;margin:0 auto}
+/* A centred wrapping row rather than three fixed columns. It was named for a count and
+   then held two, which left a hole on the right. Flex centres whatever is actually there.
+   */
+.tri{display:flex;flex-wrap:wrap;justify-content:center;
+  gap:clamp(1.25rem,2.5vw,2.5rem);max-width:64rem;margin:0 auto}
 .tri>div{background:var(--card,#fff);border:1px solid var(--rule);border-radius:5px;
-  padding:1.35rem 1.5rem}
+  padding:1.35rem 1.5rem;flex:1 1 16rem;max-width:22rem}
 .tri h3{margin:0 0 .75rem;font-size:1.05rem}
 .tri .checklist li{font-size:.93rem}
-@media (max-width:900px){.tri{grid-template-columns:1fr;max-width:34rem}}
+@media (max-width:900px){.tri{max-width:34rem}.tri>div{flex:1 1 100%;max-width:none}}
 
 /* ---------- closing call to action ---------- */
 .closing{background:var(--paper-raise);border-top:1px solid var(--rule);

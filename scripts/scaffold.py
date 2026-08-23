@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 24
+V = 25
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -310,7 +310,11 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
    `.hic` at (0,1,0) loses and every item was vertically centred in its row, which is
    what pushed a heading away from its own paragraph. Compound selector to win. */
 .grid-2.hic{align-items:start}
-.hic>.hic-head,.hic>.hic-copy,.hic>.hic-photo{align-self:start}
+/* the copy blocks sit at the top of their own content-sized rows; the photo centres
+   itself across the full span, which is what matters when the TEXT is the taller side
+   and the spacer rows have collapsed to zero */
+.hic>.hic-head,.hic>.hic-copy{align-self:start}
+.hic>.hic-photo{align-self:center}
 @media (min-width:901px){
   /* Four rows: a flexible spacer, the heading, the copy, another flexible spacer. The
      two 1fr rows split the leftover height of the spanning photo evenly, which centres
@@ -592,13 +596,16 @@ textarea{min-height:8rem}
 .health.no-qr{grid-template-columns:1fr}
 
 /* ---------- three-column centred list ---------- */
-.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.25rem,2.5vw,2.5rem);
-  max-width:64rem;margin:0 auto}
+/* A centred wrapping row rather than three fixed columns. It was named for a count and
+   then held two, which left a hole on the right. Flex centres whatever is actually there.
+   */
+.tri{display:flex;flex-wrap:wrap;justify-content:center;
+  gap:clamp(1.25rem,2.5vw,2.5rem);max-width:64rem;margin:0 auto}
 .tri>div{background:var(--card,#fff);border:1px solid var(--rule);border-radius:5px;
-  padding:1.35rem 1.5rem}
+  padding:1.35rem 1.5rem;flex:1 1 16rem;max-width:22rem}
 .tri h3{margin:0 0 .75rem;font-size:1.05rem}
 .tri .checklist li{font-size:.93rem}
-@media (max-width:900px){.tri{grid-template-columns:1fr;max-width:34rem}}
+@media (max-width:900px){.tri{max-width:34rem}.tri>div{flex:1 1 100%;max-width:none}}
 
 /* ---------- closing call to action ---------- */
 .closing{background:var(--paper-raise);border-top:1px solid var(--rule);
@@ -1703,7 +1710,7 @@ def build_pages():
 </div></section>
 
 {dob_carrier_section_html()}
-<section class="band-pink band-tight"><div class="wrap grid-2 narrow-right hic hic-flip">
+<section class="band-pink band-tight"><div class="wrap grid-2 narrow-left hic hic-flip">
     <div class="col-title hic-head">
       <p class="eyebrow">Reading Troy&rsquo;s panel</p>
       <h2>The one thing her test found</h2>
@@ -1824,6 +1831,19 @@ def build_pages():
     D_ONLY_KIT = [k for k in D_KIT if k not in M_KIT]
     dob_kit_col = dob('<div><h3>Doberman Pinschers</h3><ul class="checklist">'
                       + ''.join(f'<li>{i}</li>' for i in D_ONLY_KIT) + '</ul></div>')
+    # With two litters the useful split is shared versus breed-specific. With one there is
+    # nothing to contrast, so it is a single list rather than two cards saying the same
+    # thing in two halves.
+    if SHOW_DOBERMANS:
+        kit_cards = ('<div><h3>Every puppy</h3><ul class="checklist">'
+                     + ''.join(f'<li>{i}</li>' for i in SHARED_KIT) + '</ul></div>'
+                     '<div><h3>Munchkin Bernedoodles</h3><ul class="checklist">'
+                     + (''.join(f'<li>{i}</li>' for i in M_ONLY_KIT)
+                        or '<li>The shared list above</li>') + '</ul></div>'
+                     + dob_kit_col)
+    else:
+        kit_cards = ('<div><h3>Every puppy goes home with</h3><ul class="checklist">'
+                     + ''.join(f'<li>{i}</li>' for i in M_KIT) + '</ul></div>')
 
     steps = [
       ("Say hello", "havilah-02",
@@ -1881,18 +1901,10 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <p class="eyebrow center">In the go-home bag</p>
   <h2 class="center">What comes home with your puppy</h2>
-  <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">Both litters
-    leave with their paperwork, their food, and something that smells like home.</p>
+  <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">{'Both litters leave' if SHOW_DOBERMANS else 'Every puppy leaves'}
+    with their paperwork, their food, and something that smells like home.</p>
   <div class="tri">
-    <div>
-      <h3>Every puppy</h3>
-      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in SHARED_KIT)}</ul>
-    </div>
-    <div>
-      <h3>Munchkin Bernedoodles</h3>
-      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in M_ONLY_KIT) or '<li>The shared list above</li>'}</ul>
-    </div>
-    {dob_kit_col}
+    {kit_cards}
   </div>
   <div class="section-cta">
     <p>{'Both litters come with a written health guarantee.' if SHOW_DOBERMANS else 'Every puppy comes with a written health guarantee.'}</p>
@@ -1966,18 +1978,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise" style="margin-bottom:0"><div class="wrap">
-  <h2 class="center">Who you would be coming to meet</h2>
-  <div class="grid-2" style="margin-top:2rem">
-    <div>
-      {img_tag('eden-01', cls='framed', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
-      <h3 style="margin-top:1rem">Munchkin Bernedoodles</h3>
-      <p class="fine">Small, soft, and lap-sized. Going home in September.
-        <span class="own-line"><a href="munchkin-bernedoodles.html">See the litter</a>.</span></p>
-    </div>
-    {dob_meet_card_html()}
-  </div>
-</div></section>""")
+""")
 
     page("waitlist.html", "Join the Waitlist | Bless Your Paws Puppies",
       "Hear about new litters before they are listed. Waitlist families get first pick.",
