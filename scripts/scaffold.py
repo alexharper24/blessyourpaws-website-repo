@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 10
+V = 11
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -124,7 +124,9 @@ a{color:var(--forest)}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   min-height:82px}
 .brand{display:flex;align-items:center;text-decoration:none;flex:none}
-.brand img{height:84px;width:auto}
+/* the primary lockup is 1617x532, so ~3:1. 76px tall puts it near 230px wide,
+   which fills the bar without crowding the nav. */
+.brand img{height:76px;width:auto;display:block}
 .nav{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;justify-content:flex-end}
 .nav a{text-decoration:none;padding:.5rem .6rem;border-radius:3px;font-size:.94rem;
   white-space:nowrap}
@@ -432,6 +434,8 @@ form{display:flex;flex-direction:column;gap:1rem;max-width:36rem}
 .formcard form{max-width:none;gap:.9rem}
 .formcard .field{display:flex;flex-direction:column;gap:.3rem}
 .formcard .facts{margin-bottom:.75rem}
+/* a column that stacks a card above a photo needs its own rhythm */
+.grid-2>div>.formcard+.framed,.grid-2>div>.formcard+picture{margin-top:1.25rem}
 .formcard .facts li:last-child{border-bottom:none}
 .formcard button{margin-top:.4rem;justify-content:center}
 label{font-size:.9rem;font-weight:700}
@@ -572,7 +576,7 @@ textarea{min-height:8rem}
 /* ---------- mobile ---------- */
 @media (max-width:1180px){
   .nav a{font-size:.86rem;padding:.5rem .42rem}
-  .brand img{height:68px}
+  .brand img{height:58px}
 }
 @media (max-width:900px){
   .dogpair{grid-template-columns:1fr}
@@ -820,8 +824,11 @@ NAV = """<nav class="nav" aria-label="Main">
 
 def header():
     return f"""<header class="site-head"><div class="wrap head-row">
-  <a class="brand" href="index.html">
-    <img src="img/brand/logo-horizontal-forest.png" alt="Bless Your Paws Puppies">
+  <a class="brand" href="index.html" aria-label="Bless Your Paws Puppies, home">
+    <img src="img/brand/logo-primary.png?v={V}"
+      srcset="img/brand/logo-primary-60.png 182w, img/brand/logo-primary-84.png 255w, img/brand/logo-primary-120.png 365w, img/brand/logo-primary-168.png 511w"
+      sizes="(max-width:900px) 200px, 255px"
+      alt="Bless Your Paws Puppies" width="1617" height="532" decoding="async">
   </a>
   <button class="nav-toggle" aria-expanded="false" aria-label="Open menu">Menu</button>
   {NAV}
@@ -1623,40 +1630,46 @@ def build_pages():
     page("contact.html", "Contact | Bless Your Paws Puppies",
       "Ask about an available puppy or plan a visit. Call or text Hope, email us, or send the inquiry form.",
       f"""<section><div class="wrap">
-  <p class="eyebrow">Contact</p>
-  <h1>Say hello</h1>
-  <p class="lede" style="max-width:70ch">The fastest way to reach us is a call or a
-    text. Tell us which puppy caught your eye and a little about your family, and we
-    will get right back to you.</p>
-  <div class="grid-2" style="margin-top:2rem;align-items:start">
-    <div class="formcard">
-      <h2 style="margin-top:0">How to reach us</h2>
-      <ul class="facts">
-        <li><span class="k">Hope, Munchkin Bernedoodles</span>
-          <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
-        <li><span class="k">Joy, Dobermans</span>
-          <span class="v">Number coming soon</span></li>
-        <li><span class="k">Email</span>
-          <span class="v"><a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
-        <li><span class="k">Where</span><span class="v">{AREA}</span></li>
-        <li><span class="k">Visits</span><span class="v">By appointment</span></li>
-      </ul>
-      <p class="fine">Our exact location is shared once your visit is scheduled.
-        Video calls work well for families further away.</p>
-      {img_tag('jordan-01', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
+  <div class="grid-2" style="align-items:start">
+    <div>
+      <div class="col-title">
+        <p class="eyebrow">Contact</p>
+        <h1>Say hello</h1>
+        <p class="lede" style="margin:0">The fastest way to reach us is a call or a
+          text. Tell us which puppy caught your eye and a little about your family,
+          and we will get right back to you.</p>
+      </div>
+      <div class="formcard">
+        <h2 style="margin-top:0">Send an inquiry</h2>
+        <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
+        {hp.format(i="c")}<div class="field"><label for="name">Your name</label><input id="name" name="name" required></div>
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+        <div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
+        <div class="field"><label for="message">Which puppy caught your eye, and a little about your family</label>
+          <textarea id="message" name="message" required></textarea></div>
+        <button class="btn btn-primary" type="submit">Send inquiry</button>
+        <p class="guard-msg">The form is almost ready. For now, call or text Hope at
+          <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.</p>
+        </form>
+      </div>
     </div>
-    <div class="formcard">
-      <h2 style="margin-top:0">Send an inquiry</h2>
-      <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
-      {hp.format(i="c")}<div class="field"><label for="name">Your name</label><input id="name" name="name" required></div>
-      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
-      <div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
-      <div class="field"><label for="message">Which puppy caught your eye, and a little about your family</label>
-        <textarea id="message" name="message" required></textarea></div>
-      <button class="btn btn-primary" type="submit">Send inquiry</button>
-      <p class="guard-msg">The form is almost ready. For now, call or text Hope at
-        <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.</p>
-      </form>
+    <div>
+      <div class="formcard">
+        <h2 style="margin-top:0">How to reach us</h2>
+        <ul class="facts">
+          <li><span class="k">Hope, Munchkin Bernedoodles</span>
+            <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
+          <li><span class="k">Joy, Dobermans</span>
+            <span class="v">Number coming soon</span></li>
+          <li><span class="k">Email</span>
+            <span class="v"><a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
+          <li><span class="k">Where</span><span class="v">{AREA}</span></li>
+          <li><span class="k">Visits</span><span class="v">By appointment</span></li>
+        </ul>
+        <p class="fine" style="margin-bottom:0">Our exact location is shared once your
+          visit is scheduled. Video calls work well for families further away.</p>
+      </div>
+      {img_tag('jordan-01', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
     </div>
   </div>
 </div></section>

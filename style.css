@@ -63,7 +63,9 @@ a{color:var(--forest)}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   min-height:82px}
 .brand{display:flex;align-items:center;text-decoration:none;flex:none}
-.brand img{height:84px;width:auto}
+/* the primary lockup is 1617x532, so ~3:1. 76px tall puts it near 230px wide,
+   which fills the bar without crowding the nav. */
+.brand img{height:76px;width:auto;display:block}
 .nav{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;justify-content:flex-end}
 .nav a{text-decoration:none;padding:.5rem .6rem;border-radius:3px;font-size:.94rem;
   white-space:nowrap}
@@ -371,6 +373,8 @@ form{display:flex;flex-direction:column;gap:1rem;max-width:36rem}
 .formcard form{max-width:none;gap:.9rem}
 .formcard .field{display:flex;flex-direction:column;gap:.3rem}
 .formcard .facts{margin-bottom:.75rem}
+/* a column that stacks a card above a photo needs its own rhythm */
+.grid-2>div>.formcard+.framed,.grid-2>div>.formcard+picture{margin-top:1.25rem}
 .formcard .facts li:last-child{border-bottom:none}
 .formcard button{margin-top:.4rem;justify-content:center}
 label{font-size:.9rem;font-weight:700}
@@ -511,7 +515,7 @@ textarea{min-height:8rem}
 /* ---------- mobile ---------- */
 @media (max-width:1180px){
   .nav a{font-size:.86rem;padding:.5rem .42rem}
-  .brand img{height:68px}
+  .brand img{height:58px}
 }
 @media (max-width:900px){
   .dogpair{grid-template-columns:1fr}
