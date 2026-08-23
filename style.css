@@ -63,7 +63,7 @@ a{color:var(--forest)}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   min-height:82px}
 .brand{display:flex;align-items:center;text-decoration:none;flex:none}
-/* the primary lockup is 1617x532, so ~3:1. 76px tall puts it near 230px wide,
+/* the primary lockup is 1596x474, so ~3.4:1. 76px tall puts it near 256px wide,
    which fills the bar without crowding the nav. */
 .brand img{height:76px;width:auto;display:block}
 .nav{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;justify-content:flex-end}

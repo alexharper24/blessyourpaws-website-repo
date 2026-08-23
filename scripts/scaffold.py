@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 13
+V = 14
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -124,7 +124,7 @@ a{color:var(--forest)}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   min-height:82px}
 .brand{display:flex;align-items:center;text-decoration:none;flex:none}
-/* the primary lockup is 1617x532, so ~3:1. 76px tall puts it near 230px wide,
+/* the primary lockup is 1596x474, so ~3.4:1. 76px tall puts it near 256px wide,
    which fills the bar without crowding the nav. */
 .brand img{height:76px;width:auto;display:block}
 .nav{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;justify-content:flex-end}
@@ -844,9 +844,9 @@ def header():
     return f"""<header class="site-head"><div class="wrap head-row">
   <a class="brand" href="index.html" aria-label="Bless Your Paws Puppies, home">
     <img src="img/brand/logo-primary.png?v={V}"
-      srcset="img/brand/logo-primary-60.png 182w, img/brand/logo-primary-84.png 255w, img/brand/logo-primary-120.png 365w, img/brand/logo-primary-168.png 511w"
-      sizes="(max-width:900px) 200px, 255px"
-      alt="Bless Your Paws Puppies" width="1617" height="532" decoding="async">
+      srcset="img/brand/logo-primary-60.png 202w, img/brand/logo-primary-84.png 283w, img/brand/logo-primary-120.png 404w, img/brand/logo-primary-168.png 566w"
+      sizes="(max-width:900px) 210px, 260px"
+      alt="Bless Your Paws Puppies" width="1596" height="474" decoding="async">
   </a>
   <button class="nav-toggle" aria-expanded="false" aria-label="Open menu">Menu</button>
   {NAV}
