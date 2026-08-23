@@ -97,11 +97,12 @@ a{color:var(--forest)}
    height near a viewport so it cannot run away vertically either. */
 /* 16:9 rather than the source 3:2. Cover does crop the IMAGE by 16% of its height,
    but the height it loses is blanket and background, not the puppy: checked against
-   the source, she stays whole at object-position 50% 40%. That buys a hero roughly
+   the source, she stays whole at object-position 50% 22%, which leaves real
+   headroom above her crown rather than grazing it. That buys a hero roughly
    a sixth shorter at the same width, with the fade intact. */
 .hero-photo{justify-self:end;align-self:center;
   width:min(74%,178vh);aspect-ratio:16/9;z-index:0;pointer-events:none}
-.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
