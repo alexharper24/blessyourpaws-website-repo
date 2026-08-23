@@ -210,6 +210,32 @@ button vertically instead; that one uses `align-items:stretch`.
 redundant next to the inquiry form, and at 390px the fixed button landed on top of a
 form field on the waitlist page.
 
+**Stacked sections read heading, photo, copy. Use `.hic`.** Left to auto-placement a
+two-column section stacks as heading-copy-photo or photo-heading-copy depending on which
+column happens to come first in the source, and both are wrong on a phone: the first
+buries the photo under a wall of text, the second opens with a photo of nothing in
+particular before the reader knows what they are looking at. Nine sections were wrong
+this way. The pattern is three children in source order, `.hic-head` / `.hic-photo` /
+`.hic-copy`, on a container with `.hic`, plus `.hic-flip` when the photo belongs in the
+first column on desktop. Mobile then needs no rules at all, because the source order IS
+the mobile order.
+
+**Scope desktop-only grid placement with `min-width`, never by undoing it below 900px.**
+This is the same specificity trap as the modifier classes above and it bit three times in
+one session. An undo rule like `.hic>*` is (0,1,0) and loses to `.hic>.hic-head` at
+(0,2,0); the `grid-column:2` that survives then creates an *implicit second track*, which
+takes the whole row width and leaves the text column at 0px. The failure looks like a
+collapsed layout, not like a specificity problem, which is what makes it expensive.
+
+**The hero photo's headroom is a property of the photograph, not the crop.** `havilah-01`
+has the puppy's crown 5.4% down the frame. Cropping can only ever reduce that, so
+`object-position` is pinned to `50% 0%` on desktop and mobile uses `aspect-ratio:3/2`,
+matching the source so nothing is cropped at all. Note that 5-6% is 38px on a 593px
+desktop hero but only 14px on a phone, so the same crop that reads as generous on a
+laptop reads as tight on a phone. The mobile fix that actually mattered was the 20px gap
+between the sticky header and the photo, which had been zero. More air than this needs a
+different photograph. Run the headroom measurement in the git history before picking one.
+
 **Measure a range, not one width.** 390px alone was clean while 320px overflowed and
 768px was fine. The audit that matters runs every page at 320 / 390 / 414 checking for
 horizontal overflow, uncollapsed multi-column grids, and CTA lines that do not fill

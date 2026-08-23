@@ -209,18 +209,29 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
   .pgrid,.pgrid.cols-3,.pgrid.cols-4,.pgrid.cols-7{grid-template-columns:1fr}
 }
 .grid-2>*{min-width:0}
-/* The about intro reads heading, photo, copy in the source, which is the order it
-   should stack in on a phone, so mobile needs no rules at all. The two-column
-   arrangement is scoped to desktop with min-width deliberately: placing it
-   unconditionally and then undoing it in the mobile block is what failed here, since
-   `.intro-split>*` loses to `.intro-split>.col-title` on specificity and the surviving
-   `grid-column:2` created an implicit second track that ate the whole row. Scope
-   desktop-only placement to desktop and there is nothing to override. */
-.intro-split{align-items:start}
+/* ---- heading, photo, copy -------------------------------------------------
+   A section stacked on a phone should read heading, then the photo, then the copy.
+   Left to auto-placement it reads either heading-copy-photo or photo-heading-copy
+   depending on which column comes first in the source, and both are wrong: the first
+   buries the photo under a wall of text, the second opens with a photo of nothing in
+   particular before you know what you are looking at.
+
+   So the source order IS heading, photo, copy, and mobile needs no rules at all. The
+   two-column desktop arrangement is scoped with min-width rather than set
+   unconditionally and undone below 900px. That is deliberate and it is the third time
+   this bit: an undo rule like `.hic>*` loses on specificity to `.hic>.hic-head`, and a
+   surviving `grid-column:2` then creates an implicit second track that eats the whole
+   row. Scope desktop-only placement to desktop and there is nothing to override.
+
+   Add `hic-flip` when the photo belongs in the first column instead of the second. */
+.hic{align-items:start}
 @media (min-width:901px){
-  .intro-split>.col-title{grid-column:1;grid-row:1}
-  .intro-split>.intro-copy{grid-column:1;grid-row:2}
-  .intro-split>.intro-photo{grid-column:2;grid-row:1 / span 2}
+  .hic>.hic-head{grid-column:1;grid-row:1}
+  .hic>.hic-copy{grid-column:1;grid-row:2}
+  .hic>.hic-photo{grid-column:2;grid-row:1 / span 2}
+  .hic-flip>.hic-head{grid-column:2;grid-row:1}
+  .hic-flip>.hic-copy{grid-column:2;grid-row:2}
+  .hic-flip>.hic-photo{grid-column:1;grid-row:1 / span 2}
 }
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
@@ -564,11 +575,17 @@ textarea{min-height:8rem}
 }
 @media (max-width:900px){
   .dogpair{grid-template-columns:1fr}
-  /* stack the hero: the drift only works when there is width to fade across */
-  .hero-drift{min-height:0;display:block}
+  /* stack the hero: the drift only works when there is width to fade across.
+     The photo was sitting flush against the sticky header with a zero gap, which read
+     as the puppy bumping the top edge of the page. */
+  .hero-drift{min-height:0;display:block;padding-top:1.25rem}
   .hero-drift{display:block;min-height:0}
   .hero-drift>*{grid-area:auto}
-  .hero-photo{width:auto;justify-self:auto;aspect-ratio:16/9;margin:0 0 1.5rem}
+  /* 3:2 on a phone rather than 16:9. It matches the source exactly, so nothing is
+     cropped at all and the full 5.4% of the photograph's own headroom survives, and
+     the taller box turns that percentage into more actual pixels: 250px of height
+     instead of 211px. It is the most this photograph can give at this width. */
+  .hero-photo{width:auto;justify-self:auto;aspect-ratio:3/2;margin:0 0 1.5rem}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
   .hero-copy{width:auto;padding:1.75rem 0 0}

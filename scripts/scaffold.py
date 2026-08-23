@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 15
+V = 16
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -270,18 +270,29 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
   .pgrid,.pgrid.cols-3,.pgrid.cols-4,.pgrid.cols-7{grid-template-columns:1fr}
 }
 .grid-2>*{min-width:0}
-/* The about intro reads heading, photo, copy in the source, which is the order it
-   should stack in on a phone, so mobile needs no rules at all. The two-column
-   arrangement is scoped to desktop with min-width deliberately: placing it
-   unconditionally and then undoing it in the mobile block is what failed here, since
-   `.intro-split>*` loses to `.intro-split>.col-title` on specificity and the surviving
-   `grid-column:2` created an implicit second track that ate the whole row. Scope
-   desktop-only placement to desktop and there is nothing to override. */
-.intro-split{align-items:start}
+/* ---- heading, photo, copy -------------------------------------------------
+   A section stacked on a phone should read heading, then the photo, then the copy.
+   Left to auto-placement it reads either heading-copy-photo or photo-heading-copy
+   depending on which column comes first in the source, and both are wrong: the first
+   buries the photo under a wall of text, the second opens with a photo of nothing in
+   particular before you know what you are looking at.
+
+   So the source order IS heading, photo, copy, and mobile needs no rules at all. The
+   two-column desktop arrangement is scoped with min-width rather than set
+   unconditionally and undone below 900px. That is deliberate and it is the third time
+   this bit: an undo rule like `.hic>*` loses on specificity to `.hic>.hic-head`, and a
+   surviving `grid-column:2` then creates an implicit second track that eats the whole
+   row. Scope desktop-only placement to desktop and there is nothing to override.
+
+   Add `hic-flip` when the photo belongs in the first column instead of the second. */
+.hic{align-items:start}
 @media (min-width:901px){
-  .intro-split>.col-title{grid-column:1;grid-row:1}
-  .intro-split>.intro-copy{grid-column:1;grid-row:2}
-  .intro-split>.intro-photo{grid-column:2;grid-row:1 / span 2}
+  .hic>.hic-head{grid-column:1;grid-row:1}
+  .hic>.hic-copy{grid-column:1;grid-row:2}
+  .hic>.hic-photo{grid-column:2;grid-row:1 / span 2}
+  .hic-flip>.hic-head{grid-column:2;grid-row:1}
+  .hic-flip>.hic-copy{grid-column:2;grid-row:2}
+  .hic-flip>.hic-photo{grid-column:1;grid-row:1 / span 2}
 }
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
@@ -625,11 +636,17 @@ textarea{min-height:8rem}
 }
 @media (max-width:900px){
   .dogpair{grid-template-columns:1fr}
-  /* stack the hero: the drift only works when there is width to fade across */
-  .hero-drift{min-height:0;display:block}
+  /* stack the hero: the drift only works when there is width to fade across.
+     The photo was sitting flush against the sticky header with a zero gap, which read
+     as the puppy bumping the top edge of the page. */
+  .hero-drift{min-height:0;display:block;padding-top:1.25rem}
   .hero-drift{display:block;min-height:0}
   .hero-drift>*{grid-area:auto}
-  .hero-photo{width:auto;justify-self:auto;aspect-ratio:16/9;margin:0 0 1.5rem}
+  /* 3:2 on a phone rather than 16:9. It matches the source exactly, so nothing is
+     cropped at all and the full 5.4% of the photograph's own headroom survives, and
+     the taller box turns that percentage into more actual pixels: 250px of height
+     instead of 211px. It is the most this photograph can give at this width. */
+  .hero-photo{width:auto;justify-self:auto;aspect-ratio:3/2;margin:0 0 1.5rem}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
   .hero-copy{width:auto;padding:1.75rem 0 0}
@@ -1194,10 +1211,13 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-forest"><div class="wrap grid-2">
-  <div>
+<section class="band-forest"><div class="wrap grid-2 hic">
+  <div class="hic-head">
     <p class="eyebrow">How they are raised</p>
     <h2>Socialized before they ever leave our arms</h2>
+  </div>
+  {img_tag('caleb-02', cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy')}
+  <div class="hic-copy">
     <p>Every puppy is raised in the home, not a kennel. They grow up with children,
       other dogs, and the everyday noise of family life: the doorbell, the TV, pots
       and pans, the vacuum. Early neurological stimulation starts in the first weeks,
@@ -1206,7 +1226,6 @@ def build_pages():
       of the food they know, and a toy that smells like home.
       <a href="process.html">See how reserving works</a>.</p>
   </div>
-  {img_tag('caleb-02', cls='framed', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy')}
 </div></section>
 
 <section><div class="wrap">
@@ -1383,26 +1402,26 @@ def build_pages():
     page("what-is-a-munchkin-bernedoodle.html", "What Is a Munchkin Bernedoodle? | Bless Your Paws Puppies",
       "A plain-language guide to the Munchkin Bernedoodle: the cross, the size, the coat, and the temperament, from a family that breeds them.",
       f"""<section><div class="wrap">
-  <div class="grid-2 narrow-left">
-    <div>
-      <div class="col-title">
-        <p class="eyebrow">Breed guide</p>
-        <h1>What is a Munchkin Bernedoodle?</h1>
-      </div>
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Breed guide</p>
+      <h1>What is a Munchkin Bernedoodle?</h1>
+    </div>
+    {img_tag('shiloh-01', cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False)}
+    <div class="hic-copy">
       <p class="lede">A Munchkin Bernedoodle is an intentionally small Bernedoodle cross.
       Ours come from a Mini Multi Gen Bernedoodle mom and an AKC Cavalier King Charles
       Spaniel dad, which brings the size down naturally and adds the Cavalier's
       famously gentle temperament.</p>
     </div>
-    {img_tag('shiloh-01', cls='framed', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False)}
   </div>
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <div class="grid-2 narrow-right">
-    {img_tag('troy-01', folder='dogs', cls='framed', alt='Troy, our 21 lb Mini Multi Gen Bernedoodle dam')}
-    <div>
-      <div class="col-title"><h2>Where the small size comes from</h2></div>
+  <div class="grid-2 narrow-right hic hic-flip">
+    <div class="col-title hic-head"><h2>Where the small size comes from</h2></div>
+    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 21 lb Mini Multi Gen Bernedoodle dam')}
+    <div class="hic-copy">
       <p>The name confuses people, so here is the honest version. "Munchkin"
         describes small overall size, not short legs. There is no dwarf gene
         involved. A Munchkin Bernedoodle is a normally proportioned little dog that
@@ -1433,16 +1452,16 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-forest"><div class="wrap grid-2 narrow-left">
-  <div>
-    <h2>Honest words about the coat</h2>
+<section class="band-forest"><div class="wrap grid-2 narrow-left hic">
+  <div class="hic-head"><h2>Honest words about the coat</h2></div>
+  {img_tag('havilah-03', cls='framed hic-photo', alt='Close view of a Munchkin Bernedoodle puppy coat')}
+  <div class="hic-copy">
     <p>Doodle coats vary by individual puppy, even within one litter. Many are wavy
       to curly and shed lightly. Some shed more. We will not promise you a
       non-shedding or hypoallergenic dog, because no honest breeder can.</p>
     <p>What we will do is tell you exactly what we see in the coat of the puppy you
       ask about, and let you feel it yourself when you visit.</p>
   </div>
-  {img_tag('havilah-03', cls='framed', alt='Close view of a Munchkin Bernedoodle puppy coat')}
 </div></section>
 
 <section style="margin-bottom:0"><div class="wrap">
@@ -1519,13 +1538,13 @@ def build_pages():
 </div></section>
 
 <section class="band-pink band-tight"><div class="wrap">
-  <div class="grid-2 narrow-right">
-    {img_tag('griffin-01', cls='framed', alt='Griffin, a black and rust Doberman Pinscher puppy')}
-    <div>
-      <div class="col-title">
-        <p class="eyebrow">Reading a genetic panel</p>
-        <h2>What a carrier result actually means</h2>
-      </div>
+  <div class="grid-2 narrow-right hic hic-flip">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Reading a genetic panel</p>
+      <h2>What a carrier result actually means</h2>
+    </div>
+    {img_tag('griffin-01', cls='framed hic-photo', alt='Griffin, a black and rust Doberman Pinscher puppy')}
+    <div class="hic-copy">
       <p>Mira's panel comes back clear on everything tested except one condition, where
         she is a carrier. A carrier has one copy of a variant and is not affected by it
         herself. Carriers are bred to clear partners so that no puppy can be affected,
@@ -1560,19 +1579,19 @@ def build_pages():
     page("about.html", "About Hope and Joy | Bless Your Paws Puppies",
       "Two sisters raising Munchkin Bernedoodles and Doberman Pinschers in their northern Indiana homes.",
       f"""<section><div class="wrap">
-  <div class="grid-2 narrow-left intro-split">
-    <div class="col-title">
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
       <p class="eyebrow">About us</p>
       <h1>Two sisters, one standard</h1>
     </div>
-    <div class="intro-photo">
+    <div class="hic-photo">
       <img class="framed wide16" src="img/hope-and-joy.jpg?v={V}"
         srcset="img/r/hope-and-joy-640.webp 640w, img/r/hope-and-joy-1000.webp 1000w, img/r/hope-and-joy-1400.webp 1400w, img/r/hope-and-joy-1672.webp 1672w"
         sizes="(max-width:900px) 94vw, 56vw"
         alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
         width="1672" height="941" decoding="async">
     </div>
-    <div class="intro-copy">
+    <div class="hic-copy">
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
         northern Indiana homes. Hope raises the Munchkin Bernedoodles and Joy raises
         the Doberman Pinschers, and every litter is raised the same way: in the house,
@@ -1589,10 +1608,10 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise"><div class="wrap grid-2 narrow-right">
-  {img_tag('joshua-02', cls='framed', alt='A Munchkin Bernedoodle puppy in the grass', sizes='(max-width:900px) 94vw, 56vw')}
-  <div>
-    <h2>Why we do it this way</h2>
+<section class="band-raise"><div class="wrap grid-2 narrow-right hic hic-flip">
+  <div class="hic-head"><h2>Why we do it this way</h2></div>
+  {img_tag('joshua-02', cls='framed hic-photo', alt='A Munchkin Bernedoodle puppy in the grass', sizes='(max-width:900px) 94vw, 56vw')}
+  <div class="hic-copy">
     <p>A puppy's first eight weeks decide a lot about the dog they become. That is
       why ours are never raised apart from the household. They meet children, other
       dogs, the vacuum, and visitors before they ever meet you. {CHIP_SAMPLE}</p>
@@ -1706,10 +1725,13 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-pink" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
-  <div>
+<section class="band-pink" style="margin-bottom:0"><div class="wrap grid-2 narrow-left hic">
+  <div class="hic-head">
     <p class="eyebrow">Before you ask</p>
     <h2>The questions we get most</h2>
+  </div>
+  {img_tag('eden-03', cls='framed hic-photo', alt='A Munchkin Bernedoodle puppy')}
+  <div class="hic-copy">
     <p><strong>How do payments work?</strong> The ${DEPOSIT} deposit reserves your puppy
       online. The balance is due before or at pickup, and most families pay it by check
       or bank transfer. {CHIP_DRAFT}</p>
@@ -1719,7 +1741,6 @@ def build_pages():
       never promise a non-shedding coat.
       <a href="what-is-a-munchkin-bernedoodle.html">More on coats</a>.</p>
   </div>
-  {img_tag('eden-03', cls='framed', alt='A Munchkin Bernedoodle puppy')}
 </div></section>""")
 
     page("contact.html", "Contact | Bless Your Paws Puppies",
@@ -1861,13 +1882,14 @@ def build_pages():
     page("reviews.html", "Reviews | Bless Your Paws Puppies",
       "What families say about their Bless Your Paws puppies.",
       f"""<section><div class="wrap">
-  <div class="grid-2 narrow-left" style="align-items:start">
-    <div>
-      <div class="col-title">
-        <p class="eyebrow">Reviews</p>
-        <h1>From our families</h1>
-        <p class="fine" style="margin:0">{CHIP_SAMPLE}</p>
-      </div>
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Reviews</p>
+      <h1>From our families</h1>
+      <p class="fine" style="margin:0">{CHIP_SAMPLE}</p>
+    </div>
+    {img_tag('havilah-02', cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy')}
+    <div class="hic-copy">
       <blockquote class="lede" style="border-left:3px solid var(--sage);padding-left:1.25rem;margin:0 0 1.5rem">
         "Our puppy came home confident, snuggly, and already used to kids. You can
         tell she was raised in the middle of a family."
@@ -1877,7 +1899,6 @@ def build_pages():
         would love to hear from you.</p>
       <div class="btn-row"><a class="btn btn-primary" href="contact.html">Share your story</a></div>
     </div>
-    {img_tag('havilah-02', cls='framed', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy')}
   </div>
 </div></section>""")
 
