@@ -95,11 +95,28 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       staged but never confirmed.
 - [x] Parent facts on file: dam Troy (Mini Multi Gen Bernedoodle, 21 lbs) and the
       AKC Cavalier sire (19 lbs, ruby).
-- [ ] **What Troy is actually "genetically clear" of.** Puppy Connection says the phrase
-      but names no panel and links no result. Get the panel name and the certificate.
-- [ ] **The dam has no health testing published anywhere.** This is the gate on premium
-      pricing: if she is tested, publish and link it; if not, say what is true and price
-      accordingly. Do not imply testing that does not exist.
+- [x] **RESOLVED 2026-08-23: Troy has a full Wisdom Panel and it is now published.**
+      Tested 2026-02-21, clear on 29 of 30 conditions, and **carries one copy of CDDY**
+      (chondrodystrophy, FGF4 retrogene, autosomal dominant). Report committed at
+      `records/troy-wisdom-panel-2026-02-21.pdf` and linked in full from her row on
+      our-dogs, with a section explaining the result in plain language. Two false claims
+      were removed from the site because of it, see this repo's CLAUDE.md.
+- [ ] **Does the Cavalier sire's panel cover CDDY / the FGF4 retrogene?** This is now the
+      most important open question on the site. CDDY needs only one copy to matter, so the
+      framing of the whole pairing depends on his status, and many Cavalier panels do not
+      test FGF4 at all. Until his report exists, the site says only that we are gathering
+      it and deliberately does not characterise his results.
+- [ ] **The claim "our Cavalier sire is genetically tested clear" has been RETRACTED**
+      from the FAQ and from his row, because no document backs it. Do not reinstate it
+      without the panel.
+- [ ] **Will the puppies themselves be tested for CDDY?** It is a cheap, definitive test
+      for a dominant variant, and it would let Hope tell each buyer exactly where their
+      puppy stands. No competitor offers that. Hope's decision.
+- [ ] **Troy's weight.** The panel predicts an ideal adult weight of 22-40 lbs; the site
+      states 21 lbs from Hope. Probably just the panel's range being broad, but confirm.
+- [ ] **Troy's ancestry is now published** as 81% Poodle / 13% Bernese / 5% Bichon Frise /
+      1% Miniature Schnauzer, because the report is public and hiding it while linking the
+      document that contains it would be worse. Flag the Bichon and Schnauzer to Hope.
 - [x] **Dam is a Mini Multi Gen Bernedoodle** (confirmed 2026-08-22). Pawrade said
       "Mini", Puppy Connection said "Multi Gen"; she is both. Multi-gen supports a more
       consistent curl and lower shedding than an F1 — still a per-puppy prediction, never

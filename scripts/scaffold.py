@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 23
+V = 24
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -62,6 +62,13 @@ M_BORN, M_HOME = "July 22, 2026", "September 16 to 23, 2026"
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
 CHIP_DRAFT  = '<span class="chip chip-draft">Draft, confirm before launch</span>'
+# Two facts are still being gathered: whether the Cavalier sire's panel covers CDDY, and
+# whether the puppies themselves will be tested. Neither can be assumed. "Bred to a clear
+# partner" is exactly the sort of claim that must not be written before the paper exists.
+SIRE_PENDING = ('We are gathering our Cavalier sire&rsquo;s panel now and will publish it '
+                'here in full. Once we have it we will say plainly what it means for this '
+                'pairing, and whether we are testing the puppies themselves. '
+                '<span class="chip chip-draft">Hope to confirm before launch</span>')
 CHIP_SAMPLE = '<span class="chip chip-sample">Sample copy, waiting on their words</span>'
 CHIP_PHOTO  = '<span class="chip chip-draft">Photo coming</span>'
 SIZE_DRAFT  = ('<span class="chip chip-draft">Draft estimate from the 19 lb and 21 lb '
@@ -1530,7 +1537,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "Our Cavalier sire is AKC registered and genetically tested clear. Troy's testing documentation is being compiled and will be published here as soon as we have it."
+       "Troy has a full Wisdom Panel and we publish it in full, including the one variant she carries. Our Cavalier sire is AKC registered and we are gathering his panel to publish the same way. " + CHIP_DRAFT
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, and a toy."
@@ -1631,9 +1638,16 @@ def build_pages():
         "Troy is the mother of our Munchkin Bernedoodle litter. At 21 lbs she is a "
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
         "size and the temperament we breed for. " + CHIP_SAMPLE,
-        [("Weight:", "21 lbs, blue merle parti, born January 21, 2024."),
-         ("Health testing:", "documentation being compiled. " + CHIP_DRAFT)],
-        []) +
+        [("Weight:", "21 lbs, blue merle parti, born January 21, 2024. " + CHIP_DRAFT),
+         ("Ancestry:", "Wisdom Panel puts her at 81% Poodle, 13% Bernese Mountain Dog, "
+          "5% Bichon Frise and 1% Miniature Schnauzer, which is what a multi-generation "
+          "Bernedoodle looks like on a panel."),
+         ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
+          "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
+          "chondrodystrophy variant, CDDY, which is explained below."),
+         ("The full report:", "linked here, all 14 pages, nothing left out.")],
+        [("View Troy’s Wisdom Panel report (PDF)",
+          "records/troy-wisdom-panel-2026-02-21.pdf")]) +
       dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",
         None,
         "Our sire is an AKC-registered ruby Cavalier, 19 lbs, and the reason these "
@@ -1641,7 +1655,9 @@ def build_pages():
         "lap-dog nature comes from. " + CHIP_SAMPLE,
         [("Registration:", "AKC registered."),
          ("Weight:", "19 lbs, ruby, born December 24, 2024."),
-         ("Genetic testing:", "tested clear. Panel documentation being added. " + CHIP_DRAFT)],
+         ("Genetic testing:", "we are gathering his panel and will link it here in full, "
+          "the same way we have for Troy. Until it is in our hands we are not going to "
+          "characterise his results. " + CHIP_DRAFT)],
         []))
     D_DOGS = (
       dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",
@@ -1687,6 +1703,33 @@ def build_pages():
 </div></section>
 
 {dob_carrier_section_html()}
+<section class="band-pink band-tight"><div class="wrap grid-2 narrow-right hic hic-flip">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Reading Troy&rsquo;s panel</p>
+      <h2>The one thing her test found</h2>
+    </div>
+    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our Mini Multi Gen Bernedoodle dam')}
+    <div class="hic-copy">
+      <p>Troy came back <strong>clear on 29 of the 30 conditions</strong> on the panel.
+        On the thirtieth she carries one copy of a variant called <strong>CDDY</strong>,
+        chondrodystrophy, and we would rather you heard that from us than found it
+        yourself.</p>
+      <p><strong>What it is.</strong> CDDY is the variant behind shorter legs, and it also
+        makes the discs in a dog&rsquo;s back age faster than usual. Dogs that have it are
+        more likely to have disc trouble later in life. The panel puts that risk plainly:
+        a dog with one or two copies is between five and fifteen times more likely to need
+        back surgery than a dog with none. Plenty of dogs that carry it never have a day of
+        trouble, and plenty of dogs with disc problems do not carry it at all.</p>
+      <p><strong>What it means for a puppy.</strong> Unlike most things on a panel, this
+        one only takes a single copy to matter, so it can pass from Troy to a puppy. That
+        is the honest position, and it is why we are publishing the report rather than
+        summarising it.</p>
+      <p><strong>What we are doing about it.</strong> {SIRE_PENDING}</p>
+      <p class="fine">Do not take our word for any of this. The full report is on Troy above,
+        all fourteen pages, and the paragraph the panel itself writes about this variant is
+        on pages 4 and 5.</p>
+    </div>
+</div></section>
 
 <section class="band-raise" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
   <div>
@@ -1709,7 +1752,7 @@ def build_pages():
     page("about.html", "About Hope and Joy | Bless Your Paws Puppies",
       f"Two sisters raising {BREEDS_PHRASE}s in their northern Indiana homes.",
       f"""<section><div class="wrap">
-  <div class="grid-2 narrow-right hic">
+  <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
       <p class="eyebrow">About us</p>
       <h1>Two sisters, one standard</h1>
