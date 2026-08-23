@@ -144,6 +144,16 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       Amber's Wix site during the KFC build.
 - [ ] Faith element ON HOLD (Alex, 2026-08-22) pending the client questionnaire.
       Do not add one; do not rule one out.
+- [ ] **Mobile hero treatment: pick one.** `hero-options.html` shows four at a real
+      phone width with the headroom measured live from the rendered image. A is what is
+      live (a mount, ~60px of air, least presence); B, C and D are full bleed and taller
+      (~20-28px of air, far more presence, and no border for him to bump against). B, C
+      and D are all taller than the 3:2 source so they crop the sides and show the full
+      height, meaning nothing can ever be cut off his head or paws. Recommendation is C.
+      Separate question: whether to keep havilah-01 at all, given it has only 5.4%
+      headroom. Highest-headroom alternatives are griffin-01, malcolm-03, malcolm-01,
+      jericho-09, jordan-04 — the first three are Joy's Dobermans, so it is a business
+      call about which litter fronts the site, not a design one.
 - [ ] **Floral motif: pick the placements.** Hope asked for flowers. Five assets are
       prepared and committed (`img/brand/floral-*.webp`: two corner sprays, a
       horizontal swag, a single sprig, a wreath) but **nothing is wired into the
@@ -151,8 +161,10 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       stylesheet. Recommendation on that page is options 1, 2 and 6-restrained only,
       i.e. three placements: the swag replacing the existing section divider, the
       sprig beside a heading, and low-opacity corner sprays on one dark band per page.
-      Delete `floral-preview.html` once the choice is made, per the preview-page
-      convention. Regenerate assets with `python scripts/prep_florals.py`.
+      `floral-applied.html` then shows those three recommendations built into real page
+      sections, with a toggle for a true before and after, plus the puppy page left
+      deliberately plain. Delete both preview pages once the choice is made, per the
+      preview-page convention. Regenerate assets with `python scripts/prep_florals.py`.
 - [x] **Photos pulled 2026-08-22.** 78 full-resolution originals for all seven Munchkin
       Bernedoodles, from the Puppy Connection listings with Hope's confirmation that the
       family owns the rights. Originals in gitignored `source-photos/puppy-connection/`;
