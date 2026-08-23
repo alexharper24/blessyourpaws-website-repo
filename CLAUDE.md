@@ -270,6 +270,26 @@ not stacking.
 **Single-word last lines are handled by `text-wrap:pretty` on mobile**, with `balance` on
 headings. Browsers without support ignore both.
 
+**An overlay item must be `align-self:stretch`, not inherit `center`.** `.hero-drift` sets
+`align-items:center`. The mobile hero puts the photo and the copy in the SAME grid cell,
+so on a device whose text runs taller than the photo's `min-height` the cell grows, a
+centred photo stays at `min-height`, and the copy hangs off the bottom of the picture it
+is supposed to be sitting on. This did not reproduce in Chrome at 393px, where the lede
+wraps to four lines; it reproduced on an iPhone where it wraps to five. Stress-test an
+overlay by forcing the type larger rather than trusting one browser's line breaking.
+
+**`.wrap` makes its gutter with `width:min(94%,var(--maxw))` and auto margins, not
+padding**, so the inset is 3% a side, about 12px on a phone. Every section except `.hero`
+adds its own padding on top of that; `.hero` is `padding:0`, so overlaid hero copy sat
+12px from the screen edge. The hero overlay carries `width:100%;padding-inline:1.25rem`
+for a deliberate 20px, wider than body copy because type over a photograph needs more
+room from the edge than type on paper.
+
+**Bump `V` on every change to style.css, not once per session.** V sat at 18 across three
+different stylesheet contents while intermediate fixes were made. Only the last was
+committed so nothing broken shipped, but any device that loaded the site mid-session
+would have cached a `?v=18` that no longer matched the markup.
+
 **Measure a range, not one width.** 390px alone was clean while 320px overflowed and
 768px was fine. The audit that matters runs every page at 320 / 390 / 414 checking for
 horizontal overflow, uncollapsed multi-column grids, and CTA lines that do not fill

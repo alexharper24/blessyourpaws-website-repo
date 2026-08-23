@@ -611,8 +611,13 @@ textarea{min-height:8rem}
   /* aspect-ratio MUST be cleared. The desktop rule sets 16/9, and with a min-height
      and no width the ratio derives the width from the height: 544 x 16/9 = 967px,
      inside a 375px page. That was the whole overflow. */
+  /* align-self MUST be stretch. `.hero-drift` sets align-items:center, and the copy
+     shares this grid cell, so on a device whose text runs taller than min-height the
+     cell grows, a centred photo stays at min-height, and the copy ends up hanging off
+     the bottom of the picture it is supposed to be sitting on. Stretch keeps the photo
+     as tall as whatever the copy needs. */
   .hero-photo{width:auto;justify-self:auto;margin:0;position:relative;
-    aspect-ratio:auto;min-height:min(142vw,34rem);grid-area:1/1}
+    aspect-ratio:auto;min-height:min(142vw,34rem);grid-area:1/1;align-self:stretch}
   /* absolutely positioned so it fills the cell. `height:100%` cannot work here: the
      parent's height comes from min-height and from its grid sibling, so it is an
      indefinite height and the percentage resolves to auto, which left the photo at its
@@ -630,7 +635,13 @@ textarea{min-height:8rem}
      */
   .hero-drift{position:relative;padding-top:0;display:grid;
     grid-template-columns:minmax(0,1fr)}
-  .hero-drift>.wrap{grid-area:1/1;align-self:end;z-index:2}
+  /* `.wrap` makes its gutter with width:94% and auto margins, not padding, and `.hero`
+     is the one section with padding:0. Everywhere else the section padding adds to that
+     3%, so body copy sits about 28px in; here it left the headline 12px from the screen
+     edge, which over a photograph reads as text jammed against the glass. Give the
+     overlay a real gutter of its own. */
+  .hero-drift>.wrap{grid-area:1/1;align-self:end;z-index:2;
+    width:100%;padding-inline:1.25rem}
   .hero-copy{width:auto;padding:0 0 1.35rem}
   .hero-copy .eyebrow{color:var(--rose)}
   .hero-copy h1{color:#fff;text-shadow:0 1px 14px rgba(0,0,0,.4);
