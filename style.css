@@ -285,8 +285,11 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 a.packet-link{text-decoration:none}
 a.packet-link:hover .packet{border-color:var(--sage-deep)}
 
-.door{display:block;text-decoration:none;border:1.5px solid var(--forest);
-  border-radius:6px;overflow:hidden;background:#fff}
+/* flex column so the body fills the card and the two cards close on the same line even
+   if one caption wraps at a width the other does not */
+.door{display:flex;flex-direction:column;text-decoration:none;
+  border:1.5px solid var(--forest);border-radius:6px;overflow:hidden;background:#fff}
+.door-body{flex:1}
 .door img{width:100%;aspect-ratio:3/2;object-fit:cover}
 /* The dead band under the last line was the paragraph's own bottom margin sitting on
    top of the padding, not the padding alone. Padding on the parent stops the margin
@@ -299,6 +302,9 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
 .facts{list-style:none;margin:0 0 1.25rem;padding:0;border-top:1px solid var(--rule)}
 .facts li{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;
   border-bottom:1px solid var(--rule);font-size:.97rem}
+a[href^="mailto:"]{overflow-wrap:anywhere}
+.foot-grid>*,.foot-top>*{min-width:0}
+
 /* flex and grid children default to min-width:auto, so an unbreakable value with no
    break opportunity in it sets the min-content width of whatever column it sits in.
    The email address did exactly that and pushed the contact page 48px wider than a
@@ -597,60 +603,40 @@ textarea{min-height:8rem}
      The photo was sitting flush against the sticky header with a zero gap, which read
      as the puppy bumping the top edge of the page. */
   .hero-drift>*{grid-area:auto}
-  /* Option B, chosen 2026-08-23: full bleed, 4:5, with the copy over the foot of the
-     picture. 4:5 is taller than the source 3:2, so cover matches the box height and
-     crops the WIDTH. The full height of the photograph is shown, nothing can be cut
-     off his head or his paws at any width, and the vertical half of object-position is
-     inert here, so do not try to tune it. The air above him comes from the box being
-     tall: 5.4% of ~490px is about 26px, and with no frame line at the top edge there is
-     nothing for him to bump against, which was the original complaint. */
-  /* min-height rather than aspect-ratio, and the copy shares the same grid cell
-     instead of being absolutely positioned. That means the cell is as tall as
-     whichever is bigger, so a long headline on a 320px screen grows the photo to fit
-     instead of spilling out of the bottom of it. */
-  /* aspect-ratio MUST be cleared. The desktop rule sets 16/9, and with a min-height
-     and no width the ratio derives the width from the height: 544 x 16/9 = 967px,
-     inside a 375px page. That was the whole overflow. */
-  /* align-self MUST be stretch. `.hero-drift` sets align-items:center, and the copy
-     shares this grid cell, so on a device whose text runs taller than min-height the
-     cell grows, a centred photo stays at min-height, and the copy ends up hanging off
-     the bottom of the picture it is supposed to be sitting on. Stretch keeps the photo
-     as tall as whatever the copy needs. */
+  /* Option B, but only the caption goes on the photograph.
+     The mock this was chosen from had a one-line lede. Production has six lines plus a
+     chip, so overlaying the whole copy block put text over 72% of the picture starting
+     28% down: structurally correct, and a wall of green over the puppy. The eyebrow,
+     headline and buttons stay on the image as a compact block at its foot; the lede
+     moves below the photograph onto paper, where it is easier to read anyway.
+
+     Mechanically: .wrap and .hero-copy become display:contents so their children are
+     grid items of .hero-drift directly, which is what lets one of them sit outside the
+     photo's rows. Row 1 is the breathing space above the caption, rows 2 to 4 are the
+     caption over the foot of the photo, row 5 is below it. */
+  .hero-drift{position:relative;padding-top:0;display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:1fr auto auto auto auto}
+  .hero-drift>.wrap,.hero-copy{display:contents}
   .hero-photo{width:auto;justify-self:auto;margin:0;position:relative;
-    aspect-ratio:auto;min-height:min(142vw,34rem);grid-area:1/1;align-self:stretch}
-  /* absolutely positioned so it fills the cell. `height:100%` cannot work here: the
-     parent's height comes from min-height and from its grid sibling, so it is an
-     indefinite height and the percentage resolves to auto, which left the photo at its
-     intrinsic 250px inside a 544px cell with a dark void under it. */
+    aspect-ratio:auto;min-height:min(142vw,34rem);
+    grid-column:1;grid-row:1 / 5;align-self:stretch}
   .hero-photo img{position:absolute;inset:0;width:100%;height:100%;
     object-fit:cover;object-position:50% 50%;border:0;border-radius:0;background:none}
-  /* the scrim carries the type. It has to reach far enough up to seat the text block
-     without climbing over the puppy, so it is a four-stop gradient rather than a fade */
   .hero-photo::after{content:"";position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(to top,rgba(34,61,44,.93) 0%,rgba(34,61,44,.78) 22%,
-      rgba(34,61,44,.34) 48%,rgba(34,61,44,.04) 70%,transparent 84%)}
-  /* An implicit `auto` track sizes to max-content, and the photo's max-content is the
-     intrinsic width of the source file, so the track blew out to 967px inside a 375px
-     page and took the whole document with it. minmax(0,1fr) bounds it to the container.
-     */
-  .hero-drift{position:relative;padding-top:0;display:grid;
-    grid-template-columns:minmax(0,1fr)}
-  /* `.wrap` makes its gutter with width:94% and auto margins, not padding, and `.hero`
-     is the one section with padding:0. Everywhere else the section padding adds to that
-     3%, so body copy sits about 28px in; here it left the headline 12px from the screen
-     edge, which over a photograph reads as text jammed against the glass. Give the
-     overlay a real gutter of its own. */
-  .hero-drift>.wrap{grid-area:1/1;align-self:end;z-index:2;
-    width:100%;padding-inline:1.25rem}
-  .hero-copy{width:auto;padding:0 0 1.35rem}
-  .hero-copy .eyebrow{color:var(--rose)}
-  .hero-copy h1{color:#fff;text-shadow:0 1px 14px rgba(0,0,0,.4);
-    font-size:clamp(1.5rem,7vw,1.9rem);margin-bottom:.45rem}
-  .hero-copy .lede{color:#e9ded9;font-size:.95rem;margin-bottom:.5rem}
-  .hero-copy .btn-row{margin-top:.85rem}
-  /* the sample-copy chip has to stay legible against the scrim rather than the paper */
-  .hero-copy .chip-sample{background:rgba(253,249,249,.92);color:var(--forest);
-    border-color:transparent}
+    background:linear-gradient(to top,rgba(34,61,44,.92) 0%,rgba(34,61,44,.72) 30%,
+      rgba(34,61,44,.22) 58%,transparent 78%)}
+  /* display:contents drops the wrap, so each item carries the gutter itself */
+  .hero-copy>*{grid-column:1;padding-inline:1.25rem}
+  .hero-copy>.eyebrow{grid-row:2;z-index:2;color:var(--rose);margin:0 0 .3rem}
+  .hero-copy>h1{grid-row:3;z-index:2;color:#fff;
+    text-shadow:0 1px 14px rgba(0,0,0,.45);
+    font-size:clamp(1.5rem,7vw,1.9rem);margin:0 0 .1rem}
+  .hero-copy>.btn-row{grid-row:4;z-index:2;margin:.9rem 0 0;
+    padding-bottom:1.35rem}
+  /* on paper now, so it goes back to body colour and needs its own breathing room */
+  .hero-copy>.lede{grid-row:5;color:var(--sage-deep);font-size:1rem;
+    margin:1.5rem 0 0}
   .hero-photo img{-webkit-mask-image:none;mask-image:none}
   .dogrow{grid-template-columns:1fr;gap:1.25rem}
   .health{grid-template-columns:1fr}

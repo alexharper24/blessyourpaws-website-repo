@@ -290,6 +290,29 @@ different stylesheet contents while intermediate fixes were made. Only the last 
 committed so nothing broken shipped, but any device that loaded the site mid-session
 would have cached a `?v=18` that no longer matched the markup.
 
+**An overlay hero must be designed against the REAL copy length.** Option B was chosen
+from a mock whose lede was one line. Production's lede wraps to six or seven, and the
+eyebrow and headline to two each, so overlaying the whole copy block put text over 72% of
+the photograph starting 28% down. It measured as correct at every check I ran, because
+nothing overflowed and everything sat inside the photo. It was still wrong. Only the
+eyebrow, headline and buttons go on the picture; the lede sits below it on paper, which is
+easier to read anyway. The caption now covers 34-55% depending on width.
+
+The mechanism: `.hero-drift>.wrap` and `.hero-copy` are `display:contents` on mobile so
+their children become grid items of the drift directly, which is what lets the lede sit in
+a row outside the photo's row span. Each item then carries its own `padding-inline`, since
+display:contents drops the wrap that used to provide the gutter.
+
+**Email addresses cause horizontal overflow. Handle them once, globally.** Long, no break
+opportunity. Fixed for `.facts .v` on the contact page, then it reappeared in the footer
+in the 901-1000px band where the footer column is 169px and the address is 230px. It is
+now `a[href^="mailto:"]{overflow-wrap:anywhere}` plus `min-width:0` on the footer grids.
+
+**Audit the width just ABOVE a breakpoint, not just below.** 900 and 1280 were both clean
+while 901 overflowed by 33px. The sweep worth running is 320/360/394/430/600/768/899/901/
+940/1000/1100/1280/1600/1920 across the busiest pages, which is 112 combinations and takes
+one call.
+
 **Measure a range, not one width.** 390px alone was clean while 320px overflowed and
 768px was fine. The audit that matters runs every page at 320 / 390 / 414 checking for
 horizontal overflow, uncollapsed multi-column grids, and CTA lines that do not fill
