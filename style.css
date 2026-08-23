@@ -619,7 +619,7 @@ textarea{min-height:8rem}
     grid-template-rows:1fr auto auto auto auto}
   .hero-drift>.wrap,.hero-copy{display:contents}
   .hero-photo{width:auto;justify-self:auto;margin:0;position:relative;
-    aspect-ratio:auto;min-height:min(142vw,34rem);
+    aspect-ratio:auto;min-height:min(158vw,39rem);
     grid-column:1;grid-row:1 / 5;align-self:stretch}
   .hero-photo img{position:absolute;inset:0;width:100%;height:100%;
     object-fit:cover;object-position:50% 50%;border:0;border-radius:0;background:none}
@@ -628,12 +628,23 @@ textarea{min-height:8rem}
       rgba(34,61,44,.22) 58%,transparent 78%)}
   /* display:contents drops the wrap, so each item carries the gutter itself */
   .hero-copy>*{grid-column:1;padding-inline:1.25rem}
-  .hero-copy>.eyebrow{grid-row:2;z-index:2;color:var(--rose);margin:0 0 .3rem}
+  /* "Family-raised in Warsaw and Winona Lake" is 39 characters, and at the site's
+     .16em tracking it wrapped to two lines, spending caption height on nothing. Tighter
+     tracking and a hair smaller holds it to one line at 320px and up. */
+  .hero-copy>.eyebrow{grid-row:2;z-index:2;color:var(--rose);margin:0 0 .25rem;
+    font-size:.68rem;letter-spacing:.1em}
   .hero-copy>h1{grid-row:3;z-index:2;color:#fff;
     text-shadow:0 1px 14px rgba(0,0,0,.45);
     font-size:clamp(1.5rem,7vw,1.9rem);margin:0 0 .1rem}
-  .hero-copy>.btn-row{grid-row:4;z-index:2;margin:.9rem 0 0;
-    padding-bottom:1.35rem}
+  .hero-copy>.btn-row{grid-row:4;z-index:2;margin:.85rem 0 0;
+    padding-bottom:1.5rem}
+  /* Inverted for the scrim. The site's buttons are forest on paper; over a forest scrim
+     that is 1.05:1 for the filled one's background and 1.05:1 for the ghost one's text
+     and border, so the ghost button was simply not there. Paper on forest is 11.85:1. */
+  .hero-copy .btn-primary{background:var(--paper);color:var(--forest);
+    border-color:var(--paper)}
+  .hero-copy .btn-ghost{background:transparent;color:var(--paper);
+    border-color:rgba(253,249,249,.8)}
   /* on paper now, so it goes back to body colour and needs its own breathing room */
   .hero-copy>.lede{grid-row:5;color:var(--sage-deep);font-size:1rem;
     margin:1.5rem 0 0}

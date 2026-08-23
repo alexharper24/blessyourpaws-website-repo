@@ -290,6 +290,14 @@ different stylesheet contents while intermediate fixes were made. Only the last 
 committed so nothing broken shipped, but any device that loaded the site mid-session
 would have cached a `?v=18` that no longer matched the markup.
 
+**Buttons moved onto a dark scrim need inverting, and contrast has to be MEASURED.** The
+hero CTAs kept the site palette, forest on paper, while sitting on a 92% forest scrim:
+1.05:1 for the filled button's background and 1.05:1 for the ghost button's text AND
+border. The ghost button was not dim, it was absent. Every geometric check passed, because
+the buttons were the right size in the right place. Over the scrim they are paper on
+forest, 10.8:1. When any component moves onto a new background, compute the ratio rather
+than looking at it.
+
 **An overlay hero must be designed against the REAL copy length.** Option B was chosen
 from a mock whose lede was one line. Production's lede wraps to six or seven, and the
 eyebrow and headline to two each, so overlaying the whole copy block put text over 72% of
