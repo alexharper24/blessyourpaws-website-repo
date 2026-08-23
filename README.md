@@ -128,6 +128,10 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       collar and leash, toy.
 - [x] **Hope's phone number is 574-377-8023** (confirmed). Not the marketplace's
       574-221-0326.
+- [x] **Joy's phone number is 574-265-1060** (Alex, 2026-08-23). Litter pages now route
+      to whoever raises that litter: Doberman puppy pages carry Joy's number, Munchkin
+      pages Hope's. The footer, the home page closing band and the chat panel list both,
+      labelled by breed. Before this, every Doberman page told buyers to call Hope.
 - [ ] **Rewrite the socialisation and puppy descriptions in Hope's own words.** The
       wording currently on both marketplaces is theirs, not hers — reusing it would put
       her site in competition with them on Google. Facts carry over; prose does not.

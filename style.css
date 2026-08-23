@@ -581,11 +581,15 @@ textarea{min-height:8rem}
   .hero-drift{min-height:0;display:block;padding-top:1.25rem}
   .hero-drift{display:block;min-height:0}
   .hero-drift>*{grid-area:auto}
-  /* 3:2 on a phone rather than 16:9. It matches the source exactly, so nothing is
-     cropped at all and the full 5.4% of the photograph's own headroom survives, and
-     the taller box turns that percentage into more actual pixels: 250px of height
-     instead of 211px. It is the most this photograph can give at this width. */
-  .hero-photo{width:auto;justify-self:auto;aspect-ratio:3/2;margin:0 0 1.5rem}
+  /* The photograph has the puppy's crown 5.4% down the frame and no cropping can
+     improve on that, so bringing him lower means adding space rather than recropping.
+     The box is 4:3 while the source is 3:2, and `contain` anchored to the bottom
+     letterboxes the difference above him: about 31px at a 375px width, on top of the
+     14px the photograph itself gives. The band is filled by the image element's own
+     background, so it reads as a mounted print rather than a gap. */
+  .hero-photo{width:auto;justify-self:auto;aspect-ratio:4/3;margin:0 0 1.5rem}
+  .hero-photo img{object-fit:contain;object-position:50% 100%;
+    background:var(--paper-raise)}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
   .hero-copy{width:auto;padding:1.75rem 0 0}
@@ -643,6 +647,10 @@ textarea{min-height:8rem}
   body.nav-open .chat-fab{display:none}
   /* and it must not come to rest on the last line of a page */
   main{padding-bottom:4.5rem}
+
+  /* ---- a trailing link reads as a stranded fragment when it wraps onto the tail of
+     a sentence, so on a phone it takes its own line */
+  .own-line{display:block;margin-top:.3rem}
 
   /* ---- a slimmer bar gives a phone back some screen */
   .head-row{min-height:68px}

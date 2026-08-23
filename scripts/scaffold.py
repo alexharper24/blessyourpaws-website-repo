@@ -14,10 +14,12 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 16
+V = 17
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
-PHONE_DISPLAY = "(574) 377-8023"
+PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
+JOY_PHONE_DISPLAY = "(574) 265-1060"      # Joy, Dobermans. Confirmed by Alex 2026-08-23
+JOY_PHONE_HREF = "tel:5742651060"
 SMS_HREF = "sms:5743778023"
 EMAIL = "info@blessyourpawspuppies.com"
 AREA = "Warsaw and Winona Lake, Indiana"
@@ -642,11 +644,15 @@ textarea{min-height:8rem}
   .hero-drift{min-height:0;display:block;padding-top:1.25rem}
   .hero-drift{display:block;min-height:0}
   .hero-drift>*{grid-area:auto}
-  /* 3:2 on a phone rather than 16:9. It matches the source exactly, so nothing is
-     cropped at all and the full 5.4% of the photograph's own headroom survives, and
-     the taller box turns that percentage into more actual pixels: 250px of height
-     instead of 211px. It is the most this photograph can give at this width. */
-  .hero-photo{width:auto;justify-self:auto;aspect-ratio:3/2;margin:0 0 1.5rem}
+  /* The photograph has the puppy's crown 5.4% down the frame and no cropping can
+     improve on that, so bringing him lower means adding space rather than recropping.
+     The box is 4:3 while the source is 3:2, and `contain` anchored to the bottom
+     letterboxes the difference above him: about 31px at a 375px width, on top of the
+     14px the photograph itself gives. The band is filled by the image element's own
+     background, so it reads as a mounted print rather than a gap. */
+  .hero-photo{width:auto;justify-self:auto;aspect-ratio:4/3;margin:0 0 1.5rem}
+  .hero-photo img{object-fit:contain;object-position:50% 100%;
+    background:var(--paper-raise)}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
   .hero-copy{width:auto;padding:1.75rem 0 0}
@@ -704,6 +710,10 @@ textarea{min-height:8rem}
   body.nav-open .chat-fab{display:none}
   /* and it must not come to rest on the last line of a page */
   main{padding-bottom:4.5rem}
+
+  /* ---- a trailing link reads as a stranded fragment when it wraps onto the tail of
+     a sentence, so on a phone it takes its own line */
+  .own-line{display:block;margin-top:.3rem}
 
   /* ---- a slimmer bar gives a phone back some screen */
   .head-row{min-height:68px}
@@ -892,8 +902,9 @@ JS = """// Bless Your Paws Puppies - v2
   var panel = document.createElement('div');
   panel.className = 'chat-panel';
   panel.innerHTML = '<h3>Talk puppies with us</h3>'
-    + '<p>Call or text is the fastest way to reach us. We are always happy to answer questions or set up a visit or video call.</p>'
-    + '<div class="row"><span class="lbl">Call/Text</span><a href="__PHONE_HREF__">__PHONE__</a></div>'
+    + '<p>Call or text is the fastest way to reach us. Hope raises the Munchkin Bernedoodles and Joy raises the Dobermans.</p>'
+    + '<div class="row"><span class="lbl">Hope</span><a href="__PHONE_HREF__">__PHONE__</a></div>'
+    + '<div class="row"><span class="lbl">Joy</span><a href="__JOY_HREF__">__JOY_PHONE__</a></div>'
     + '<div class="row"><span class="lbl">Email</span><a href="mailto:__EMAIL__">__EMAIL__</a></div>'
     + '<div class="row"><span class="lbl">Inquiry</span><a href="contact.html">Start an inquiry</a></div>'
     + '<div class="row"><span class="lbl">Waitlist</span><a href="waitlist.html">Join the waitlist</a></div>';
@@ -912,6 +923,8 @@ JS = """// Bless Your Paws Puppies - v2
 """
 JS = (JS.replace("__PHONE_HREF__", PHONE_HREF)
         .replace("__PHONE__", PHONE_DISPLAY)
+        .replace("__JOY_HREF__", JOY_PHONE_HREF)
+        .replace("__JOY_PHONE__", JOY_PHONE_DISPLAY)
         .replace("__EMAIL__", EMAIL))
 
 SPRIG = ('<svg class="sprig" width="72" height="25" viewBox="0 0 40 14" aria-hidden="true">'
@@ -972,7 +985,8 @@ def footer():
         <li><a href="purchase-agreement.html">Purchase agreement</a></li>
       </ul></div>
       <div><h3>Get in touch</h3><ul>
-        <li>Call or text Hope<br><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></li>
+        <li>Hope, Munchkin Bernedoodles<br><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></li>
+        <li>Joy, Dobermans<br><a href="{JOY_PHONE_HREF}">{JOY_PHONE_DISPLAY}</a></li>
         <li><a href="mailto:{EMAIL}">{EMAIL}</a></li>
         <li>{AREA}</li>
         <li class="fine">Visits by appointment. Our location is shared once your
@@ -1628,8 +1642,12 @@ def build_pages():
       you are further away.</p>
     <div class="contact-pair">
       <a class="contact-tile" href="{PHONE_HREF}">
-        <span class="ct-label">Call or text Hope</span>
+        <span class="ct-label">Hope, Munchkins</span>
         <span class="ct-value">{PHONE_DISPLAY}</span>
+      </a>
+      <a class="contact-tile" href="{JOY_PHONE_HREF}">
+        <span class="ct-label">Joy, Dobermans</span>
+        <span class="ct-value">{JOY_PHONE_DISPLAY}</span>
       </a>
       <a class="contact-tile" href="mailto:{EMAIL}">
         <span class="ct-label">Email us</span>
@@ -1777,7 +1795,7 @@ def build_pages():
           <li><span class="k">Hope, Munchkin Bernedoodles</span>
             <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
           <li><span class="k">Joy, Dobermans</span>
-            <span class="v">Number coming soon</span></li>
+            <span class="v"><a href="{JOY_PHONE_HREF}">{JOY_PHONE_DISPLAY}</a></span></li>
           <li><span class="k">Email</span>
             <span class="v"><a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
           <li><span class="k">Where</span><span class="v">{AREA}</span></li>
@@ -1798,13 +1816,13 @@ def build_pages():
       {img_tag('eden-01', cls='framed', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
       <h3 style="margin-top:1rem">Munchkin Bernedoodles</h3>
       <p class="fine">Small, soft, and lap-sized. Going home in September.
-        <a href="munchkin-bernedoodles.html">See the litter</a>.</p>
+        <span class="own-line"><a href="munchkin-bernedoodles.html">See the litter</a>.</span></p>
     </div>
     <div>
       {img_tag('malcolm-02', cls='framed', alt='Malcolm, a black and rust Doberman Pinscher puppy')}
       <h3 style="margin-top:1rem">Doberman Pinschers</h3>
       <p class="fine">AKC registered, loyal, and ready to go home now.
-        <a href="dobermans.html">See the litter</a>.</p>
+        <span class="own-line"><a href="dobermans.html">See the litter</a>.</span></p>
     </div>
   </div>
 </div></section>""")
@@ -1999,6 +2017,12 @@ def build_pages():
     def puppy_page(slug, name, sex, colour, note, price, breed, born, home, kit,
                    parents_html, extra_facts):
         him = "him" if sex == "Boy" else "her"
+        # Hope raises the Munchkin Bernedoodles, Joy the Dobermans. A buyer asking
+        # about one of Joy's puppies was being told to call Hope.
+        is_munchkin = breed.startswith('Munchkin')
+        owner = "Hope" if is_munchkin else "Joy"
+        owner_href = PHONE_HREF if is_munchkin else JOY_PHONE_HREF
+        owner_phone = PHONE_DISPLAY if is_munchkin else JOY_PHONE_DISPLAY
         cnt = COUNTS[slug]
         first = PRIMARY.get(slug, 1)
         order = [first] + [i for i in range(1, cnt + 1) if i != first]
@@ -2058,9 +2082,9 @@ def build_pages():
           <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Balance</a>
         </div>
         <p class="guard-msg">Online payments are almost ready. To reserve {name}
-          today, call or text Hope at <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a>.</p>
+          today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
         <p class="fine">Prefer to talk first? <a href="contact.html">Start an
-          inquiry</a>, or call or text <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a>.
+          inquiry</a>, or call or text <a href="{owner_href}">{owner_phone}</a>.
           Visits and video calls are always welcome before you decide.</p>
       </div>
       <h3>About {name} {CHIP_SAMPLE}</h3>

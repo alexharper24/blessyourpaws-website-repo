@@ -171,8 +171,9 @@
   var panel = document.createElement('div');
   panel.className = 'chat-panel';
   panel.innerHTML = '<h3>Talk puppies with us</h3>'
-    + '<p>Call or text is the fastest way to reach us. We are always happy to answer questions or set up a visit or video call.</p>'
-    + '<div class="row"><span class="lbl">Call/Text</span><a href="tel:5743778023">(574) 377-8023</a></div>'
+    + '<p>Call or text is the fastest way to reach us. Hope raises the Munchkin Bernedoodles and Joy raises the Dobermans.</p>'
+    + '<div class="row"><span class="lbl">Hope</span><a href="tel:5743778023">(574) 377-8023</a></div>'
+    + '<div class="row"><span class="lbl">Joy</span><a href="tel:5742651060">(574) 265-1060</a></div>'
     + '<div class="row"><span class="lbl">Email</span><a href="mailto:info@blessyourpawspuppies.com">info@blessyourpawspuppies.com</a></div>'
     + '<div class="row"><span class="lbl">Inquiry</span><a href="contact.html">Start an inquiry</a></div>'
     + '<div class="row"><span class="lbl">Waitlist</span><a href="waitlist.html">Join the waitlist</a></div>';
