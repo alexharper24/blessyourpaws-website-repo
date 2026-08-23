@@ -30,3 +30,6 @@ dist/
 Thumbs.db
 desktop.ini
 *.swp
+
+# Client source documents — health records etc. Not published until reviewed.
+source-files/

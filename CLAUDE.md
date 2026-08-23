@@ -151,12 +151,69 @@ over fine. Prose and identity do not.
 
 - **"Munchkin Bernedoodle" is an established market term** — use it prominently. It
   is what buyers search. Verified against seven competing breeder sites 2026-08-22.
-- **It means small overall size, NOT short legs.** Some secondary sources (including
-  Google's AI Overview) call it a Corgi-like dwarf trait. The actual breeder sources
-  do not. **Never put short-leg or dwarfism language on this site.**
+- **It means small overall size** as a market term. Some secondary sources (including
+  Google's AI Overview) call it a Corgi-like dwarf trait; the breeder sources do not.
+- **REVISED 2026-08-23 by Troy's own genetic report. The site may no longer claim there
+  is no dwarfism gene involved.** Troy's Wisdom Panel (test date 2026-02-21) returns her
+  **At Risk for Chondrodystrophy (CDDY) and IVDD**: one copy of the FGF4 retrogene
+  insertion, autosomal dominant, plus one copy of CDPA. The report states in terms that
+  her legs will likely be slightly shorter. Two claims were removed from the live site
+  because of it: "There is no dwarf gene involved" and the FAQ answer "No. ... not from a
+  short-legged or dwarfism gene." Do not reinstate either. What replaces them is Hope's
+  decision, not ours, because CDDY is dominant and therefore inheritable by the puppies.
+- Do not write short-leg or dwarfism language *as marketing*. That is different from
+  denying the genetics, which is what the old rule had the site doing.
 - **Never promise non-shedding or hypoallergenic coats.** Even the established
   breeders hedge ("may be low-shedding, depending on the individual puppy"). Publish
   only what Hope states about her own puppies.
+
+
+## Doberman line is OFF (2026-08-23)
+
+Alex: conflict of interest, temporary, expects it may come back. **Nothing is deleted.**
+`SHOW_DOBERMANS = False` in `scripts/scaffold.py` gates all of it: the breed page, the
+three puppy pages, nav and footer links, the litter section on puppies.html, Mira and the
+sire on our-dogs, the home page doors and parent grid, the gallery filter, the waitlist
+option, the purchase-agreement registration clause, the "reading a genetic panel" section
+(which is entirely about Mira's panel), and every title, description and OG tag that named
+the breed. Flip it to True and re-run to restore all of it.
+
+Photos, the `DOBERMANS` data list and the per-dog facts all stay in the repo. The four
+generated pages were `git rm`'d because a file left in the repo stays live on Pages
+whether or not anything links to it.
+
+Two traps found doing this. `NAV` was a plain string, not an f-string, so a `{dob(...)}`
+call inside it was emitted as **literal text into every page** rather than evaluated —
+check that a template is an f-string before putting an expression in it. And a Doberman
+photo was being used as generic step imagery on process.html with the alt text "Meet the
+puppy", so grepping for the word "Doberman" alone would have missed it; grep the slugs
+(`elowen|malcolm|griffin|mira`) too.
+
+Joy stays on the site. Her number and her name remain; only the breed attribution comes
+off, so labels read "Hope" and "Joy" rather than "Hope, Munchkins" and "Joy, Dobermans".
+
+## Troy's genetic report
+
+`source-files/troy genetic report.pdf`, Wisdom Panel, test date 2026-02-21. **`source-files/`
+is gitignored on purpose** — a file committed here is publicly reachable on Pages whether
+or not anything links to it, and this one should not go up until Hope has seen what it
+says and decided how she wants it presented.
+
+Contains no owner name and no address, so there is no PII barrier to publishing it. What
+it contains instead:
+
+- **At Risk: CDDY / IVDD.** One copy of the FGF4 retrogene insertion, autosomal dominant.
+  Also one copy of CDPA. See the breed-term rules above; this is the finding that took two
+  claims off the site.
+- **Clear on 29 conditions, carrier of 0.** That is a genuinely good result to publish and
+  is most of the story.
+- Breed mix 67% Toy/Mini Poodle, 14% Medium/Standard Poodle, 13% Bernese Mountain Dog,
+  5% Bichon Frise, 1% Miniature Schnauzer. Consistent with a multi-gen Bernedoodle, which
+  is mostly Poodle by definition. The Bichon and Schnauzer fractions are worth mentioning
+  to Hope before anyone else notices them.
+- **Predicted ideal adult weight 22-40 lbs**, against the 21 lbs the site states for her.
+  Worth a question; it does not change the puppies' estimate, which comes from the actual
+  parent weights.
 
 ## Never guess these
 

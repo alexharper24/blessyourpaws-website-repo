@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 22
+V = 23
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -45,6 +45,18 @@ DOBERMANS = [
     ("malcolm", "Malcolm", "Boy",  "Black and rust", "Eager to please, and doing well learning to sit and stay."),
     ("griffin", "Griffin", "Boy",  "Black and rust", "An outgoing boy who makes friends with everyone."),
 ]
+# ---------------------------------------------------------------------------
+# Doberman line: OFF since 2026-08-23 (Alex, conflict of interest). Nothing is
+# deleted. Flip this to True and re-run to restore the whole line: the breed page,
+# the three puppy pages, the nav and footer links, the litter section on
+# puppies.html, Mira and the sire on our-dogs, the gallery filter, and the prose
+# that names the breed. Photos and data stay in the repo either way.
+SHOW_DOBERMANS = False
+D_LIST = list(DOBERMANS) if SHOW_DOBERMANS else []
+def dob(html):
+    """Emit this markup only while the Doberman line is on."""
+    return html if SHOW_DOBERMANS else ""
+
 M_PRICE, D_PRICE, DEPOSIT = 2000, 2200, 500
 M_BORN, M_HOME = "July 22, 2026", "September 16 to 23, 2026"
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
@@ -973,7 +985,7 @@ JS = """// Bless Your Paws Puppies - v2
   var panel = document.createElement('div');
   panel.className = 'chat-panel';
   panel.innerHTML = '<h3>Talk puppies with us</h3>'
-    + '<p>Call or text is the fastest way to reach us. Hope raises the Munchkin Bernedoodles and Joy raises the Dobermans.</p>'
+    + '<p>Call or text is the fastest way to reach us. __WHO__</p>'
     + '<div class="row"><span class="lbl">Hope</span><a href="__PHONE_HREF__">__PHONE__</a></div>'
     + '<div class="row"><span class="lbl">Joy</span><a href="__JOY_HREF__">__JOY_PHONE__</a></div>'
     + '<div class="row"><span class="lbl">Email</span><a href="mailto:__EMAIL__">__EMAIL__</a></div>'
@@ -992,7 +1004,9 @@ JS = """// Bless Your Paws Puppies - v2
   }
 })();
 """
-JS = (JS.replace("__PHONE_HREF__", PHONE_HREF)
+JS = (JS.replace("__WHO__", "Hope raises the Munchkin Bernedoodles and Joy raises the Dobermans."
+                 if SHOW_DOBERMANS else "Hope and Joy raise the puppies between them.")
+        .replace("__PHONE_HREF__", PHONE_HREF)
         .replace("__PHONE__", PHONE_DISPLAY)
         .replace("__JOY_HREF__", JOY_PHONE_HREF)
         .replace("__JOY_PHONE__", JOY_PHONE_DISPLAY)
@@ -1006,10 +1020,10 @@ SPRIG = ('<svg class="sprig" width="72" height="25" viewBox="0 0 40 14" aria-hid
  '<path d="M23 7c0-2.4 2-3.6 4-3.6C27 5.8 25 7 23 7z" fill="currentColor" stroke="none" opacity=".45"/>'
  '<circle cx="34" cy="7" r="1.6" fill="currentColor" stroke="none" opacity=".6"/></g></svg>')
 
-NAV = """<nav class="nav" aria-label="Main">
+NAV = f"""<nav class="nav" aria-label="Main">
   <a href="puppies.html">Puppies</a>
   <a href="munchkin-bernedoodles.html">Bernedoodles</a>
-  <a href="dobermans.html">Dobermans</a>
+{dob('  <a href="dobermans.html">Dobermans</a>')}
   <a href="our-dogs.html">Our Dogs</a>
   <a href="gallery.html">Gallery</a>
   <a href="about.html">About</a>
@@ -1042,7 +1056,7 @@ def footer():
       <div><h3>Our puppies</h3><ul>
         <li><a href="puppies.html">All available puppies</a></li>
         <li><a href="munchkin-bernedoodles.html">Munchkin Bernedoodles</a></li>
-        <li><a href="dobermans.html">Doberman Pinschers</a></li>
+{dob('        <li><a href="dobermans.html">Doberman Pinschers</a></li>')}
         <li><a href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a></li>
         <li><a href="gallery.html">Photo gallery</a></li>
         <li><a href="reviews.html">Reviews</a></li>
@@ -1056,8 +1070,8 @@ def footer():
         <li><a href="purchase-agreement.html">Purchase agreement</a></li>
       </ul></div>
       <div><h3>Get in touch</h3><ul>
-        <li>Hope, Munchkin Bernedoodles<br><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></li>
-        <li>Joy, Dobermans<br><a href="{JOY_PHONE_HREF}">{JOY_PHONE_DISPLAY}</a></li>
+        <li>{'Hope, Munchkin Bernedoodles' if SHOW_DOBERMANS else 'Hope'}<br><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></li>
+        <li>{'Joy, Dobermans' if SHOW_DOBERMANS else 'Joy'}<br><a href="{JOY_PHONE_HREF}">{JOY_PHONE_DISPLAY}</a></li>
         <li><a href="mailto:{EMAIL}">{EMAIL}</a></li>
         <li>{AREA}</li>
         <li class="fine">Visits by appointment. Our location is shared once your
@@ -1126,6 +1140,37 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
     parts.append(f'alt={q}{alt}{q}')
     if lazy: parts.append(f'loading={q}lazy{q}')
     return " ".join(parts) + ">"
+
+def dob_carrier_section_html():
+    """Reading-a-genetic-panel section. Entirely about Mira's panel and illustrated with
+    a Doberman puppy, so it goes when the Doberman line goes. This is where Troy's
+    Wisdom Panel belongs once Hope has decided how she wants it presented."""
+    return dob('<section class="band-pink band-tight"><div class="wrap">'
+      '<div class="grid-2 narrow-right hic hic-flip">'
+      '<div class="col-title hic-head"><p class="eyebrow">Reading a genetic panel</p>'
+      '<h2>What a carrier result actually means</h2></div>'
+      + img_tag('griffin-01', cls='framed hic-photo',
+                alt='Griffin, a black and rust Doberman Pinscher puppy')
+      + '<div class="hic-copy">'
+        "<p>Mira's panel comes back clear on everything tested except one condition, "
+        'where she is a carrier. A carrier has one copy of a variant and is not affected '
+        'by it herself. Carriers are bred to clear partners so that no puppy can be '
+        'affected, which is exactly how she is paired.</p>'
+        '<p>An OFA heart exam is a cardiac screening performed by a veterinarian and '
+        'registered with the Orthopedic Foundation for Animals. Mira has been screened '
+        'by EKG and holter, and her eyes are tested too.</p>'
+        '<p class="fine">Do not take our word for any of it. Scan the QR beside her, or '
+        'follow the links, and read the records yourself.</p>'
+        '</div></div></div></section>')
+
+def dob_meet_card_html():
+    return dob('<div>'
+      + img_tag('malcolm-02', cls='framed',
+                alt='Malcolm, a black and rust Doberman Pinscher puppy')
+      + '<h3 style="margin-top:1rem">Doberman Pinschers</h3>'
+        '<p class="fine">AKC registered, loyal, and ready to go home now.'
+        '<span class="own-line"><a href="dobermans.html">See the litter</a>.</span></p>'
+        '</div>')
 
 def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None):
     """Full-width dog row: big photo, story, a testing block with the real records
@@ -1198,13 +1243,36 @@ def share_row(name, path, img):
   <a href="mailto:?subject={t}&amp;body={u}" aria-label="Share {name} by email">{ic('<path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/>')}</a>
 </div>"""
 
+# One phrase for every title, description, OG tag and JSON-LD block, so the breed
+# list is stated once instead of in nine places that can drift apart.
+BREEDS_PHRASE = ("Munchkin Bernedoodle and Doberman Pinscher" if SHOW_DOBERMANS
+                 else "Munchkin Bernedoodle")
+BREEDS_SHORT  = ("Munchkin Bernedoodle and Doberman" if SHOW_DOBERMANS
+                 else "Munchkin Bernedoodle")
+
+dob_reg_clause = dob('<li><strong>Registration.</strong> Doberman puppies are sold '
+                     'with AKC registration. Breeding rights are available for an '
+                     'additional $' + str(DEPOSIT) + '.</li>')
+
 M_PARENTS = None  # filled in build_pages
 D_PARENTS = None
 
 def build_pages():
     global M_PARENTS, D_PARENTS
     m_cards = "\n".join(card(s, n, x, c, M_PRICE, "Munchkin Bernedoodle") for s, n, x, c, _ in MUNCHKINS)
-    d_cards = "\n".join(card(s, n, x, c, D_PRICE, "Doberman Pinscher") for s, n, x, c, _ in DOBERMANS)
+    d_cards = "\n".join(card(s, n, x, c, D_PRICE, "Doberman Pinscher") for s, n, x, c, _ in D_LIST)
+    # built here rather than inline in the template: an f-string cannot hold a
+    # conditional multi-line block without nesting quotes of the same kind
+    dob_litter_block = dob(f'''<div class="section-head" style="margin-top:4rem">
+    <div>
+      <h2 style="margin:0">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
+      <p class="fine" style="margin:.35rem 0 0">Born {D_BORN}.
+        <strong>Ready to go home now.</strong> AKC registered, tails docked, dew claws
+        removed, microchipped.</p>
+    </div>
+    <a class="btn btn-ghost breed-link" href="dobermans.html">About Doberman Pinschers</a>
+  </div>
+  <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>''')
 
     M_PARENTS = (
       parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
@@ -1233,12 +1301,12 @@ def build_pages():
 
     org_ld = json.dumps({"@context": "https://schema.org", "@type": "LocalBusiness",
         "name": "Bless Your Paws Puppies",
-        "description": "Family-raised Munchkin Bernedoodle and Doberman Pinscher puppies in Warsaw and Winona Lake, Indiana.",
+        "description": f"Family-raised {BREEDS_PHRASE} puppies in Warsaw and Winona Lake, Indiana.",
         "telephone": "+1-574-377-8023", "email": EMAIL, "areaServed": AREA,
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
 
-    page("index.html", "Bless Your Paws Puppies | Munchkin Bernedoodle and Doberman Puppies, Northern Indiana",
-      "Family-raised Munchkin Bernedoodle and Doberman Pinscher puppies from two sisters in northern Indiana. Raised in the home, around kids, with early socialization.",
+    page("index.html", f"Bless Your Paws Puppies | {BREEDS_SHORT} Puppies, Northern Indiana",
+      f"Family-raised {BREEDS_PHRASE} puppies from two sisters in northern Indiana. Raised in the home, around kids, with early socialization.",
       f"""<section class="hero">
   <div class="hero-drift">
     <div class="hero-photo">
@@ -1248,8 +1316,7 @@ def build_pages():
       <div class="hero-copy">
         <p class="eyebrow">Family-raised in Warsaw and Winona Lake</p>
         <h1>Puppies raised in the middle of real family life</h1>
-        <p class="lede">We are two sisters raising Munchkin Bernedoodles and Doberman
-          Pinschers underfoot in our homes, around our kids, the vacuum, the doorbell,
+        <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else 'Munchkin Bernedoodles'} underfoot in our homes, around our kids, the vacuum, the doorbell,
           and everything else a family sounds like. {CHIP_SAMPLE}</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="puppies.html">See available puppies</a>
@@ -1263,23 +1330,22 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <p class="eyebrow">Available now</p>
   <h2>Puppies looking for their families</h2>
-  <p class="lede">Munchkin Bernedoodles going home in September, and Doberman
-    Pinschers ready right now. A ${DEPOSIT} deposit holds your puppy.</p>
+  <p class="lede">{'Munchkin Bernedoodles going home in September, and Doberman Pinschers ready right now.' if SHOW_DOBERMANS else 'Munchkin Bernedoodles going home in September.'} A ${DEPOSIT} deposit holds your puppy.</p>
   <div class="pgrid" style="margin-top:2rem">
 {card(*MUNCHKINS[1][:4], M_PRICE, "Munchkin Bernedoodle")}
 {card(*MUNCHKINS[2][:4], M_PRICE, "Munchkin Bernedoodle")}
 {card(*MUNCHKINS[6][:4], M_PRICE, "Munchkin Bernedoodle")}
-{card(*DOBERMANS[0][:4], D_PRICE, "Doberman Pinscher")}
+{card(*DOBERMANS[0][:4], D_PRICE, "Doberman Pinscher") if SHOW_DOBERMANS else card(*MUNCHKINS[3][:4], M_PRICE, "Munchkin Bernedoodle")}
   </div>
   <div class="section-cta">
-    <p>Every available puppy, both litters, in one place.</p>
+    <p>{'Every available puppy, both litters, in one place.' if SHOW_DOBERMANS else 'Every available puppy in one place.'}</p>
     <a class="btn btn-primary" href="puppies.html">See all available puppies</a>
   </div>
 </div></section>
 
 <section><div class="wrap">
   {SPRIG}
-  <h2 class="center" style="margin-top:1rem">Two breeds, one standard of raising</h2>
+  <h2 class="center" style="margin-top:1rem">{'Two breeds, one standard of raising' if SHOW_DOBERMANS else 'One breed, one standard of raising'}</h2>
   <div class="grid-2" style="margin-top:2rem;align-items:stretch">
     <a class="door" href="munchkin-bernedoodles.html">
       {img_tag('eden-01', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
@@ -1287,12 +1353,12 @@ def build_pages():
       <p class="fine">A small, sweet Bernedoodle and Cavalier cross. Going home in
         September.</p></div>
     </a>
-    <a class="door" href="dobermans.html">
-      {img_tag('griffin-01', alt='Griffin, a Doberman Pinscher puppy')}
+    {dob('''<a class="door" href="dobermans.html">
+      IMGDOB
       <div class="door-body"><h3>Doberman Pinschers</h3>
       <p class="fine">Loyal Dobermans from our health-tested dam Mira. Ready to go
         home now.</p></div>
-    </a>
+    </a>''').replace('IMGDOB', img_tag('griffin-01', alt='Griffin, a Doberman Pinscher puppy'))}
   </div>
 </div></section>
 
@@ -1324,7 +1390,7 @@ def build_pages():
     <a class="btn btn-primary" href="our-dogs.html">Meet our dogs</a>
   </div>
   <div class="parent-grid">
-{M_PARENTS}{D_PARENTS}
+{M_PARENTS}{D_PARENTS if SHOW_DOBERMANS else ''}
   </div>
 </div></section>
 
@@ -1338,7 +1404,7 @@ def build_pages():
       extra_head=f'<script type="application/ld+json">{org_ld}</script>\n')
 
     page("puppies.html", "Available Puppies | Bless Your Paws Puppies",
-      f"All available Munchkin Bernedoodle and Doberman Pinscher puppies. A ${DEPOSIT} deposit reserves your puppy.",
+      f"All available {BREEDS_PHRASE} puppies. A ${DEPOSIT} deposit reserves your puppy.",
       f"""<section><div class="wrap">
   <p class="eyebrow">Available now</p>
   <h1>Our puppies</h1>
@@ -1356,16 +1422,7 @@ def build_pages():
   </div>
   <div class="pgrid cols-4" style="margin-top:1.5rem">{m_cards}</div>
 
-  <div class="section-head" style="margin-top:4rem">
-    <div>
-      <h2 style="margin:0">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
-      <p class="fine" style="margin:.35rem 0 0">Born {D_BORN}.
-        <strong>Ready to go home now.</strong> AKC registered, tails docked, dew claws
-        removed, microchipped.</p>
-    </div>
-    <a class="btn btn-ghost breed-link" href="dobermans.html">About Doberman Pinschers</a>
-  </div>
-  <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>
+{dob_litter_block}
 </div></section>""")
 
     page("munchkin-bernedoodles.html", "Munchkin Bernedoodle Puppies for Sale | Bless Your Paws Puppies",
@@ -1409,7 +1466,8 @@ def build_pages():
   <div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="waitlist.html">Join the waitlist</a></div>
 </div></section>""")
 
-    page("dobermans.html", "Doberman Pinscher Puppies for Sale | Bless Your Paws Puppies",
+    if SHOW_DOBERMANS:
+      page("dobermans.html", "Doberman Pinscher Puppies for Sale | Bless Your Paws Puppies",
       f"AKC Doberman Pinscher puppies, ready to go home now. From our health-tested dam Mira. ${D_PRICE:,} with a ${DEPOSIT} deposit.",
       f"""<section><div class="wrap">
   <div class="grid-2 narrow-left">
@@ -1441,14 +1499,14 @@ def build_pages():
     <div><h2 style="margin:0">Meet their parents</h2></div>
     <a class="btn btn-primary" href="our-dogs.html">Full health details</a>
   </div>
-  <div class="parent-grid">{D_PARENTS}</div>
+  {dob('<div class="parent-grid">' + str(D_PARENTS) + '</div>')}
 </div></section>""")
 
     faq = [
       ("How big does a Munchkin Bernedoodle get?",
        "Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at 15 to 25 lbs full grown, based on the 21 lb mom and 19 lb dad. Size varies puppy to puppy, so ask us about the one you love."),
-      ("Is a Munchkin Bernedoodle a dwarf breed?",
-       "No. The small size comes from breeding down through generations and crossing in a naturally smaller parent breed, not from a short-legged or dwarfism gene. These are normally proportioned little dogs."),
+      ("How does a Munchkin Bernedoodle end up so small?",
+       "By breeding down through generations and crossing in a naturally smaller parent breed. Ours come from a 21 lb Mini Multi Gen Bernedoodle mother and a 19 lb Cavalier father. " + CHIP_DRAFT),
       ("How is this different from a Mini or Micro Bernedoodle?",
        "A Mini or Micro Bernedoodle usually gets small by crossing to a smaller Poodle. A Munchkin adds Cavalier King Charles Spaniel, which brings the size down and brings the Cavalier's calm, affectionate temperament with it."),
       ("Do they shed? Are they hypoallergenic?",
@@ -1472,9 +1530,11 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "Our Cavalier sire is AKC registered and genetically tested clear. Troy's testing documentation is being compiled and will be published here as soon as we have it. On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records."),
+       "Our Cavalier sire is AKC registered and genetically tested clear. Troy's testing documentation is being compiled and will be published here as soon as we have it."
+       + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
-       "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, and a toy. Doberman puppies also come with AKC registration, a one year genetic health guarantee, microchipping, tail docked and dew claws removed."),
+       "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, and a toy."
+       + (" Doberman puppies also come with AKC registration, a one year genetic health guarantee, microchipping, tail docked and dew claws removed." if SHOW_DOBERMANS else "")),
       ("How do I reserve one, and is the deposit refundable?",
        "A $500 deposit reserves your puppy. It applies to your balance and is transferable to another available puppy if your plans change. Our refund terms are being finalised, so ask us before you put a deposit down and we will tell you plainly."),
     ]
@@ -1508,12 +1568,12 @@ def build_pages():
     {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 21 lb Mini Multi Gen Bernedoodle dam')}
     <div class="hic-copy">
       <p>The name confuses people, so here is the honest version. "Munchkin"
-        describes small overall size, not short legs. There is no dwarf gene
-        involved. A Munchkin Bernedoodle is a normally proportioned little dog that
-        keeps the Bernedoodle look, usually somewhere between 10 and 25 lbs full
-        grown, where a standard Bernedoodle can reach 70 lbs or more.</p>
-      <p>Ours get there the natural way: a small mom at 21 lbs bred to a small dad at
-        19 lbs. No trick, no trait, just two small parents.</p>
+        describes small overall size. A Munchkin Bernedoodle is a little dog that keeps
+        the Bernedoodle look, usually somewhere between 10 and 25 lbs full grown, where
+        a standard Bernedoodle can reach 70 lbs or more.</p>
+      <p>Ours come from a small mom at 21 lbs bred to a small dad at 19 lbs. We publish
+        each parent's testing on the <a href="our-dogs.html">our dogs</a> page so you can
+        read it for yourself rather than take our word for it. {CHIP_DRAFT}</p>
     </div>
   </div>
 </div></section>
@@ -1607,7 +1667,11 @@ def build_pages():
         []))
 
     page("our-dogs.html", "Our Dogs and Their Health | Bless Your Paws Puppies",
-      "Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, Mira the health-tested Doberman dam, and our Doberman sire, with testing and records for each.",
+      ("Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, "
+       "Mira the health-tested Doberman dam, and our Doberman sire, with testing and "
+       "records for each." if SHOW_DOBERMANS else
+       "Meet the parents: Troy the Mini Multi Gen Bernedoodle and our AKC Cavalier "
+       "sire, with testing and records for each."),
       f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">The parents</p>
   <h1>Our dogs, and what they are tested for</h1>
@@ -1619,29 +1683,10 @@ def build_pages():
 
 <section><div class="wrap">
   <div class="dogpair">{M_DOGS}</div>
-  <div class="dogpair">{D_DOGS}</div>
+  {dob('<div class="dogpair">' + D_DOGS + '</div>')}
 </div></section>
 
-<section class="band-pink band-tight"><div class="wrap">
-  <div class="grid-2 narrow-right hic hic-flip">
-    <div class="col-title hic-head">
-      <p class="eyebrow">Reading a genetic panel</p>
-      <h2>What a carrier result actually means</h2>
-    </div>
-    {img_tag('griffin-01', cls='framed hic-photo', alt='Griffin, a black and rust Doberman Pinscher puppy')}
-    <div class="hic-copy">
-      <p>Mira's panel comes back clear on everything tested except one condition, where
-        she is a carrier. A carrier has one copy of a variant and is not affected by it
-        herself. Carriers are bred to clear partners so that no puppy can be affected,
-        which is exactly how she is paired.</p>
-      <p>An OFA heart exam is a cardiac screening performed by a veterinarian and
-        registered with the Orthopedic Foundation for Animals. Mira has been screened by
-        EKG and holter, and her eyes are tested too.</p>
-      <p class="fine">Do not take our word for any of it. Scan the QR beside her, or
-        follow the links, and read the records yourself.</p>
-    </div>
-  </div>
-</div></section>
+{dob_carrier_section_html()}
 
 <section class="band-raise" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
   <div>
@@ -1662,9 +1707,9 @@ def build_pages():
 </div></section>""")
 
     page("about.html", "About Hope and Joy | Bless Your Paws Puppies",
-      "Two sisters raising Munchkin Bernedoodles and Doberman Pinschers in their northern Indiana homes.",
+      f"Two sisters raising {BREEDS_PHRASE}s in their northern Indiana homes.",
       f"""<section><div class="wrap">
-  <div class="grid-2 narrow-left hic">
+  <div class="grid-2 narrow-right hic">
     <div class="col-title hic-head">
       <p class="eyebrow">About us</p>
       <h1>Two sisters, one standard</h1>
@@ -1678,8 +1723,7 @@ def build_pages():
     </div>
     <div class="hic-copy">
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
-        northern Indiana homes. Hope raises the Munchkin Bernedoodles and Joy raises
-        the Doberman Pinschers, and every litter is raised the same way: in the house,
+        northern Indiana homes. {'Hope raises the Munchkin Bernedoodles and Joy raises the Doberman Pinschers, and every litter' if SHOW_DOBERMANS else 'Every litter'} is raised the same way: in the house,
         around our kids, in the middle of everything. {CHIP_SAMPLE}</p>
       <p>We grew up in a big family where there was always something cooking and
         someone at the door, and our puppies grow up the same way. By the time a puppy
@@ -1713,11 +1757,11 @@ def build_pages():
       you are further away.</p>
     <div class="contact-pair">
       <a class="contact-tile" href="{PHONE_HREF}">
-        <span class="ct-label">Hope, Munchkins</span>
+        <span class="ct-label">{'Hope, Munchkins' if SHOW_DOBERMANS else 'Hope'}</span>
         <span class="ct-value">{PHONE_DISPLAY}</span>
       </a>
       <a class="contact-tile" href="{JOY_PHONE_HREF}">
-        <span class="ct-label">Joy, Dobermans</span>
+        <span class="ct-label">{'Joy, Dobermans' if SHOW_DOBERMANS else 'Joy'}</span>
         <span class="ct-value">{JOY_PHONE_DISPLAY}</span>
       </a>
       <a class="contact-tile" href="mailto:{EMAIL}">
@@ -1735,6 +1779,8 @@ def build_pages():
     SHARED_KIT = [k for k in M_KIT if k in D_KIT]
     M_ONLY_KIT = [k for k in M_KIT if k not in D_KIT]
     D_ONLY_KIT = [k for k in D_KIT if k not in M_KIT]
+    dob_kit_col = dob('<div><h3>Doberman Pinschers</h3><ul class="checklist">'
+                      + ''.join(f'<li>{i}</li>' for i in D_ONLY_KIT) + '</ul></div>')
 
     steps = [
       ("Say hello", "havilah-02",
@@ -1743,7 +1789,7 @@ def build_pages():
        "and no pressure.",
        'Most families text a photo of the puppy they like and go from there. '
        '<a href="puppies.html">See who is available</a>.'),
-      ("Meet the puppy", "malcolm-02",
+      ("Meet the puppy", "malcolm-02" if SHOW_DOBERMANS else "jordan-02",
        "We set up a visit or a video call so you can meet the puppy, meet the parents, "
        "and meet us. Ten minutes is usually enough to know. We would rather talk you out "
        "of the wrong puppy than sell you one.",
@@ -1803,13 +1849,10 @@ def build_pages():
       <h3>Munchkin Bernedoodles</h3>
       <ul class="checklist">{''.join(f'<li>{i}</li>' for i in M_ONLY_KIT) or '<li>The shared list above</li>'}</ul>
     </div>
-    <div>
-      <h3>Doberman Pinschers</h3>
-      <ul class="checklist">{''.join(f'<li>{i}</li>' for i in D_ONLY_KIT)}</ul>
-    </div>
+    {dob_kit_col}
   </div>
   <div class="section-cta">
-    <p>Both litters come with a written health guarantee.</p>
+    <p>{'Both litters come with a written health guarantee.' if SHOW_DOBERMANS else 'Every puppy comes with a written health guarantee.'}</p>
     <a class="btn btn-primary" href="health-guarantee.html">Read the guarantee</a>
   </div>
 </div></section>
@@ -1865,7 +1908,7 @@ def build_pages():
         <ul class="facts">
           <li><span class="k">Hope, Munchkin Bernedoodles</span>
             <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
-          <li><span class="k">Joy, Dobermans</span>
+          <li><span class="k">{'Joy, Dobermans' if SHOW_DOBERMANS else 'Joy'}</span>
             <span class="v"><a href="{JOY_PHONE_HREF}">{JOY_PHONE_DISPLAY}</a></span></li>
           <li><span class="k">Email</span>
             <span class="v"><a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
@@ -1889,12 +1932,7 @@ def build_pages():
       <p class="fine">Small, soft, and lap-sized. Going home in September.
         <span class="own-line"><a href="munchkin-bernedoodles.html">See the litter</a>.</span></p>
     </div>
-    <div>
-      {img_tag('malcolm-02', cls='framed', alt='Malcolm, a black and rust Doberman Pinscher puppy')}
-      <h3 style="margin-top:1rem">Doberman Pinschers</h3>
-      <p class="fine">AKC registered, loyal, and ready to go home now.
-        <span class="own-line"><a href="dobermans.html">See the litter</a>.</span></p>
-    </div>
+    {dob_meet_card_html()}
   </div>
 </div></section>""")
 
@@ -1921,7 +1959,7 @@ def build_pages():
     <div class="field"><label for="wline">Which puppies are you hoping for?</label>
       <select id="wline" name="line">
         <option>Munchkin Bernedoodles</option>
-        <option>Doberman Pinschers</option>
+{dob('        <option>Doberman Pinschers</option>')}
         <option>Either, tell me about both</option>
       </select></div>
     <div class="field"><label for="wwhen">When are you hoping to bring a puppy home?</label>
@@ -1938,15 +1976,16 @@ def build_pages():
     for s, n, _, c, _ in MUNCHKINS:
         for i in range(1, COUNTS[s] + 1):
             items.append((f"{s}-{i:02d}", n, "munchkin", s))
-    for s, n, _, c, _ in DOBERMANS:
+    for s, n, _, c, _ in D_LIST:
         for i in range(1, COUNTS[s] + 1):
             items.append((f"{s}-{i:02d}", n, "doberman", s))
     gal = "\n".join(f'<a data-line="{line}" data-pup="{slug}" href="puppy-{slug}.html">'
                     f'{img_tag(stem, alt=name)}</a>' for stem, name, line, slug in items)
     pup_opts = "\n".join(f'        <option value="{sl}">{nm}</option>'
-                         for sl, nm, *_ in list(MUNCHKINS) + list(DOBERMANS))
+                         for sl, nm, *_ in list(MUNCHKINS) + D_LIST)
     page("gallery.html", "Photo Gallery | Bless Your Paws Puppies",
-      "Every photo of our Munchkin Bernedoodle and Doberman Pinscher puppies.",
+      "Every photo of our Munchkin Bernedoodle puppies." if not SHOW_DOBERMANS
+      else "Every photo of our Munchkin Bernedoodle and Doberman Pinscher puppies.",
       f"""<section><div class="wrap">
   <p class="eyebrow">Gallery</p>
   <h1>The photo album</h1>
@@ -1955,7 +1994,7 @@ def build_pages():
   <div class="filter-row" style="margin-top:1.5rem">
     <button class="cur" data-line="all">All photos</button>
     <button data-line="munchkin">Munchkin Bernedoodles</button>
-    <button data-line="doberman">Dobermans</button>
+{dob('    <button data-line="doberman">Dobermans</button>')}
     <label class="filter-select">
       <span class="visually-hidden">Filter by puppy</span>
       <select id="pup-select">
@@ -2040,8 +2079,7 @@ def build_pages():
       available puppy if plans change. Refund terms to be confirmed. {CHIP_DRAFT}</li>
     <li><strong>Go-home.</strong> Puppies go home no earlier than 8 weeks of age,
       after a final veterinary check.</li>
-    <li><strong>Registration.</strong> Doberman puppies are sold with AKC
-      registration. Breeding rights are available for an additional ${DEPOSIT}.</li>
+    {dob_reg_clause}
     <li><strong>Health.</strong> The puppy is sold with the
       <a href="health-guarantee.html">written health guarantee</a>, which is part of
       this agreement.</li>
@@ -2195,7 +2233,7 @@ def build_pages():
     for s, n, x, c, note in MUNCHKINS:
         puppy_page(s, n, x, c, note, M_PRICE, "Munchkin Bernedoodle", M_BORN, M_HOME,
                    M_KIT, M_PARENTS, m_facts)
-    for s, n, x, c, note in DOBERMANS:
+    for s, n, x, c, note in D_LIST:
         puppy_page(s, n, x, c, note, D_PRICE, "Doberman Pinscher", D_BORN, D_HOME,
                    D_KIT, D_PARENTS, d_facts)
 
