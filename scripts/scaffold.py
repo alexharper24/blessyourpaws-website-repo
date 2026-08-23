@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 21
+V = 22
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -293,18 +293,19 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 .grid-2.hic{align-items:start}
 .hic>.hic-head,.hic>.hic-copy,.hic>.hic-photo{align-self:start}
 @media (min-width:901px){
-  /* Both rows were `auto`, so when the photo spanning them was taller than the text
-     the leftover height was split BETWEEN the two rows and opened a gap between a
-     heading and its own paragraph. Row 1 hugs the heading and row 2 takes all the
-     slack, which puts the copy directly under the heading and the empty space at the
-     bottom where it belongs. */
-  .hic{grid-template-rows:auto 1fr}
-  .hic>.hic-head{grid-column:1;grid-row:1}
-  .hic>.hic-copy{grid-column:1;grid-row:2}
-  .hic>.hic-photo{grid-column:2;grid-row:1 / span 2}
-  .hic-flip>.hic-head{grid-column:2;grid-row:1}
-  .hic-flip>.hic-copy{grid-column:2;grid-row:2}
-  .hic-flip>.hic-photo{grid-column:1;grid-row:1 / span 2}
+  /* Four rows: a flexible spacer, the heading, the copy, another flexible spacer. The
+     two 1fr rows split the leftover height of the spanning photo evenly, which centres
+     the heading and copy as a GROUP while leaving them adjacent to each other.
+     `auto 1fr` was wrong in the other direction: it put all the slack in the copy's row
+     and pinned the text to the top of the picture. Plain `auto auto` is wrong too, since
+     the slack then lands between the heading and its own paragraph. */
+  .hic{grid-template-rows:1fr auto auto 1fr}
+  .hic>.hic-head{grid-column:1;grid-row:2}
+  .hic>.hic-copy{grid-column:1;grid-row:3}
+  .hic>.hic-photo{grid-column:2;grid-row:1 / -1}
+  .hic-flip>.hic-head{grid-column:2;grid-row:2}
+  .hic-flip>.hic-copy{grid-column:2;grid-row:3}
+  .hic-flip>.hic-photo{grid-column:1;grid-row:1 / -1}
 }
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
@@ -588,10 +589,13 @@ textarea{min-height:8rem}
 .closing h2{margin:0}
 .closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0;
   max-width:44ch}
-/* auto columns, centred: equal 1fr columns left dead space beside the shorter
-   value, which read as a stray gap */
-.contact-pair{display:grid;grid-template-columns:repeat(2,auto);gap:.85rem;
-  justify-content:center;margin:.35rem 0 .25rem}
+/* A wrapping centred row, not a grid. It held two tiles when it was written and now
+   holds three, and `repeat(2,auto)` stranded the third on its own row against the left
+   edge of an otherwise centred block. Flex-wrap centres whatever ends up on each line,
+   however many tiles there are. */
+.contact-pair{display:flex;flex-wrap:wrap;justify-content:center;gap:.85rem;
+  margin:.35rem 0 .25rem}
+.contact-pair>.contact-tile{flex:0 1 auto;min-width:0}
 .contact-tile{display:flex;flex-direction:column;gap:.2rem;text-decoration:none;
   background:var(--paper);border:1.5px solid var(--rule);border-radius:5px;
   padding:.9rem 1.1rem;text-align:left;min-height:44px}
@@ -602,7 +606,9 @@ textarea{min-height:8rem}
   color:var(--sage-deep);font-weight:700;margin-right:-.14em}
 .ct-value{font-family:"Lora",Georgia,serif;font-size:1.02rem;font-weight:600;
   overflow-wrap:anywhere}
-@media (max-width:620px){.contact-pair{grid-template-columns:1fr;justify-content:stretch}}
+@media (max-width:620px){
+  .contact-pair{flex-direction:column;align-items:stretch}
+}
 .closing .btn-row{margin:.35rem 0 0;justify-content:center}
 
 /* ---------- FAQ accordion ---------- */

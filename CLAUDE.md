@@ -220,6 +220,20 @@ this way. The pattern is three children in source order, `.hic-head` / `.hic-pho
 first column on desktop. Mobile then needs no rules at all, because the source order IS
 the mobile order.
 
+**Centring a heading-plus-copy group against a taller photo takes FOUR rows, not two.**
+`.hic` is `grid-template-rows:1fr auto auto 1fr` with the photo spanning `1 / -1`. Both
+wrong answers were tried first: `auto auto` puts the leftover height BETWEEN the heading
+and its own paragraph, so the heading floats away from it; `auto 1fr` puts all of it under
+the copy, so the whole text block pins to the top of the picture and leaves a void below.
+Two flexible spacer rows split the slack evenly above and below the pair. When the text is
+taller than the photo the spacers compute to 0px and there is nothing to centre, which is
+correct, so verify against a section where the photo is the taller side.
+
+**A layout named for its item count breaks when the count changes.** `.contact-pair` was
+`grid-template-columns:repeat(2,auto)` and held two tiles. Adding Joy's number made three,
+and the third was stranded on its own row against the left edge of an otherwise centred
+block. It is a wrapping centred flex row now, which is right for any number of tiles.
+
 **Scope desktop-only grid placement with `min-width`, never by undoing it below 900px.**
 This is the same specificity trap as the modifier classes above and it bit three times in
 one session. An undo rule like `.hic>*` is (0,1,0) and loses to `.hic>.hic-head` at
