@@ -124,9 +124,10 @@ a{color:var(--forest)}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   min-height:82px}
 .brand{display:flex;align-items:center;text-decoration:none;flex:none}
-/* the primary lockup is 1596x474, so ~3.4:1. 76px tall puts it near 256px wide,
-   which fills the bar without crowding the nav. */
-.brand img{height:76px;width:auto;display:block}
+/* the primary lockup is 1596x474, so ~3.4:1. At 76px it stood 6px shy of the 82px
+   bar and read as though it were bursting out of it. 56px leaves 13px of air above
+   and below, and the two smaller breakpoints hold that same 13px. */
+.brand img{height:56px;width:auto;display:block}
 .nav{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;justify-content:flex-end}
 .nav a{text-decoration:none;padding:.5rem .6rem;border-radius:3px;font-size:.94rem;
   white-space:nowrap}
@@ -263,6 +264,19 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
   .pgrid,.pgrid.cols-3,.pgrid.cols-4,.pgrid.cols-7{grid-template-columns:1fr}
 }
 .grid-2>*{min-width:0}
+/* The about intro reads heading, photo, copy in the source, which is the order it
+   should stack in on a phone, so mobile needs no rules at all. The two-column
+   arrangement is scoped to desktop with min-width deliberately: placing it
+   unconditionally and then undoing it in the mobile block is what failed here, since
+   `.intro-split>*` loses to `.intro-split>.col-title` on specificity and the surviving
+   `grid-column:2` created an implicit second track that ate the whole row. Scope
+   desktop-only placement to desktop and there is nothing to override. */
+.intro-split{align-items:start}
+@media (min-width:901px){
+  .intro-split>.col-title{grid-column:1;grid-row:1}
+  .intro-split>.intro-copy{grid-column:1;grid-row:2}
+  .intro-split>.intro-photo{grid-column:2;grid-row:1 / span 2}
+}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);
   align-items:center}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
@@ -601,7 +615,7 @@ textarea{min-height:8rem}
 /* ---------- mobile ---------- */
 @media (max-width:1180px){
   .nav a{font-size:.86rem;padding:.5rem .42rem}
-  .brand img{height:58px}
+  .brand img{height:48px}
 }
 @media (max-width:900px){
   .dogpair{grid-template-columns:1fr}
@@ -637,6 +651,9 @@ textarea{min-height:8rem}
      columns on a phone and squeezed the copy into a third of the screen on eight
      pages. Any new .grid-2 modifier has to be named here too. */
   .grid-2.narrow-left,.grid-2.narrow-right{grid-template-columns:1fr}
+  /* a photo that earns its place beside a fact list on desktop, but which the grid
+     directly below repeats once everything is stacked */
+  .hide-mobile{display:none}
   .parent-grid.row-4{grid-template-columns:1fr}
 
   /* ---- call to action rows. flex-grow on a wrapping row does both halves of the
@@ -667,7 +684,7 @@ textarea{min-height:8rem}
 
   /* ---- a slimmer bar gives a phone back some screen */
   .head-row{min-height:68px}
-  .brand img{height:52px}
+  .brand img{height:42px}
 }
 @media (max-width:400px){
   /* below this a key beside its value leaves each about 130px, so stack them */
@@ -1264,7 +1281,7 @@ def build_pages():
       <p>New to the cross? <a href="what-is-a-munchkin-bernedoodle.html">Read our
         plain-language guide</a> to what a Munchkin Bernedoodle is and what to expect.</p>
     </div>
-    {img_tag('jericho-01', cls='framed', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
+    {img_tag('jericho-01', cls='framed hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
   </div>
   <div class="pgrid cols-4" style="margin-top:2.5rem">{m_cards}</div>
 </div></section>
@@ -1304,7 +1321,7 @@ def build_pages():
       <p>Mira's genetic and heart testing is real and linked:
         <a href="our-dogs.html">see the records</a>.</p>
     </div>
-    {img_tag('elowen-01', cls='framed', alt='Elowen, a black and rust Doberman Pinscher puppy', lazy=False)}
+    {img_tag('elowen-01', cls='framed hide-mobile', alt='Elowen, a black and rust Doberman Pinscher puppy', lazy=False)}
   </div>
   <div class="pgrid cols-3" style="margin-top:2.5rem">{d_cards}</div>
 </div></section>
@@ -1537,12 +1554,19 @@ def build_pages():
     page("about.html", "About Hope and Joy | Bless Your Paws Puppies",
       "Two sisters raising Munchkin Bernedoodles and Doberman Pinschers in their northern Indiana homes.",
       f"""<section><div class="wrap">
-  <div class="grid-2 narrow-left">
-    <div>
-      <div class="col-title">
-        <p class="eyebrow">About us</p>
-        <h1>Two sisters, one standard</h1>
-      </div>
+  <div class="grid-2 narrow-left intro-split">
+    <div class="col-title">
+      <p class="eyebrow">About us</p>
+      <h1>Two sisters, one standard</h1>
+    </div>
+    <div class="intro-photo">
+      <img class="framed wide16" src="img/hope-and-joy.jpg?v={V}"
+        srcset="img/r/hope-and-joy-640.webp 640w, img/r/hope-and-joy-1000.webp 1000w, img/r/hope-and-joy-1400.webp 1400w, img/r/hope-and-joy-1672.webp 1672w"
+        sizes="(max-width:900px) 94vw, 56vw"
+        alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
+        width="1672" height="941" decoding="async">
+    </div>
+    <div class="intro-copy">
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
         northern Indiana homes. Hope raises the Munchkin Bernedoodles and Joy raises
         the Doberman Pinschers, and every litter is raised the same way: in the house,
@@ -1555,13 +1579,6 @@ def build_pages():
         <a class="btn btn-primary" href="contact.html">Say hello</a>
         <a class="btn btn-ghost" href="process.html">How reserving works</a>
       </div>
-    </div>
-    <div>
-      <img class="framed wide16" src="img/hope-and-joy.jpg?v={V}"
-        srcset="img/r/hope-and-joy-640.webp 640w, img/r/hope-and-joy-1000.webp 1000w, img/r/hope-and-joy-1400.webp 1400w, img/r/hope-and-joy-1672.webp 1672w"
-        sizes="(max-width:900px) 94vw, 56vw"
-        alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
-        width="1672" height="941" decoding="async">
     </div>
   </div>
 </div></section>

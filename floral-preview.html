@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="robots" content="noindex, nofollow">
+<title>Floral placements — Bless Your Paws</title>
+<link rel="stylesheet" href="style.css?v=15">
+<style>
+:root{color-scheme:light only}
+@media (prefers-color-scheme:dark){
+  :root{color-scheme:light only}
+  body{background:var(--paper);color:var(--forest)}
+}
+/* ---------- preview chrome, not part of the site ---------- */
+.pv-head{background:var(--forest);color:var(--paper);padding:1.5rem 0}
+.pv-head h1{color:var(--paper);margin:0 0 .35rem;font-size:1.5rem}
+.pv-head p{margin:0;color:var(--rose);font-size:.95rem}
+.pv-opt{border-top:2px solid var(--forest);margin-top:3.5rem;padding-top:0}
+.pv-bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:baseline;
+  padding:.85rem 0 1.1rem}
+.pv-num{font-weight:700;background:var(--forest);color:var(--paper);
+  border-radius:999px;width:28px;height:28px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:.85rem;flex:none}
+.pv-name{font-family:var(--display);font-size:1.25rem;font-weight:600}
+.pv-tag{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+  font-weight:700;padding:.2rem .55rem;border-radius:3px}
+.pv-safe{background:var(--sage-light);color:var(--forest)}
+.pv-care{background:var(--rose);color:var(--forest)}
+.pv-note{font-size:.93rem;color:var(--sage-deep);max-width:62ch;margin:0 0 1.5rem}
+.pv-note b{color:var(--forest)}
+.pv-frame{border:1px dashed var(--sage);border-radius:6px;padding:0;
+  overflow:hidden;margin-bottom:.5rem}
+.pv-cap{font-size:.76rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--sage-deep);font-weight:700;margin:.65rem 0 .3rem}
+
+/* ============================================================
+   THE ACTUAL CANDIDATE TREATMENTS
+   Each is written the way it would ship, so what is on screen is
+   what the site would get.
+   ============================================================ */
+
+/* --- 1. swag as a section divider, replacing the current line rule --- */
+.fl-divider{display:block;margin:0 auto;width:min(240px,52vw);height:auto;
+  opacity:.9}
+.fl-divider-lg{width:min(420px,70vw)}
+
+/* --- 2. corner sprays framing a band --- */
+.fl-corners{position:relative;overflow:hidden}
+.fl-corners>.wrap{position:relative;z-index:1}
+.fl-corners::before,.fl-corners::after{content:"";position:absolute;
+  width:clamp(140px,22vw,280px);aspect-ratio:1;background-size:contain;
+  background-repeat:no-repeat;pointer-events:none;z-index:0}
+.fl-corners::before{top:0;left:0;
+  background-image:url("img/brand/floral-corner-left-520.webp");
+  background-position:top left}
+.fl-corners::after{bottom:0;right:0;
+  background-image:url("img/brand/floral-corner-right-520.webp");
+  background-position:bottom right;transform:rotate(180deg)}
+.fl-soft::before,.fl-soft::after{opacity:.22}
+.fl-bold::before,.fl-bold::after{opacity:1}
+
+/* --- 3. wreath around a seal / stat --- */
+.fl-seal{position:relative;display:grid;place-items:center;
+  width:clamp(190px,42vw,240px);aspect-ratio:1;margin:0 auto;text-align:center}
+.fl-seal::before{content:"";position:absolute;inset:0;
+  background:url("img/brand/floral-wreath-420.webp") center/contain no-repeat}
+.fl-seal-in{position:relative;z-index:1;max-width:56%}
+.fl-seal-in .n{font-family:var(--display);font-size:2rem;line-height:1;
+  font-weight:600;display:block}
+.fl-seal-in .t{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;
+  font-weight:700;color:var(--sage-deep);display:block;margin-top:.3rem}
+
+/* --- 4. sprig as a heading accent --- */
+.fl-head{display:flex;align-items:center;gap:.85rem;margin-bottom:.4rem}
+.fl-head img{width:clamp(44px,7vw,62px);height:auto;flex:none}
+.fl-head h2{margin:0}
+
+/* --- 5. very low opacity watermark behind a quote --- */
+.fl-mark{position:relative;overflow:hidden}
+.fl-mark>.wrap{position:relative;z-index:1}
+.fl-mark::after{content:"";position:absolute;right:-4%;top:50%;
+  translate:0 -50%;width:min(46%,460px);aspect-ratio:1;
+  background:url("img/brand/floral-wreath-640.webp") center/contain no-repeat;
+  opacity:.13;pointer-events:none}
+
+/* --- 6. sprig as the list marker --- */
+.fl-list{list-style:none;margin:0;padding:0}
+.fl-list li{padding:.5rem 0 .5rem 2.4rem;position:relative;font-size:.97rem}
+.fl-list li::before{content:"";position:absolute;left:0;top:.45rem;
+  width:26px;height:20px;
+  background:url("img/brand/floral-sprig-240.webp") left center/contain no-repeat}
+
+/* --- 7. swag arching over the page title --- */
+.fl-crown{text-align:center;padding-top:.5rem}
+.fl-crown img{display:block;margin:0 auto -.4rem;width:min(300px,64vw);height:auto}
+
+@media (max-width:900px){
+  /* the corner sprays need reining in on a phone: at 22vw each they close in on the
+     copy from both sides. Opacity is set per variant rather than on the base, because
+     a base rule here is later in the file than .fl-soft and .fl-bold and would beat
+     both of them, flattening the one comparison this page exists to show. */
+  .fl-corners::before,.fl-corners::after{width:120px}
+  .fl-soft::before,.fl-soft::after{opacity:.16}
+  .fl-bold::before,.fl-bold::after{opacity:.85}
+  .fl-mark::after{opacity:.09;width:70%}
+}
+</style>
+</head>
+<body>
+
+<div class="pv-head"><div class="wrap">
+  <h1>Floral placements, seven candidates</h1>
+  <p>Same five source files throughout. Everything here uses the real stylesheet, so what you see is what would ship.</p>
+</div></div>
+
+<div class="wrap" style="padding-top:2rem">
+  <p class="lede" style="max-width:64ch">Hope asked for flowers. The risk is a greeting card, so these are ordered
+  from <b>hardest to get wrong</b> to <b>most likely to tip into twee</b>. My
+  recommendation is at the bottom.</p>
+</div>
+
+<!-- ============ 1 ============ -->
+<section class="pv-opt"><div class="wrap">
+  <div class="pv-bar"><span class="pv-num">1</span>
+    <span class="pv-name">Swag as the section divider</span>
+    <span class="pv-tag pv-safe">Safest</span></div>
+  <p class="pv-note">The site already draws a small sage sprig between sections. This
+    swaps that one decorative element for the real thing and adds nothing new. It is
+    the entire motif for the price of one asset, it never touches the copy, and it
+    reads as <b>stationery</b> rather than decoration.</p>
+</div>
+
+<div class="pv-frame">
+  <div class="wrap" style="padding:2.5rem 1.25rem">
+    <p class="pv-cap">Current</p>
+    <svg class="sprig" width="120" height="18" viewBox="0 0 120 18" fill="none"
+      stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="color:var(--sage)">
+      <path d="M2 9h116M42 9c4-5 10-5 14 0M64 9c4 5 10 5 14 0"/></svg>
+    <p class="pv-cap" style="margin-top:2.5rem">Small, 240px</p>
+    <img class="fl-divider" src="img/brand/floral-swag-640.webp" alt="" width="2118" height="502">
+    <p class="pv-cap" style="margin-top:2.5rem">Large, 420px</p>
+    <img class="fl-divider fl-divider-lg" src="img/brand/floral-swag-1000.webp" alt="" width="2118" height="502">
+  </div>
+</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="pv-opt"><div class="wrap">
+  <div class="pv-bar"><span class="pv-num">2</span>
+    <span class="pv-name">Sprig beside a heading</span>
+    <span class="pv-tag pv-safe">Safest</span></div>
+  <p class="pv-note">A single bloom at 44 to 62px next to a section heading. Small
+    enough to be punctuation, and it gives the florals a job on every page without a
+    single large placement. Use it on <b>two or three headings per page at most</b>.</p>
+</div>
+
+<div class="pv-frame"><div class="wrap" style="padding:2.5rem 1.25rem">
+  <div class="fl-head">
+    <img src="img/brand/floral-sprig-240.webp" alt="" width="1093" height="692">
+    <h2 style="margin:0">Why we do it this way</h2>
+  </div>
+  <p style="max-width:60ch">A puppy's first eight weeks decide a lot about the dog they
+    become. That is why ours are never raised apart from the household.</p>
+  <p class="pv-cap" style="margin-top:2rem">And as the list marker</p>
+  <ul class="fl-list" style="max-width:52ch">
+    <li>Raised in the house, never in a kennel run</li>
+    <li>Held every day from the first week</li>
+    <li>Vet checked and first shots before go home</li>
+  </ul>
+</div></div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="pv-opt"><div class="wrap">
+  <div class="pv-bar"><span class="pv-num">3</span>
+    <span class="pv-name">Swag arching over a page title</span>
+    <span class="pv-tag pv-safe">Safe, once</span></div>
+  <p class="pv-note">Crown one page and one page only. On the About page it reads as
+    a title plate. Put it on every page and it becomes a letterhead you cannot
+    escape.</p>
+</div>
+
+<div class="pv-frame"><div class="wrap fl-crown" style="padding:2.5rem 1.25rem">
+  <img src="img/brand/floral-swag-640.webp" alt="" width="2118" height="502">
+  <p class="eyebrow" style="margin:0">About us</p>
+  <h1 style="margin:.1rem 0 0">Two sisters, one standard</h1>
+</div></div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="pv-opt"><div class="wrap">
+  <div class="pv-bar"><span class="pv-num">4</span>
+    <span class="pv-name">Wreath as a seal</span>
+    <span class="pv-tag pv-care">Judgement call</span></div>
+  <p class="pv-note">The wreath wants to hold something short. Around a number it is
+    a seal and it works. <b>Around a puppy photo it is a greeting card</b>, which is
+    the exact failure mode to avoid, so that version is not shown here.</p>
+</div>
+
+<div class="pv-frame"><div class="wrap" style="padding:2.5rem 1.25rem">
+  <div class="tri" style="gap:1.5rem">
+    <div class="fl-seal"><div class="fl-seal-in">
+      <span class="n">2</span><span class="t">Breeds raised at home</span></div></div>
+    <div class="fl-seal"><div class="fl-seal-in">
+      <span class="n">10</span><span class="t">Puppies this season</span></div></div>
+    <div class="fl-seal"><div class="fl-seal-in">
+      <span class="n">Est.<br>2024</span><span class="t">Warsaw, Indiana</span></div></div>
+  </div>
+</div></div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="pv-opt"><div class="wrap">
+  <div class="pv-bar"><span class="pv-num">5</span>
+    <span class="pv-name">Wreath as a faint watermark</span>
+    <span class="pv-tag pv-care">Judgement call</span></div>
+  <p class="pv-note">At 13% opacity behind a quote it registers as texture rather
+    than as a flower. Cheap, and it survives being scaled. The catch is that at this
+    opacity it can just read as a <b>smudge</b> on a poor screen.</p>
+</div>
+
+<div class="pv-frame">
+  <section class="band-raise fl-mark" style="margin:0"><div class="wrap" style="padding:3rem 1.25rem">
+    <blockquote style="margin:0;max-width:44ch">
+      <p class="lede" style="margin:0 0 .6rem">"They answered every question I had, twice, and
+        sent pictures the whole way through."</p>
+      <footer style="font-size:.92rem;color:var(--sage-deep)">Sample review, waiting on real ones</footer>
+    </blockquote>
+  </div></section>
+</div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="pv-opt"><div class="wrap">
+  <div class="pv-bar"><span class="pv-num">6</span>
+    <span class="pv-name">Corner sprays on the dark band</span>
+    <span class="pv-tag pv-care">Best payoff, most risk</span></div>
+  <p class="pv-note">The call to action here is a plain link because that is what the
+    forest bands on the real site use. There is no inverted button variant, and a
+    preview is the wrong place to invent one.</p>
+  <p class="pv-note">This is where the palette earns its keep: the pinks sing against
+    forest green in a way they never do on white. Shown twice, because the opacity is
+    the whole decision. <b>Full strength competes with the words.</b></p>
+</div>
+
+<div class="pv-frame">
+  <p class="pv-cap" style="padding:.85rem 1.25rem 0">Restrained, 22% opacity</p>
+  <section class="band-forest fl-corners fl-soft" style="margin:0"><div class="wrap" style="padding:3.5rem 1.25rem">
+    <h2 style="margin:0 0 .5rem">Come and meet them</h2>
+    <p style="max-width:48ch;margin:0">Visits are by appointment, and the location is
+      shared once your visit is scheduled.</p>
+    <p style="margin:.9rem 0 0"><a href="#">Say hello and plan a visit</a></p>
+  </div></section>
+
+  <p class="pv-cap" style="padding:1.5rem 1.25rem 0">Full strength</p>
+  <section class="band-forest fl-corners fl-bold" style="margin:0"><div class="wrap" style="padding:3.5rem 1.25rem">
+    <h2 style="margin:0 0 .5rem">Come and meet them</h2>
+    <p style="max-width:48ch;margin:0">Visits are by appointment, and the location is
+      shared once your visit is scheduled.</p>
+    <p style="margin:.9rem 0 0"><a href="#">Say hello and plan a visit</a></p>
+  </div></section>
+</div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="pv-opt"><div class="wrap">
+  <div class="pv-bar"><span class="pv-num">7</span>
+    <span class="pv-name">Corner sprays on white</span>
+    <span class="pv-tag pv-care">Weakest</span></div>
+  <p class="pv-note">The same treatment on the paper background. The greens go muddy
+    and the pinks disappear into the page. Included so the contrast with option 6 is
+    on the record: <b>these florals need the dark ground.</b></p>
+</div>
+
+<div class="pv-frame">
+  <section class="fl-corners fl-soft" style="margin:0"><div class="wrap" style="padding:3.5rem 1.25rem">
+    <h2 style="margin:0 0 .5rem">Come and meet them</h2>
+    <p style="max-width:48ch;margin:0">Visits are by appointment, and the location is
+      shared once your visit is scheduled.</p>
+  </div></section>
+</div>
+</section>
+
+<!-- ============ recommendation ============ -->
+<section class="pv-opt" style="border-top-width:3px">
+<div class="wrap" style="padding-bottom:4rem">
+  <div class="pv-bar"><span class="pv-name" style="font-size:1.4rem">What I would ship</span></div>
+  <p class="pv-note" style="max-width:68ch"><b>Options 1, 2 and 6-restrained, and nothing else.</b>
+    The swag replaces the existing divider so the motif appears on every page without
+    adding a single element. The sprig accents two headings per page. One dark band per
+    page gets the corner sprays at low opacity, which is the only placement with real
+    visual impact and the only one that uses the pinks the way the palette intends.</p>
+  <p class="pv-note" style="max-width:68ch">That is <b>three</b> placements. The reason
+    to stop there is that florals read as intentional when they are rare and as a theme
+    when they are everywhere, and a theme is what makes a breeder site look amateur.
+    Option 3 is worth one page if Hope wants more. I would skip 4, 5 and 7.</p>
+  <p class="pv-note" style="max-width:68ch">Nothing here is wired into the site yet. Say
+    which numbers you want and I will build those and delete this page.</p>
+</div>
+</section>
+
+</body>
+</html>
