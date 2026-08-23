@@ -96,14 +96,20 @@ a{color:var(--forest)}
    fixed rem cap broke the drift at wide viewports: the photo pinned right while the
    copy stayed in the centred wrap, and the two separated. 160vh at 3:2 keeps the
    height near a viewport so it cannot run away vertically either. */
-/* 16:9 rather than the source 3:2. Cover does crop the IMAGE by 16% of its height,
-   but the height it loses is blanket and background, not the puppy: checked against
-   the source, she stays whole at object-position 50% 22%, which leaves real
-   headroom above her crown rather than grazing it. That buys a hero roughly
-   a sixth shorter at the same width, with the fade intact. */
+/* 16:9 rather than the source 3:2, which buys a hero roughly a sixth shorter at the
+   same width with the fade intact. The height it loses is blanket and background, not
+   the puppy.
+   object-position is pinned to 0% deliberately, and it is the only value that should
+   be used here. havilah-01 is 1731x1154 and the top of his head is 5.4% down the
+   frame, so the source itself carries very little headroom. Cover shows 84.4% of the
+   source height, so every percent of object-position eats 0.19% of that headroom:
+   at 22% the crown sat 2.3% below the top edge and read as though he were about to
+   hit his head, and by 34% it was clipped outright. At 0% the crown sits 6.4% down,
+   which is the most this photograph can give. More air than that needs a different
+   photograph, not a different crop. */
 .hero-photo{justify-self:end;align-self:center;
   width:min(74%,178vh);aspect-ratio:16/9;z-index:0;pointer-events:none}
-.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 0%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
