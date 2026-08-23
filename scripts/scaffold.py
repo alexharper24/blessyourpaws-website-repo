@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 8
+V = 9
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"
 PHONE_HREF = "tel:5743778023"
@@ -145,17 +145,22 @@ a{color:var(--forest)}
    trimming the puppy top and bottom. a taller frame lands nearer 3:2 and keeps him
    whole. */
 .hero-drift{position:relative;display:grid;align-items:center;
-  min-height:clamp(26rem,38vw,34rem)}
-.hero-photo{grid-area:1/1;justify-self:end;align-self:center;width:76%;
-  aspect-ratio:3/2;z-index:0;pointer-events:none}
+  min-height:clamp(24rem,34vw,32rem)}
+/* every direct child shares the one cell. the grid child here is the .wrap, NOT
+   .hero-copy, so targeting .hero-copy left the .wrap auto-placed into row 2 and
+   stacked the copy underneath the photo. */
+.hero-drift>*{grid-area:1/1}
+.hero-photo{justify-self:end;align-self:center;
+  width:min(74%,58rem);aspect-ratio:3/2;z-index:0;pointer-events:none}
 .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 34%;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%);
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 14%,
     #000 42%,#000 100%)}
 /* a narrower measure: the headline was setting two very long lines */
-.hero-copy{grid-area:1/1;position:relative;z-index:1;width:min(33rem,46%);
-  padding:clamp(2.5rem,5vw,4.5rem) 0;justify-self:start}
+.hero-drift>.wrap{z-index:1;align-self:center}
+.hero-copy{position:relative;width:min(33rem,46%);
+  padding:clamp(2.25rem,4vw,3.5rem) 0}
 .hero-copy .lede{max-width:30rem}
 .hero-copy h1{text-shadow:0 1px 0 var(--paper)}
 /* older engines without mask-image get a plain right-hand photo rather than a
@@ -173,10 +178,8 @@ a{color:var(--forest)}
 .grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
 /* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
    3:2 cuts off either their heads or their torsos. */
-/* capped at the source width: the original is 768px, so a wider slot would upscale
-   it and render soft. it also reads better at this size than filling the column. */
-.framed.portrait{aspect-ratio:3/4;object-fit:cover;object-position:50% 26%;
-  max-width:29rem;width:100%;justify-self:center;margin:0 auto;display:block}
+/* a 16:9 original keeps a 16:9 frame, so none of the subject is cropped away */
+.framed.wide16{aspect-ratio:1672/941;object-fit:cover}
 /* .78/1.22 puts a feature photo near 780px in a 1339 wrap. .62/1.38 gave 894px,
    which overwhelmed the paragraph beside it. */
 .grid-2.narrow-left{grid-template-columns:.78fr 1.22fr}
@@ -463,7 +466,19 @@ textarea{min-height:8rem}
 .closing .inner{max-width:44rem;margin:0 auto;text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:.85rem}
 .closing h2{margin:0}
-.closing .contact-line{font-size:1.05rem;color:var(--forest-soft);margin:0}
+.closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0;
+  max-width:44ch}
+.contact-pair{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;width:100%;
+  margin:.35rem 0 .25rem}
+.contact-tile{display:flex;flex-direction:column;gap:.2rem;text-decoration:none;
+  background:var(--paper);border:1.5px solid var(--rule);border-radius:5px;
+  padding:.9rem 1.1rem;text-align:left;min-height:44px}
+.contact-tile:hover{border-color:var(--forest)}
+.ct-label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sage-deep);font-weight:700}
+.ct-value{font-family:"Lora",Georgia,serif;font-size:1.02rem;font-weight:600;
+  overflow-wrap:anywhere}
+@media (max-width:620px){.contact-pair{grid-template-columns:1fr}}
 .closing .btn-row{margin:.35rem 0 0;justify-content:center}
 
 /* ---------- FAQ accordion ---------- */
@@ -526,11 +541,11 @@ textarea{min-height:8rem}
   /* stack the hero: the drift only works when there is width to fade across */
   .hero-drift{min-height:0;display:block}
   .hero-drift{display:block;min-height:0}
-  .hero-photo{grid-area:auto;width:auto;justify-self:auto;aspect-ratio:3/2;
-    margin:0 0 1.5rem}
+  .hero-drift>*{grid-area:auto}
+  .hero-photo{width:auto;justify-self:auto;aspect-ratio:3/2;margin:0 0 1.5rem}
   .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
     border:1.5px solid var(--forest)}
-  .hero-copy{grid-area:auto;width:auto;padding:1.75rem 0 0}
+  .hero-copy{width:auto;padding:1.75rem 0 0}
   .hero-copy h1{text-shadow:none}
   .dogrow{grid-template-columns:1fr;gap:1.25rem}
   .health{grid-template-columns:1fr}
@@ -1385,17 +1400,17 @@ def build_pages():
       </div>
     </div>
     <div>
-      <img class="framed portrait" src="img/hope-and-joy.jpg?v={V}"
-        srcset="img/r/hope-and-joy-320.webp 320w, img/r/hope-and-joy-640.webp 640w, img/r/hope-and-joy-768.webp 768w"
-        sizes="(max-width:900px) 92vw, 29rem"
+      <img class="framed wide16" src="img/hope-and-joy.jpg?v={V}"
+        srcset="img/r/hope-and-joy-640.webp 640w, img/r/hope-and-joy-1000.webp 1000w, img/r/hope-and-joy-1400.webp 1400w, img/r/hope-and-joy-1672.webp 1672w"
+        sizes="(max-width:900px) 94vw, 56vw"
         alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
-        width="768" height="1024" decoding="async">
+        width="1672" height="941" decoding="async">
     </div>
   </div>
 </div></section>
 
-<section class="band-raise"><div class="wrap grid-2 narrow-right">
-  {img_tag('joshua-02', cls='framed', alt='A Munchkin Bernedoodle puppy in the grass')}
+<section class="band-raise"><div class="wrap grid-2 narrow-left">
+  {img_tag('joshua-02', cls='framed', alt='A Munchkin Bernedoodle puppy in the grass', sizes='(max-width:900px) 94vw, 56vw')}
   <div>
     <h2>Why we do it this way</h2>
     <p>A puppy's first eight weeks decide a lot about the dog they become. That is
@@ -1409,12 +1424,19 @@ def build_pages():
 
 <section class="closing" style="margin-bottom:0"><div class="wrap">
   <div class="inner">
-    <p class="eyebrow" style="margin:0">Visits by appointment</p>
     <h2>Come and meet them</h2>
-    <p class="contact-line">Call or text Hope on
-      <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a>, or email
-      <a href="mailto:{EMAIL}">{EMAIL}</a>. Video calls work well if you are
-      further away.</p>
+    <p class="contact-line">Visits are by appointment, and video calls work well if
+      you are further away.</p>
+    <div class="contact-pair">
+      <a class="contact-tile" href="{PHONE_HREF}">
+        <span class="ct-label">Call or text Hope</span>
+        <span class="ct-value">{PHONE_DISPLAY}</span>
+      </a>
+      <a class="contact-tile" href="mailto:{EMAIL}">
+        <span class="ct-label">Email us</span>
+        <span class="ct-value">{EMAIL}</span>
+      </a>
+    </div>
     <div class="btn-row">
       <a class="btn btn-primary" href="puppies.html">See available puppies</a>
       <a class="btn btn-ghost" href="contact.html">Send an inquiry</a>
