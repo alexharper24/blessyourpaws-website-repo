@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 17
+V = 18
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -287,8 +287,18 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
    row. Scope desktop-only placement to desktop and there is nothing to override.
 
    Add `hic-flip` when the photo belongs in the first column instead of the second. */
-.hic{align-items:start}
+/* `.grid-2` sets align-items:center and is declared after this block, so a bare
+   `.hic` at (0,1,0) loses and every item was vertically centred in its row, which is
+   what pushed a heading away from its own paragraph. Compound selector to win. */
+.grid-2.hic{align-items:start}
+.hic>.hic-head,.hic>.hic-copy,.hic>.hic-photo{align-self:start}
 @media (min-width:901px){
+  /* Both rows were `auto`, so when the photo spanning them was taller than the text
+     the leftover height was split BETWEEN the two rows and opened a gap between a
+     heading and its own paragraph. Row 1 hugs the heading and row 2 takes all the
+     slack, which puts the copy directly under the heading and the empty space at the
+     bottom where it belongs. */
+  .hic{grid-template-rows:auto 1fr}
   .hic>.hic-head{grid-column:1;grid-row:1}
   .hic>.hic-copy{grid-column:1;grid-row:2}
   .hic>.hic-photo{grid-column:2;grid-row:1 / span 2}
@@ -341,7 +351,11 @@ a.packet-link:hover .packet{border-color:var(--sage-deep)}
 .door{display:block;text-decoration:none;border:1.5px solid var(--forest);
   border-radius:6px;overflow:hidden;background:#fff}
 .door img{width:100%;aspect-ratio:3/2;object-fit:cover}
-.door-body{padding:1.25rem 1.4rem 1.5rem}
+/* The dead band under the last line was the paragraph's own bottom margin sitting on
+   top of the padding, not the padding alone. Padding on the parent stops the margin
+   collapsing out, so it has to be removed explicitly. */
+.door-body{padding:1.15rem 1.4rem 1.25rem}
+.door-body>:last-child{margin-bottom:0}
 .door:hover{border-color:var(--sage-deep)}
 
 /* ---------- facts ---------- */
@@ -539,7 +553,11 @@ textarea{min-height:8rem}
   gap:1.5rem;align-items:start}
 .health p{margin:0 0 .45rem;font-size:.95rem}
 .health .btn{margin-top:.55rem;padding:.55rem 1.1rem;font-size:.88rem;min-height:44px}
-.health-btns{display:flex;flex-direction:column;align-items:flex-start;gap:.1rem}
+/* stretch rather than flex-start so both record links take the width of the wider one.
+   Two links of different widths stacked on top of each other read as an accident. */
+.health-btns{display:flex;flex-direction:column;align-items:stretch;gap:.45rem;
+  max-width:22rem}
+.health-btns .btn{justify-content:center}
 .health-qr{margin:0;text-align:center;flex:none;width:132px}
 .health-qr img{width:132px;height:132px;border:1px solid var(--rule);
   border-radius:4px;background:#fff}
@@ -641,22 +659,51 @@ textarea{min-height:8rem}
   /* stack the hero: the drift only works when there is width to fade across.
      The photo was sitting flush against the sticky header with a zero gap, which read
      as the puppy bumping the top edge of the page. */
-  .hero-drift{min-height:0;display:block;padding-top:1.25rem}
-  .hero-drift{display:block;min-height:0}
   .hero-drift>*{grid-area:auto}
-  /* The photograph has the puppy's crown 5.4% down the frame and no cropping can
-     improve on that, so bringing him lower means adding space rather than recropping.
-     The box is 4:3 while the source is 3:2, and `contain` anchored to the bottom
-     letterboxes the difference above him: about 31px at a 375px width, on top of the
-     14px the photograph itself gives. The band is filled by the image element's own
-     background, so it reads as a mounted print rather than a gap. */
-  .hero-photo{width:auto;justify-self:auto;aspect-ratio:4/3;margin:0 0 1.5rem}
-  .hero-photo img{object-fit:contain;object-position:50% 100%;
-    background:var(--paper-raise)}
-  .hero-photo img{-webkit-mask-image:none;mask-image:none;border-radius:6px;
-    border:1.5px solid var(--forest)}
-  .hero-copy{width:auto;padding:1.75rem 0 0}
-  .hero-copy h1{text-shadow:none}
+  /* Option B, chosen 2026-08-23: full bleed, 4:5, with the copy over the foot of the
+     picture. 4:5 is taller than the source 3:2, so cover matches the box height and
+     crops the WIDTH. The full height of the photograph is shown, nothing can be cut
+     off his head or his paws at any width, and the vertical half of object-position is
+     inert here, so do not try to tune it. The air above him comes from the box being
+     tall: 5.4% of ~490px is about 26px, and with no frame line at the top edge there is
+     nothing for him to bump against, which was the original complaint. */
+  /* min-height rather than aspect-ratio, and the copy shares the same grid cell
+     instead of being absolutely positioned. That means the cell is as tall as
+     whichever is bigger, so a long headline on a 320px screen grows the photo to fit
+     instead of spilling out of the bottom of it. */
+  /* aspect-ratio MUST be cleared. The desktop rule sets 16/9, and with a min-height
+     and no width the ratio derives the width from the height: 544 x 16/9 = 967px,
+     inside a 375px page. That was the whole overflow. */
+  .hero-photo{width:auto;justify-self:auto;margin:0;position:relative;
+    aspect-ratio:auto;min-height:min(142vw,34rem);grid-area:1/1}
+  /* absolutely positioned so it fills the cell. `height:100%` cannot work here: the
+     parent's height comes from min-height and from its grid sibling, so it is an
+     indefinite height and the percentage resolves to auto, which left the photo at its
+     intrinsic 250px inside a 544px cell with a dark void under it. */
+  .hero-photo img{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;object-position:50% 50%;border:0;border-radius:0;background:none}
+  /* the scrim carries the type. It has to reach far enough up to seat the text block
+     without climbing over the puppy, so it is a four-stop gradient rather than a fade */
+  .hero-photo::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to top,rgba(34,61,44,.93) 0%,rgba(34,61,44,.78) 22%,
+      rgba(34,61,44,.34) 48%,rgba(34,61,44,.04) 70%,transparent 84%)}
+  /* An implicit `auto` track sizes to max-content, and the photo's max-content is the
+     intrinsic width of the source file, so the track blew out to 967px inside a 375px
+     page and took the whole document with it. minmax(0,1fr) bounds it to the container.
+     */
+  .hero-drift{position:relative;padding-top:0;display:grid;
+    grid-template-columns:minmax(0,1fr)}
+  .hero-drift>.wrap{grid-area:1/1;align-self:end;z-index:2}
+  .hero-copy{width:auto;padding:0 0 1.35rem}
+  .hero-copy .eyebrow{color:var(--rose)}
+  .hero-copy h1{color:#fff;text-shadow:0 1px 14px rgba(0,0,0,.4);
+    font-size:clamp(1.5rem,7vw,1.9rem);margin-bottom:.45rem}
+  .hero-copy .lede{color:#e9ded9;font-size:.95rem;margin-bottom:.5rem}
+  .hero-copy .btn-row{margin-top:.85rem}
+  /* the sample-copy chip has to stay legible against the scrim rather than the paper */
+  .hero-copy .chip-sample{background:rgba(253,249,249,.92);color:var(--forest);
+    border-color:transparent}
+  .hero-photo img{-webkit-mask-image:none;mask-image:none}
   .dogrow{grid-template-columns:1fr;gap:1.25rem}
   .health{grid-template-columns:1fr}
   .health-qr{width:110px}
@@ -715,15 +762,25 @@ textarea{min-height:8rem}
      a sentence, so on a phone it takes its own line */
   .own-line{display:block;margin-top:.3rem}
 
+  /* ---- a single word alone on the last line. Narrow columns produce these constantly,
+     and `pretty` exists for exactly this: it pulls a word back from the last line by
+     re-breaking the ones above it. `balance` evens out short headings. Browsers without
+     support simply ignore both and break as they do now. */
+  p,li,figcaption,blockquote,.v,.k{text-wrap:pretty}
+  h1,h2,h3,.eyebrow,.dog-kicker{text-wrap:balance}
+
+  /* ---- these two labels are long enough to wrap to two lines in a ghost button,
+     which looks broken next to a single-line heading */
+  .breed-link{white-space:nowrap;font-size:.92rem;padding-left:1rem;padding-right:1rem}
+
   /* ---- a slimmer bar gives a phone back some screen */
   .head-row{min-height:68px}
   .brand img{height:42px}
 }
-@media (max-width:400px){
-  /* below this a key beside its value leaves each about 130px, so stack them */
-  .facts li{flex-direction:column;gap:.15rem}
-  .facts .v{text-align:left}
-}
+/* No stacking breakpoint here on purpose. Stacking the key above its value doubles the
+   height of every fact list, which on a puppy page is six rows of pure scrolling. The
+   pair stays side by side at every width; `min-width:0` plus `overflow-wrap` on the
+   value is what stops a long one forcing the row wider than the screen. */
 @media (max-width:900px){
   .hero{overflow:visible}
 }
@@ -1209,7 +1266,7 @@ def build_pages():
 <section><div class="wrap">
   {SPRIG}
   <h2 class="center" style="margin-top:1rem">Two breeds, one standard of raising</h2>
-  <div class="grid-2" style="margin-top:2rem;align-items:stretch">
+  <div class="grid-2" style="margin-top:2rem;align-items:start">
     <a class="door" href="munchkin-bernedoodles.html">
       {img_tag('eden-01', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
       <div class="door-body"><h3>Munchkin Bernedoodles</h3>
@@ -1281,7 +1338,7 @@ def build_pages():
       <p class="fine" style="margin:.35rem 0 0">Born {M_BORN}. Going home {M_HOME}.
         {SIZE_DRAFT}</p>
     </div>
-    <a class="btn btn-ghost" href="munchkin-bernedoodles.html">About the breed</a>
+    <a class="btn btn-ghost breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
   </div>
   <div class="pgrid cols-4" style="margin-top:1.5rem">{m_cards}</div>
 
@@ -1292,7 +1349,7 @@ def build_pages():
         <strong>Ready to go home now.</strong> AKC registered, tails docked, dew claws
         removed, microchipped.</p>
     </div>
-    <a class="btn btn-ghost" href="dobermans.html">About the breed</a>
+    <a class="btn btn-ghost breed-link" href="dobermans.html">About Doberman Pinschers</a>
   </div>
   <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>
 </div></section>""")
@@ -1525,7 +1582,7 @@ def build_pages():
         [("View Mira\u2019s GenSol Results (PDF)",
           "https://gensol2storageaccount.blob.core.windows.net/certificates/eb11a34d-fa1e-4a4b-ac2f-b5b5bcc6d48e/gensolresult534262.pdf"),
          ("View Mira\u2019s OFA Record", "https://ofa.org/advanced-search?appnum=2720473")],
-        qr="qr-mira.png", qr_num="2720473") +
+        ) +
       dog_row("doberman-sire-01", "Our Doberman sire", "Doberman Pinscher", None,
         "Our sire is a big, striking red and rust boy at 100 lbs, and an easy dog to "
         "live with. He is where the Doberman puppies get their size and their steady "

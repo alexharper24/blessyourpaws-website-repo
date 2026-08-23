@@ -236,6 +236,40 @@ laptop reads as tight on a phone. The mobile fix that actually mattered was the 
 between the sticky header and the photo, which had been zero. More air than this needs a
 different photograph. Run the headroom measurement in the git history before picking one.
 
+**Clearing `aspect-ratio` is part of overriding a sized box.** The mobile hero blew the
+whole document out to 967px inside a 375px page. The mobile rule set `width:auto` and a
+`min-height`, but left the desktop `aspect-ratio:16/9` in place, and the ratio then
+derived the width FROM the height: 544 x 16/9 = 967. Any rule that re-sizes a box which
+had an aspect-ratio must set `aspect-ratio:auto` too.
+
+**`height:100%` needs a parent with a definite height.** After that fix the hero photo
+sat at its intrinsic 250px inside a 544px cell with a dark void beneath it, because the
+parent's height came from `min-height` plus a grid sibling, which is indefinite, so the
+percentage resolved to auto. The photo is `position:absolute;inset:0` instead. Same trap
+applies to any full-bleed image in a cell sized by something other than itself.
+
+**A grid's implicit track is `auto`, which means max-content.** An unconstrained image in
+one sizes the track to the intrinsic width of the source file. Overlay heroes use
+`grid-template-columns:minmax(0,1fr)`.
+
+**`.grid-2` sets `align-items:center` and is declared AFTER `.hic`.** A bare `.hic` at
+(0,1,0) loses, every item centres in its row, and a heading floats away from its own
+paragraph. It is `.grid-2.hic` for that reason. Also give `.hic` `grid-template-rows:auto
+1fr` on desktop: with two `auto` rows the slack from a tall spanning photo is split
+BETWEEN the heading row and the copy row, which opens the same gap a different way.
+
+**A last child's bottom margin does not collapse out through padding.** The "extra white
+space before the box closes" on the door cards was the final paragraph's own margin
+sitting on top of `.door-body`'s padding. `.door-body>:last-child{margin-bottom:0}`.
+
+**Do not stack `.facts` key over value at narrow widths.** It was tried and reverted:
+doubling the height of a six-row fact list is pure scrolling on the page where buyers are
+reading specs. `min-width:0` plus `overflow-wrap` on the value is what prevents overflow,
+not stacking.
+
+**Single-word last lines are handled by `text-wrap:pretty` on mobile**, with `balance` on
+headings. Browsers without support ignore both.
+
 **Measure a range, not one width.** 390px alone was clean while 320px overflowed and
 768px was fine. The audit that matters runs every page at 320 / 390 / 414 checking for
 horizontal overflow, uncollapsed multi-column grids, and CTA lines that do not fill
