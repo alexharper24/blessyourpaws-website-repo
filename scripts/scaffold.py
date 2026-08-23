@@ -632,10 +632,10 @@ textarea{min-height:8rem}
   .cthumbs button{width:64px;height:64px}
   .facts li{min-height:44px}
 
-  /* ---- the compound-selector trap this repo's CLAUDE.md already warns about, hit
-     anyway. `.grid-2` above is specificity (0,1,0); `.grid-2.narrow-left` is (0,2,0),
-     so the two narrow variants kept their desktop columns on a phone and squeezed
-     the copy into a third of the screen on eight pages. Name every variant. */
+  /* ---- the compound-selector trap. `.grid-2` above is specificity (0,1,0) while
+     `.grid-2.narrow-left` is (0,2,0), so the two narrow variants kept their desktop
+     columns on a phone and squeezed the copy into a third of the screen on eight
+     pages. Any new .grid-2 modifier has to be named here too. */
   .grid-2.narrow-left,.grid-2.narrow-right{grid-template-columns:1fr}
   .parent-grid.row-4{grid-template-columns:1fr}
 

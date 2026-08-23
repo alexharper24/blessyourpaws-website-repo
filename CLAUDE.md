@@ -180,3 +180,39 @@ Or `preview_start({name: "blessyourpaws"})` from the root launch.json.
 
 Before committing: `python check_site.py blessyourpaws-website-repo` from the
 `site-checks` repo.
+
+## Responsive traps this build actually hit
+
+Two of these cost a full review round each. Check both before claiming a mobile pass
+is done.
+
+**A modifier class outranks the mobile override.** `.grid-2.narrow-left` is
+specificity (0,2,0); the `@media (max-width:900px)` rule that collapses `.grid-2` is
+(0,1,0) and loses. The variants held their desktop columns on a phone across eight
+pages while the override looked correct in the source. Every modifier has to be named
+in the mobile block explicitly. Applies equally to `.parent-grid.row-4` and to any
+`.grid-2` modifier added later.
+
+**Flex and grid children default to `min-width:auto`.** A value with no break
+opportunity in it, in this case `info@blessyourpawspuppies.com`, sets the min-content
+width of its column, which pushed the contact page 48px past a 320px screen and
+dragged the photo in the next column out with it. `.grid-2>*{min-width:0}` and
+`overflow-wrap:anywhere` on the value are the fix. The symptom is horizontal scroll on
+one page at one narrow width, so it does not show up unless 320px is actually measured.
+
+**CTA rows.** The rule is: side by side when the buttons fit, full width when one
+wraps onto its own line. `flex:1 1 auto` on the buttons of a wrapping row does both,
+so there is no need for a media query per button pair. Do not apply it to
+`.section-cta` on mobile, which turns to a column, where flex-grow would grow the
+button vertically instead; that one uses `align-items:stretch`.
+
+**The chat launcher is not injected on a page that has `form[data-guard]`.** It is
+redundant next to the inquiry form, and at 390px the fixed button landed on top of a
+form field on the waitlist page.
+
+**Measure a range, not one width.** 390px alone was clean while 320px overflowed and
+768px was fine. The audit that matters runs every page at 320 / 390 / 414 checking for
+horizontal overflow, uncollapsed multi-column grids, and CTA lines that do not fill
+their container, then re-checks 1280 and 1920 to confirm the desktop treatment and the
+asymmetric columns survived. `.parent-grid` is `auto-fit`, so 2 to 3 columns at 768px
+and above is correct, not a missed collapse.
