@@ -77,6 +77,14 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 
 ### Content from Joy and Hope
 
+> **Client questionnaire issued 2026-08-22.** 27 questions covering every open item
+> below, grouped into terms / parent dogs / their own words / look and feel / practical
+> setup, tagged Hope / Joy / Both, with the launch blockers marked. Built outside this
+> repo (it is a client document, not a site page) at
+> `scratchpad/questionnaire.html` -> `BlessYourPaws-Questionnaire.pdf`. As answers come
+> back, tick the items here rather than tracking them in the PDF.
+
+
 - [x] **RESOLVED: the Bernedoodle dam is TROY** (female, Mini Multi Gen Bernedoodle).
       The "Mura/Mira" transcription was the Doberman, Mira, all along. The earlier
       note calling Troy the Cavalier sire was wrong.
