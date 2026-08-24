@@ -169,6 +169,35 @@ over fine. Prose and identity do not.
   only what Hope states about her own puppies.
 
 
+## Image sizing: the `sizes` hint must be measured, not guessed
+
+`img_tag`'s default was `45vw` while the things using it rendered anywhere from 289px to
+852px. A wrong `sizes` costs bytes in one direction and sharpness in the other, and neither
+shows up in any check that only looks for broken images.
+
+Named constants now, each measured at 1440 against the real grid track:
+
+| constant | column | renders | hint |
+|---|---|---|---|
+| `CARD_SIZES` | `.pgrid` 4-up | 289px | 22vw + breakpoints |
+| `GAL_SIZES` | gallery tiles | 321px | 22vw + breakpoints |
+| `PHOTO_WIDE` | `narrow-left` 1.30fr | 843px | 58vw |
+| `PHOTO_LEAN` | `lean-left` 1.15fr | 745px | 46vw |
+| `PHOTO_NARROW` | `narrow-right` + flip, .70fr | 403px | 29vw |
+
+The card grid alone was picking a 1000px file for a 289px slot: 372KB where 74KB does, and
+the gallery 5.2MB where 979KB does. **When adding a section, pick the constant that matches
+its column ratio.** The audit is analytic and cache-proof: resolve each `sizes` attribute at
+a viewport width and compare to the element's real rendered width. Do NOT audit by reading
+`currentSrc` — the browser keeps a larger cached candidate and will report it, which is how
+I first mis-measured this.
+
+**The LCP image must be eager and `fetchpriority="high"`.** Six pages had a lazy-loaded
+largest-contentful image, which delays LCP by a whole round trip for nothing. `img_tag`
+takes `priority=True`, which sets `fetchpriority` and `decoding=sync` and suppresses
+`loading=lazy`. The check: the first image in the viewport wider than 200px must have
+`fetchpriority` and must not be lazy, on every page, at every width.
+
 ## Adopted puppies stay on the site
 
 `ADOPTED = {"tirzah"}` in `scripts/scaffold.py`. **ADOPTED means spoken for, NOT gone.**

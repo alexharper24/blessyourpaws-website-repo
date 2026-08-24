@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 38
+V = 44
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -1100,7 +1100,7 @@ def header():
   <a class="brand" href="index.html" aria-label="Bless Your Paws Puppies, home">
     <img src="img/brand/logo-primary.png?v={V}"
       srcset="img/brand/logo-primary-60.png{asset_v('img/brand/logo-primary-60.png')} 202w, img/brand/logo-primary-84.png{asset_v('img/brand/logo-primary-84.png')} 283w, img/brand/logo-primary-120.png{asset_v('img/brand/logo-primary-120.png')} 404w, img/brand/logo-primary-168.png{asset_v('img/brand/logo-primary-168.png')} 566w"
-      sizes="(max-width:900px) 210px, 260px"
+      sizes="(max-width:900px) 145px, 190px"
       alt="Bless Your Paws Puppies" width="1596" height="474" decoding="async">
   </a>
   <button class="nav-toggle" aria-expanded="false" aria-label="Open menu">Menu</button>
@@ -1178,7 +1178,7 @@ def page(path, title, desc, body, extra_head=""):
 {body}
 </main>
 {footer()}
-<script src="main.js?v={V}"></script>
+<script src="main.js?v={V}" defer></script>
 </body>
 </html>
 """
@@ -1195,7 +1195,7 @@ def asset_v(path):
         return ""
 
 def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
-            sizes="(max-width:900px) 94vw, 45vw"):
+            sizes="(max-width:900px) 94vw, 58vw", priority=False):
     q = chr(34)
     parts = ["<img"]
     if hidden: parts.append("hidden")
@@ -1212,7 +1212,12 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
     parts.append(f'src={q}img/{folder}/{stem}.jpg'
                  f'{asset_v(f"img/{folder}/{stem}.jpg")}{q}')
     parts.append(f'alt={q}{alt}{q}')
-    if lazy: parts.append(f'loading={q}lazy{q}')
+    if priority:
+        # the largest-contentful candidate: eager, and flagged so the browser fetches it
+        # ahead of the other images competing for the same connection
+        parts.append(f'fetchpriority={q}high{q}')
+        parts.append(f'decoding={q}sync{q}')
+    if lazy and not priority: parts.append(f'loading={q}lazy{q}')
     return " ".join(parts) + ">"
 
 def dob_carrier_section_html():
@@ -1246,7 +1251,8 @@ def dob_meet_card_html():
         '<span class="own-line"><a href="dobermans.html">See the litter</a>.</span></p>'
         '</div>')
 
-def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None):
+def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None,
+            first=False):
     """Full-width dog row: big photo, story, a testing block with the real records
     linked, and a QR to the OFA page. Mirrors the Kingdom Family Companions pattern."""
     hp = "".join("<p><strong>%s</strong> %s</p>" % (k, v) for k, v in health)
@@ -1265,6 +1271,7 @@ def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None):
     reg_html = '<p class="reg-name">%s</p>' % reg if reg else ""
     return ('<article class="dogrow">'
       + img_tag(stem, folder="dogs", cls="dog-photo",
+                lazy=not first, priority=first,
                 alt="%s, our %s" % (name, breed),
                 sizes="(max-width:900px) 94vw, 56vw")
       + '<div>'
@@ -1293,7 +1300,17 @@ def parent_card(stem, name, role, breed, facts, note=""):
       '<ul class="facts" style="margin-top:.6rem;margin-bottom:0">' + rows + '</ul>'
       + note_html + '</div></article>')
 
-def card(slug, name, sex, colour, price, breed):
+# measured against the real .pgrid tracks rather than guessed: 289px at 1440, 321 in the
+# gallery, so the old "45vw" was more than double the truth
+# measured, per column ratio, at 1440
+PHOTO_WIDE   = "(max-width:900px) 94vw, 58vw"   # narrow-left: photo in the 1.30fr column
+PHOTO_LEAN   = "(max-width:900px) 94vw, 46vw"   # lean-left
+PHOTO_NARROW = "(max-width:900px) 94vw, 29vw"   # narrow-right + flip: copy takes the width
+
+CARD_SIZES = ("(max-width:460px) 92vw, (max-width:760px) 46vw, "
+              "(max-width:1100px) 30vw, 22vw")
+
+def card(slug, name, sex, colour, price, breed, first=False):
     # an adopted puppy shows no price: she is not for sale, and a price beside "Adopted!"
     # invites the question of whether she still is
     adopted = slug in ADOPTED
@@ -1301,7 +1318,8 @@ def card(slug, name, sex, colour, price, breed):
     badge = ('<span class="status status-adopted">Adopted!</span>' if adopted
              else '<span class="status">Available</span>')
     return f"""<a class="packet-link{' is-adopted' if adopted else ''}" href="puppy-{slug}.html"><article class="packet">
-  {img_tag(lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy')}
+  {img_tag(lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy', sizes=CARD_SIZES,
+           lazy=not first, priority=first)}
   <div class="packet-body">
     <p class="packet-name">{name}</p>
     <p class="packet-meta">{sex} &middot; {colour}</p>
@@ -1344,7 +1362,8 @@ D_PARENTS = None
 
 def build_pages():
     global M_PARENTS, D_PARENTS
-    m_cards = "\n".join(card(s, n, x, c, M_PRICE, "Munchkin Bernedoodle") for s, n, x, c, _ in MUNCHKINS)
+    m_cards = "\n".join(card(s, n, x, c, M_PRICE, "Munchkin Bernedoodle", first=(k == 0))
+                        for k, (s, n, x, c, _) in enumerate(MUNCHKINS))
     d_cards = "\n".join(card(s, n, x, c, D_PRICE, "Doberman Pinscher") for s, n, x, c, _ in D_LIST)
     # built here rather than inline in the template: an f-string cannot hold a
     # conditional multi-line block without nesting quotes of the same kind
@@ -1418,7 +1437,7 @@ def build_pages():
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else 'Available now'}</p>
       <h1>Munchkin Bernedoodle puppies</h1>
     </div>
-    {img_tag('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
+    {img_tag('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False, priority=True)}
     <div class="hic-copy">
       <p class="lede">{n_word(M_TOTAL)} puppies from Troy, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
@@ -1468,7 +1487,7 @@ def build_pages():
       f"""<section class="hero">
   <div class="hero-drift">
     <div class="hero-photo">
-      {img_tag('havilah-01', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, sizes='(max-width:900px) 96vw, 74vw')}
+      {img_tag('havilah-01', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes='(max-width:900px) 96vw, 74vw')}
     </div>
     <div class="wrap">
       <div class="hero-copy">
@@ -1508,7 +1527,7 @@ def build_pages():
     <p class="eyebrow">How they are raised</p>
     <h2>Socialized before they ever leave our arms</h2>
   </div>
-  {img_tag('caleb-02', cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy')}
+  {img_tag('caleb-02', cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
   <div class="hic-copy">
     <p>Every puppy is raised in the home, not a kennel. They grow up with children,
       other dogs, and the everyday noise of family life: the doorbell, the TV, pots
@@ -1570,7 +1589,7 @@ def build_pages():
       <p>New to the cross? <a href="what-is-a-munchkin-bernedoodle.html">Read our
         plain-language guide</a> to what a Munchkin Bernedoodle is and what to expect.</p>
     </div>
-    {img_tag('jericho-01', cls='framed hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
+    {img_tag('jericho-01', cls='framed hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False, priority=True)}
   </div>
   <div class="pgrid cols-4" style="margin-top:2.5rem">{m_cards}</div>
 </div></section>
@@ -1611,7 +1630,7 @@ def build_pages():
       <p>Mira's genetic and heart testing is real and linked:
         <a href="our-dogs.html">see the records</a>.</p>
     </div>
-    {img_tag('elowen-01', cls='framed hide-mobile', alt='Elowen, a black and rust Doberman Pinscher puppy', lazy=False)}
+    {img_tag('elowen-01', cls='framed hide-mobile', alt='Elowen, a black and rust Doberman Pinscher puppy', lazy=False, priority=True)}
   </div>
   <div class="pgrid cols-3" style="margin-top:2.5rem">{d_cards}</div>
 </div></section>
@@ -1674,7 +1693,7 @@ def build_pages():
       <p class="eyebrow">Breed guide</p>
       <h1>What is a Munchkin Bernedoodle?</h1>
     </div>
-    {img_tag('shiloh-01', cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False)}
+    {img_tag('shiloh-01', cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_NARROW)}
     <div class="hic-copy">
       <p class="lede">A Munchkin Bernedoodle is an intentionally small Bernedoodle cross.
       Ours come from a Mini Multi Gen Bernedoodle mom and an AKC Cavalier King Charles
@@ -1687,7 +1706,7 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <div class="grid-2 narrow-right hic hic-flip">
     <div class="col-title hic-head"><h2>Where the small size comes from</h2></div>
-    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 22 lb Mini Multi Gen Bernedoodle dam')}
+    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 22 lb Mini Multi Gen Bernedoodle dam', sizes=PHOTO_NARROW)}
     <div class="hic-copy">
       <p>The name confuses people, so here is the honest version. "Munchkin"
         describes small overall size. A Munchkin Bernedoodle is a little dog that keeps
@@ -1721,7 +1740,7 @@ def build_pages():
 
 <section class="band-forest"><div class="wrap grid-2 narrow-left hic">
   <div class="hic-head"><h2>Honest words about the coat</h2></div>
-  {img_tag('havilah-03', cls='framed hic-photo', alt='Close view of a Munchkin Bernedoodle puppy coat')}
+  {img_tag('havilah-03', cls='framed hic-photo', alt='Close view of a Munchkin Bernedoodle puppy coat', sizes=PHOTO_NARROW)}
   <div class="hic-copy">
     <p>Doodle coats vary by individual puppy, even within one litter. Many are wavy
       to curly and shed lightly. Some shed more. We will not promise you a
@@ -1761,7 +1780,7 @@ def build_pages():
           "pages 4 and 5."),
          ("The report:", "linked here, with every health result the panel returned.")],
         [("View Troy’s Wisdom Panel report (PDF)",
-          "records/troy-wisdom-panel-2026-02-21.pdf")]) +
+          "records/troy-wisdom-panel-2026-02-21.pdf")], first=True) +
       dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",
         None,
         "Our sire is an AKC-registered ruby Cavalier, 19 lbs, and the reason these "
@@ -1846,7 +1865,8 @@ def build_pages():
       <h1>Two sisters, one standard</h1>
     </div>
     <div class="hic-photo">
-      <img class="framed wide16" src="img/hope-and-joy.jpg?v={V}"
+      <img class="framed wide16" fetchpriority="high" decoding="sync"
+        src="img/hope-and-joy.jpg?v={V}"
         srcset="img/r/hope-and-joy-640.webp?v={V} 640w, img/r/hope-and-joy-1000.webp?v={V} 1000w, img/r/hope-and-joy-1400.webp?v={V} 1400w, img/r/hope-and-joy-1672.webp?v={V} 1672w"
         sizes="(max-width:900px) 94vw, 56vw"
         alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
@@ -1960,7 +1980,7 @@ def build_pages():
     ]
     steps_html = "\n".join(
       f'''    <article class="step">
-      <div class="step-media">{img_tag(stem, alt=title, sizes="(max-width:460px) 92vw, (max-width:760px) 46vw, (max-width:1100px) 30vw, 19vw")}</div>
+      <div class="step-media">{img_tag(stem, alt=title, sizes="(max-width:460px) 92vw, (max-width:760px) 46vw, (max-width:1100px) 30vw, 19vw", lazy=(i > 1), priority=(i == 1))}</div>
       <div class="step-head"><span class="step-num">{i}</span><h3>{title}</h3></div>
       <p>{body}</p>
       <p class="fine">{note}</p>
@@ -2058,7 +2078,7 @@ def build_pages():
         <p class="fine" style="margin-bottom:0">Our exact location is shared once your
           visit is scheduled. Video calls work well for families further away.</p>
       </div>
-      {img_tag('jordan-01', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
+      {img_tag('jordan-01', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw', lazy=False, priority=True)}
     </div>
   </div>
 </div></section>
@@ -2077,7 +2097,7 @@ def build_pages():
     <p>Joining costs nothing and commits you to nothing. When a new litter arrives,
       waitlist families hear first, in the order they joined, and get first chance to
       reserve.</p>
-    {img_tag('jordan-02', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy')}
+    {img_tag('jordan-02', cls='framed', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy', lazy=False, priority=True)}
   </div>
   <div class="formcard">
     <h2 style="margin-top:0">Add your name</h2>
@@ -2108,8 +2128,12 @@ def build_pages():
     for s, n, _, c, _ in D_LIST:
         for i in range(1, COUNTS[s] + 1):
             items.append((f"{s}-{i:02d}", n, "doberman", s))
+    # tiles sit in their own grid, not the section column, so they need their own hint
+    GAL_SIZES = ("(max-width:460px) 46vw, (max-width:760px) 31vw, "
+                 "(max-width:1100px) 24vw, 22vw")
     gal = "\n".join(f'<a data-line="{line}" data-pup="{slug}" href="puppy-{slug}.html">'
-                    f'{img_tag(stem, alt=name)}</a>' for stem, name, line, slug in items)
+                    f'{img_tag(stem, alt=name, sizes=GAL_SIZES, lazy=(k>0), priority=(k==0))}</a>'
+                    for k, (stem, name, line, slug) in enumerate(items))
     pup_opts = "\n".join(f'        <option value="{sl}">{nm}</option>'
                          for sl, nm, *_ in list(MUNCHKINS) + D_LIST)
     page("gallery.html", "Photo Gallery | Bless Your Paws Puppies",
@@ -2145,7 +2169,7 @@ def build_pages():
       <h1>From our families</h1>
       <p class="fine" style="margin:0">{CHIP_SAMPLE}</p>
     </div>
-    {img_tag('havilah-02', cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy')}
+    {img_tag('havilah-02', cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True)}
     <div class="hic-copy">
       <blockquote class="lede" style="border-left:3px solid var(--sage);padding-left:1.25rem;margin:0 0 1.5rem">
         "Our puppy came home confident, snuggly, and already used to kids. You can
@@ -2296,7 +2320,8 @@ def build_pages():
         order = [first] + [i for i in range(1, cnt + 1) if i != first]
         slides = "\n".join(
             "        " + img_tag(f"{slug}-{i:02d}", alt=f"{name}, photo {k+1}",
-                                 lazy=(k > 0), hidden=(k > 0))
+                                 lazy=(k > 0), hidden=(k > 0), priority=(k == 0),
+                                 sizes="(max-width:900px) 94vw, 52vw")
             for k, i in enumerate(order))
         thumbs = "\n".join(
             f'        <button aria-current="{"true" if k==0 else "false"}" '
@@ -2309,11 +2334,19 @@ def build_pages():
         # with one breed the litter page is puppies.html, so the crumb points there
         breed_page = ('munchkin-bernedoodles' if (is_munchkin and SHOW_DOBERMANS)
                       else 'puppies' if is_munchkin else 'dobermans')
+        # The structured data is the machine-readable copy of the same claim, and it was
+        # still saying InStock, "available now" and $2,000 for an adopted puppy long after
+        # the visible page stopped. Google reads this for rich results, so it is the one
+        # that would have kept offering her for sale in search.
+        adopted = slug in ADOPTED
         ld = json.dumps({"@context": "https://schema.org", "@type": "Product",
             "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{lead(slug)}.jpg",
-            "description": f"{name} is a {colour.lower()} {breed} puppy, available now.",
+            "description": (f"{name} is a {colour.lower()} {breed} puppy from our litter, "
+                            f"already adopted." if adopted else
+                            f"{name} is a {colour.lower()} {breed} puppy, available now."),
             "offers": {"@type": "Offer", "priceCurrency": "USD", "price": str(price),
-                       "availability": "https://schema.org/InStock"}})
+                       "availability": ("https://schema.org/SoldOut" if adopted
+                                        else "https://schema.org/InStock")}})
         page(f"puppy-{slug}.html", f"{name}, {breed} Puppy | Bless Your Paws Puppies",
           # an adopted puppy's description must not advertise a price or a deposit: that
           # is the line search engines and link previews show, so it is the one place a
