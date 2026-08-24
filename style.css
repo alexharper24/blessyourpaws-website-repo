@@ -535,6 +535,13 @@ textarea{min-height:8rem}
   gap:clamp(1.25rem,2.5vw,2.5rem);max-width:64rem;margin:0 auto}
 .tri>div{background:var(--card,#fff);border:1px solid var(--rule);border-radius:5px;
   padding:1.35rem 1.5rem;flex:1 1 16rem;max-width:22rem}
+/* When there is only one card it sits alone in a wide band and reads as an afterthought.
+   Given the room, it takes it: wider panel, list in two columns, heading across the top. */
+.tri.one>div{flex:1 1 auto;max-width:44rem;padding:1.75rem 2rem;width:100%}
+.tri.one h3{text-align:center;margin-bottom:1.1rem}
+.tri.one .checklist{columns:2;column-gap:2.5rem}
+.tri.one .checklist li{break-inside:avoid}
+@media (max-width:620px){.tri.one .checklist{columns:1}}
 .tri h3{margin:0 0 .75rem;font-size:1.05rem}
 .tri .checklist li{font-size:.93rem}
 @media (max-width:900px){.tri{max-width:34rem}.tri>div{flex:1 1 100%;max-width:none}}

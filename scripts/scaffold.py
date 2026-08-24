@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 27
+V = 28
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -62,13 +62,6 @@ M_BORN, M_HOME = "July 22, 2026", "September 16 to 23, 2026"
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
 CHIP_DRAFT  = '<span class="chip chip-draft">Draft, confirm before launch</span>'
-# Two facts are still being gathered: whether the Cavalier sire's panel covers CDDY, and
-# whether the puppies themselves will be tested. Neither can be assumed. "Bred to a clear
-# partner" is exactly the sort of claim that must not be written before the paper exists.
-SIRE_PENDING = ('We are gathering our Cavalier sire&rsquo;s panel now and will publish it '
-                'here in full. Once we have it we will say plainly what it means for this '
-                'pairing, and whether we are testing the puppies themselves. '
-                '<span class="chip chip-draft">Hope to confirm before launch</span>')
 CHIP_SAMPLE = '<span class="chip chip-sample">Sample copy, waiting on their words</span>'
 CHIP_PHOTO  = '<span class="chip chip-draft">Photo coming</span>'
 SIZE_DRAFT  = ('<span class="chip chip-draft">Draft estimate from the 19 lb and 21 lb '
@@ -617,6 +610,13 @@ textarea{min-height:8rem}
   gap:clamp(1.25rem,2.5vw,2.5rem);max-width:64rem;margin:0 auto}
 .tri>div{background:var(--card,#fff);border:1px solid var(--rule);border-radius:5px;
   padding:1.35rem 1.5rem;flex:1 1 16rem;max-width:22rem}
+/* When there is only one card it sits alone in a wide band and reads as an afterthought.
+   Given the room, it takes it: wider panel, list in two columns, heading across the top. */
+.tri.one>div{flex:1 1 auto;max-width:44rem;padding:1.75rem 2rem;width:100%}
+.tri.one h3{text-align:center;margin-bottom:1.1rem}
+.tri.one .checklist{columns:2;column-gap:2.5rem}
+.tri.one .checklist li{break-inside:avoid}
+@media (max-width:620px){.tri.one .checklist{columns:1}}
 .tri h3{margin:0 0 .75rem;font-size:1.05rem}
 .tri .checklist li{font-size:.93rem}
 @media (max-width:900px){.tri{max-width:34rem}.tri>div{flex:1 1 100%;max-width:none}}
@@ -1714,7 +1714,9 @@ def build_pages():
           "Bernedoodle looks like on a panel."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
-          "chondrodystrophy variant, CDDY, which is explained below."),
+          "chondrodystrophy variant, CDDY. It takes only one copy to matter, so it can "
+          "pass to a puppy. The full report is linked below and the panel explains it on "
+          "pages 4 and 5."),
          ("The full report:", "linked here, all 14 pages, nothing left out.")],
         [("View Troy’s Wisdom Panel report (PDF)",
           "records/troy-wisdom-panel-2026-02-21.pdf")]) +
@@ -1773,33 +1775,7 @@ def build_pages():
 </div></section>
 
 {dob_carrier_section_html()}
-<section class="band-pink band-tight"><div class="wrap grid-2 narrow-left hic hic-flip">
-    <div class="col-title hic-head">
-      <p class="eyebrow">Reading Troy&rsquo;s panel</p>
-      <h2>The one thing her test found</h2>
-    </div>
-    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our Mini Multi Gen Bernedoodle dam')}
-    <div class="hic-copy">
-      <p>Troy came back <strong>clear on 29 of the 30 conditions</strong> on the panel.
-        On the thirtieth she carries one copy of a variant called <strong>CDDY</strong>,
-        chondrodystrophy, and we would rather you heard that from us than found it
-        yourself.</p>
-      <p><strong>What it is.</strong> CDDY is the variant behind shorter legs, and it also
-        makes the discs in a dog&rsquo;s back age faster than usual. Dogs that have it are
-        more likely to have disc trouble later in life. The panel puts that risk plainly:
-        a dog with one or two copies is between five and fifteen times more likely to need
-        back surgery than a dog with none. Plenty of dogs that carry it never have a day of
-        trouble, and plenty of dogs with disc problems do not carry it at all.</p>
-      <p><strong>What it means for a puppy.</strong> Unlike most things on a panel, this
-        one only takes a single copy to matter, so it can pass from Troy to a puppy. That
-        is the honest position, and it is why we are publishing the report rather than
-        summarising it.</p>
-      <p><strong>What we are doing about it.</strong> {SIRE_PENDING}</p>
-      <p class="fine">Do not take our word for any of this. The full report is on Troy above,
-        all fourteen pages, and the paragraph the panel itself writes about this variant is
-        on pages 4 and 5.</p>
-    </div>
-</div></section>
+
 
 <section class="band-raise" style="margin-bottom:0"><div class="wrap grid-2 narrow-left">
   <div>
@@ -1850,7 +1826,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise"><div class="wrap grid-2 narrow-right hic hic-flip">
+<section class="band-raise"><div class="wrap grid-2 hic hic-flip">
   <div class="hic-head"><h2>Why we do it this way</h2></div>
   {img_tag('joshua-02', cls='framed hic-photo', alt='A Munchkin Bernedoodle puppy in the grass', sizes='(max-width:900px) 94vw, 56vw')}
   <div class="hic-copy">
@@ -1966,7 +1942,7 @@ def build_pages():
   <h2 class="center">What comes home with your puppy</h2>
   <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">{'Both litters leave' if SHOW_DOBERMANS else 'Every puppy leaves'}
     with their paperwork, their food, and something that smells like home.</p>
-  <div class="tri">
+  <div class="tri{'' if SHOW_DOBERMANS else ' one'}">
     {kit_cards}
   </div>
   <div class="section-cta">
