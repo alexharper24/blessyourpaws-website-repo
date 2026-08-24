@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 31
+V = 32
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -1220,7 +1220,8 @@ def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None):
     linked, and a QR to the OFA page. Mirrors the Kingdom Family Companions pattern."""
     hp = "".join("<p><strong>%s</strong> %s</p>" % (k, v) for k, v in health)
     btns = "".join(
-      '<a class="btn btn-ghost" href="%s" target="_blank" rel="noopener">%s</a>' % (u, t)
+      '<a class="btn btn-ghost" href="%s%s" target="_blank" rel="noopener">%s</a>'
+      % (u, asset_v(u) if not u.startswith("http") else "", t)
       for t, u in links)
     if qr:
         qrfig = ('<figure class="health-qr">'
@@ -1721,9 +1722,11 @@ def build_pages():
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
           "chondrodystrophy variant, CDDY. It takes only one copy to matter, so it can "
-          "pass to a puppy. The full report is linked below and the panel explains it on "
-          "pages 4 and 5."),
-         ("The full report:", "linked here, all 14 pages, nothing left out.")],
+          "pass to a puppy. The report is linked below and the panel explains it on its "
+          "pages 4 and 5, which are the first two sheets."),
+         ("The report:", "linked here. Every health result the panel returned, pages 4 "
+          "to 14 as the report numbers them. The first three pages, her profile summary "
+          "and breed ancestry, are not included.")],
         [("View Troy’s Wisdom Panel report (PDF)",
           "records/troy-wisdom-panel-2026-02-21.pdf")]) +
       dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",
