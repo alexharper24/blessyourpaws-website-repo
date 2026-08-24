@@ -14,8 +14,9 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 44
+V = 46
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
+BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
 JOY_PHONE_DISPLAY = "(574) 265-1060"      # Joy, Dobermans. Confirmed by Alex 2026-08-23
@@ -93,6 +94,13 @@ CSS = """/* Bless Your Paws Puppies - v2
    seed-packet cards. Wide gallery-first layout: the puppies are the product, so
    photography gets the room. Deliberately NOT Kingdom Family Companions'
    cream/espresso ledger. */
+
+@font-face{font-family:"Lora";font-style:normal;font-weight:400 700;
+  font-display:swap;src:url("fonts/lora-variable.woff2") format("woff2")}
+@font-face{font-family:"Lora";font-style:italic;font-weight:400 600;
+  font-display:swap;src:url("fonts/lora-italic.woff2") format("woff2")}
+@font-face{font-family:"Mulish";font-style:normal;font-weight:400 700;
+  font-display:swap;src:url("fonts/mulish-variable.woff2") format("woff2")}
 
 :root{
   --forest:#223d2c; --forest-soft:#34523f;
@@ -1167,9 +1175,8 @@ def page(path, title, desc, body, extra_head=""):
 <link rel="icon" href="favicon.ico?v={V}" sizes="any">
 <link rel="icon" href="img/favicon.png?v={V}" type="image/png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v={V}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..600&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/lora-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/mulish-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v={V}">
 {extra_head}</head>
 <body>
@@ -1427,8 +1434,7 @@ def build_pages():
 {dob_litter_block}'''
         PUPPIES_TAIL = ""
     else:
-        PUPPIES_TITLE = ("Munchkin Bernedoodle Puppies for Sale | "
-                         "Bless Your Paws Puppies")
+        PUPPIES_TITLE = f"Munchkin Bernedoodle Puppies for Sale | {BRAND}"
         PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle "
                          f"dam and an AKC Cavalier sire. Born {M_BORN}, home in September. "
                          f"${M_PRICE:,} with a ${DEPOSIT} deposit.")
@@ -1482,7 +1488,7 @@ def build_pages():
         "telephone": "+1-574-377-8023", "email": EMAIL, "areaServed": AREA,
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
 
-    page("index.html", f"Bless Your Paws Puppies | {BREEDS_SHORT} Puppies, Northern Indiana",
+    page("index.html", f"{BREEDS_SHORT} Puppies in Indiana | {BRAND}",
       f"Family-raised {BREEDS_PHRASE} puppies from two sisters in northern Indiana. Raised in the home, around kids, with early socialization.",
       f"""<section class="hero">
   <div class="hero-drift">
@@ -1685,7 +1691,7 @@ def build_pages():
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
-    page("what-is-a-munchkin-bernedoodle.html", "What Is a Munchkin Bernedoodle? | Bless Your Paws Puppies",
+    page("what-is-a-munchkin-bernedoodle.html", f"What Is a Munchkin Bernedoodle? | {BRAND}",
       "A plain-language guide to the Munchkin Bernedoodle: the cross, the size, the coat, and the temperament, from a family that breeds them.",
       f"""<section><div class="wrap">
   <div class="grid-2 narrow-left hic">
@@ -2347,7 +2353,7 @@ def build_pages():
             "offers": {"@type": "Offer", "priceCurrency": "USD", "price": str(price),
                        "availability": ("https://schema.org/SoldOut" if adopted
                                         else "https://schema.org/InStock")}})
-        page(f"puppy-{slug}.html", f"{name}, {breed} Puppy | Bless Your Paws Puppies",
+        page(f"puppy-{slug}.html", f"{name}, {breed} Puppy | {BRAND}",
           # an adopted puppy's description must not advertise a price or a deposit: that
           # is the line search engines and link previews show, so it is the one place a
           # sold puppy most easily looks available

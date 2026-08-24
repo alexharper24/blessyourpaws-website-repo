@@ -169,6 +169,35 @@ over fine. Prose and identity do not.
   only what Hope states about her own puppies.
 
 
+## Fonts are self-hosted
+
+`fonts/` holds three woff2 files: `lora-variable`, `lora-italic`, `mulish-variable`. Both
+families are SIL Open Font License, so redistribution is fine. They are VARIABLE fonts, one
+file spanning 400-700, which is why six Google faces came down as three files.
+
+Google Fonts is gone entirely. It cost two third-party origins, a DNS and TLS handshake for
+each, and a serial dependency: the browser had to fetch and parse a stylesheet from
+googleapis before it could even discover the font URLs on gstatic. Self-hosted with a
+`preload` on the two faces every page uses, the fonts start with the HTML. Byte count is
+about the same, roughly 66KB either way; the win is the round trips, not the bytes.
+
+`lora-italic` is declared but deliberately NOT preloaded. A browser only fetches a
+`@font-face` file when a matching glyph actually renders, and the only italic on the site is
+`.reg-name`, which is Mira's registered name and off with the Doberman line. Verified: the
+italic file is not requested. It will start being fetched, on its own, the day that section
+returns.
+
+Do not reinstate the Google Fonts link. If a weight is needed that the variable range does
+not cover, the range is what changes.
+
+## Page weight vs repo weight
+
+The repo is ~74MB and that is fine. 20.9MB of it is JPEGs that are the `src` fallback behind
+a webp `srcset` on 211 img tags, so they are fetched only by a browser with no webp support,
+which is under 1% in 2026. **That is clone and deploy weight, not page weight, and it does
+not cost a visitor anything.** Real pages are 130-343KB. Do not "optimise" it by deleting
+the fallbacks; if it ever matters, the lever is Cloudflare Pages build time, not visitors.
+
 ## Image sizing: the `sizes` hint must be measured, not guessed
 
 `img_tag`'s default was `45vw` while the things using it rendered anywhere from 289px to
