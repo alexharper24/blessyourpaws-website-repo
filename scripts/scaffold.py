@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 49
+V = 50
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -226,13 +226,19 @@ a{color:var(--forest)}
 
 .hero-split{display:grid;grid-template-columns:.68fr 1.32fr;gap:clamp(2rem,4vw,4rem);
   align-items:center}
-/* A <picture> must not become the layout box. desktop_only_img wraps its <img> in one,
-   which made the PICTURE the grid item and left .hic-photo's placement matching nothing:
-   the puppies.html hero silently fell from 843px to 454px while still looking fine.
-   display:contents drops the wrapper's box so the <img> is the grid child again, which
-   is what every rule in this stylesheet is written against. Keeps the classes, and the
-   thinking behind them, on the <img> where they were. */
-picture{display:contents}
+/* desktop_only_img wraps its <img> in a <picture> so a phone never downloads a photo it
+   hides. The PICTURE therefore has to BE the layout box and carry the layout classes,
+   because every placement rule here is a child combinator: .hic>.hic-photo, .grid-2>*,
+   .pgrid>*. display:contents was tried first and is wrong for exactly that reason. It
+   makes the <img> the grid ITEM while those selectors still see it as a grandchild, so
+   .hic>.hic-photo matched nothing, the photo was auto-placed into the heading's row, and
+   that row grew to the height of the picture: the heading pinned to the top and the copy
+   pushed 650px below it. The layout looked broken in a way that measuring widths did not
+   catch, because the widths were all correct.
+   overflow:hidden so .framed's border-radius clips the photo, and the <img> simply fills
+   whatever box the classes on the picture produce. */
+picture{display:block;overflow:hidden}
+picture>img{display:block;width:100%;height:100%;object-fit:cover}
 .framed{width:100%;max-width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
@@ -1372,12 +1378,12 @@ def desktop_only_img(stem, folder="puppies", cls="", alt="",
     # the same time. "not all and (max-width:900px)" is true precisely when the CSS rule
     # is false, so the two cannot disagree. If the breakpoint moves, move both.
     mq = "not all and (max-width:900px)"
-    out = ["<picture>"]
+    out = [f"<picture class={q}{cls}{q}>"]
     if ss:
         out.append(f'<source media={q}{mq}{q} srcset={q}{ss}{q} '
                    f'sizes={q}{sizes}{q} type={q}image/webp{q}>')
     out.append(f'<source media={q}{mq}{q} srcset={q}{jpg}{q}>')
-    out.append(f'<img class={q}{cls}{q} alt={q}{alt}{q} '
+    out.append(f'<img alt={q}{alt}{q} '
                f'fetchpriority={q}high{q} decoding={q}sync{q}>')
     out.append("</picture>")
     return "".join(out)

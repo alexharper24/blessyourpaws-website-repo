@@ -374,11 +374,26 @@ source matches it. Visible and unloadable at once. The query is
 `not all and (max-width:900px)`, which is true precisely when the CSS rule is false. Move
 one, move the other.
 
-**`picture{display:contents}` is load-bearing.** Wrapping an `<img>` in a `<picture>` makes
-the PICTURE the grid item, so `.hic>.hic-photo` matched nothing and the puppies.html hero
-fell from 843px to 454px while still looking plausible. `display:contents` drops the
-wrapper's box so the `<img>` is the grid child again and every rule in the stylesheet keeps
-working, with the classes staying on the `<img>` where they were written.
+**The `<picture>` must BE the layout box and carry the layout classes.** Every placement
+rule in this stylesheet is a child combinator: `.hic>.hic-photo`, `.grid-2>*`, `.pgrid>*`.
+Wrapping an `<img>` in a `<picture>` inserts a generation between the grid and the image, so
+whichever element holds the classes, one of the two goes wrong.
+
+Both failure modes were hit in order, which is worth recording because the second is far
+harder to see than the first. Leaving the classes on the `<img>` with a plain wrapper makes
+the PICTURE the grid item, `.hic-photo` matches nothing, and the hero drops from 843px to
+454px. Adding `picture{display:contents}` to fix that makes the `<img>` the grid ITEM while
+those same selectors still see it as a grandchild: `.hic>.hic-photo` still matches nothing,
+so the photo is auto-placed into the heading's row, that row grows to the photo's 655px, and
+the heading pins to the top with the copy pushed 650px below it. **The widths were all
+correct in that state**, which is exactly why checking `heroWidth` and `headWidth` passed it
+and Alex's eye caught it instead. Check the vertical arrangement of a `.hic`, not just its
+column widths: assert `.hic-copy.top - .hic-head.bottom` is about 14px.
+
+The answer is `picture{display:block;overflow:hidden}` with the classes on the `<picture>`
+and `picture>img{width:100%;height:100%;object-fit:cover}` filling it. `overflow:hidden` so
+`.framed`'s border-radius clips the photo. `.grid-2 .framed` is a descendant selector and
+still applies, giving the picture the 3:2 box the image then fills.
 
 **The cache warmer.** After the load event and an idle main thread, `main.js` quietly
 fetches what the next page will need. Two things keep it honest: it only ever requests URLs
