@@ -170,11 +170,19 @@ over fine. Prose and identity do not.
 
 ## Adopted puppies stay on the site
 
-`ADOPTED = {"tirzah"}` in `scripts/scaffold.py`. An adopted puppy keeps her card and her
-page so the litter reads as a whole rather than looking like puppies went missing, but
-nothing on either invites a purchase: no price on the card, an "Adopted!" badge on rose at
-7.08:1, and her page's reserve block is replaced with a "she is home" note pointing at the
-available puppies and the waitlist. Add a slug to `ADOPTED` and that all follows.
+`ADOPTED = {"tirzah"}` in `scripts/scaffold.py`. **ADOPTED means spoken for, NOT gone.**
+An adopted puppy is still with Hope and goes home on the same date as her littermates, so
+no copy may say she is home or with her family. She keeps her card and her page so the
+litter reads as a whole rather than looking like puppies went missing, but nothing offers
+her for sale. Add a slug to `ADOPTED` and all of this follows:
+
+- no price on the card, and the badge replaces the price in the page's name row too
+- an "Adopted!" badge on rose, forest label, 7.08:1
+- the reserve block becomes "<name> is adopted", saying she has found her family and goes
+  home on the litter date, and pointing at the available puppies and the waitlist
+- **the meta and og description drop the price and the deposit.** That is the line search
+  results and link previews show, so it is the single easiest place for a spoken-for puppy
+  to still look available, and it is the one furthest from anyone's eye while editing.
 
 **Say "Adopted!", not "sold"** (Alex, 2026-08-23). One exception left standing on purpose:
 the purchase agreement says the puppy "is sold with the written health guarantee". That is

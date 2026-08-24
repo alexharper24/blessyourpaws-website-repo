@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 35
+V = 36
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -41,8 +41,9 @@ MUNCHKINS = [
     ("jericho", "Jericho", "Boy",  "Blue merle parti",    ""),
     ("tirzah",  "Tirzah",  "Girl", "Black phantom",       ""),
 ]
-# Puppies already in their homes. They stay on the site so the litter reads as a whole
-# rather than looking like one went missing, and they are never presented as for sale.
+# Puppies that are spoken for. ADOPTED means reserved by a family, NOT already gone: they
+# go home on the same date as their littermates. They stay on the site so the litter reads
+# as a whole rather than looking like one went missing, and they are never offered for sale.
 ADOPTED = {"tirzah"}
 
 def n_word(n):
@@ -2255,14 +2256,16 @@ def build_pages():
         owner = "Hope" if is_munchkin else "Joy"
         owner_href = PHONE_HREF if is_munchkin else JOY_PHONE_HREF
         owner_phone = PHONE_DISPLAY if is_munchkin else JOY_PHONE_DISPLAY
-        # A puppy already in her home is not for sale. She keeps her page so the litter
-        # reads as a whole, but nothing on it invites a deposit.
+        # Spoken for, but still here: she goes home with her littermates. Nothing on the
+        # page invites a deposit, and nothing claims she has already left.
         if slug in ADOPTED:
+            her = "her" if sex == "Girl" else "his"
             reserve_block = (
               '<div class="reserve is-adopted">'
-              f'<h3>{name} is home</h3>'
-              f'<p class="fine">{name} was adopted and is with her family. She is here so '
-              'you can see the whole litter, not because she is available.</p>'
+              f'<h3>{name} is adopted</h3>'
+              f'<p class="fine">{name} has found {her} family and goes home on {home}, '
+              'the same day as the rest of the litter. She is on the site so you can see '
+              'the whole litter, not because she is available.</p>'
               '<p class="fine">Hoping for one like her? '
               '<a href="puppies.html">See who is available</a> or '
               '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
@@ -2307,7 +2310,13 @@ def build_pages():
             "offers": {"@type": "Offer", "priceCurrency": "USD", "price": str(price),
                        "availability": "https://schema.org/InStock"}})
         page(f"puppy-{slug}.html", f"{name}, {breed} Puppy | Bless Your Paws Puppies",
-          f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${DEPOSIT} deposit to reserve.",
+          # an adopted puppy's description must not advertise a price or a deposit: that
+          # is the line search engines and link previews show, so it is the one place a
+          # sold puppy most easily looks available
+          (f"{name} is a {colour.lower()} {breed} puppy from our litter, already adopted "
+           f"and going home {home}."
+           if slug in ADOPTED else
+           f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${DEPOSIT} deposit to reserve."),
           f"""<section><div class="wrap">
   <p class="eyebrow"><a href="puppies.html">Available puppies</a> /
     <a href="{breed_page}.html">{breed}s</a></p>
@@ -2324,7 +2333,7 @@ def build_pages():
       </div>
     </div>
     <div class="puppy-info">
-      <div class="name-row"><h1>{name}</h1><span class="price">${price:,}</span></div>
+      <div class="name-row"><h1>{name}</h1>{'<span class="status status-adopted">Adopted!</span>' if slug in ADOPTED else f'<span class="price">${price:,}</span>'}</div>
       <p class="lede">{sex} &middot; {colour} &middot; {breed}</p>
       <ul class="facts">
         <li><span class="k">Status</span><span class="v">{'Adopted!' if slug in ADOPTED else 'Available'}</span></li>
