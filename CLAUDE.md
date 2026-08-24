@@ -240,6 +240,18 @@ page together.
 Watch the per-puppy breadcrumb when toggling: `breed_page` resolves to `puppies` for
 Munchkins while the flag is off, and back to `munchkin-bernedoodles` when it is on.
 
+**`scaffold.py` never deletes. Toggling `SHOW_DOBERMANS` to test leaves live pages behind.**
+Flipping it to True to verify the restore path regenerated dobermans.html,
+munchkin-bernedoodles.html and the three Doberman puppy pages. Flipping back does not
+remove them, so five pages the site no longer links were left in the working tree, and got
+committed. A file in this repo is live on Pages whether or not anything links to it, so
+that briefly republished the whole Doberman line.
+
+site-checks caught it, via the nav-consistency check rather than anything about Dobermans:
+the stale pages carried the old nav and no longer matched the rest of the site. Run
+site-checks after any flag toggle, and `git rm` the pages the scaffold has stopped
+generating.
+
 ## Troy's genetic report
 
 `source-files/troy genetic report.pdf`, Wisdom Panel, test date 2026-02-21. **`source-files/`
