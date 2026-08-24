@@ -303,6 +303,12 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 Two of these cost a full review round each. Check both before claiming a mobile pass
 is done.
 
+**Column ratios available on `.grid-2`**, so the next one does not get invented from
+scratch: plain is 1fr 1fr; `lean-left` / `lean-right` are 1.15fr / .85fr, a photo that
+leads without dominating; `narrow-left` / `narrow-right` are .70fr / 1.30fr, a strong
+asymmetry. At 1440 the wide column comes out about 648px, 745px and 843px respectively.
+Every one of them is named in the mobile collapse rule, and any new one must be too.
+
 **A modifier class outranks the mobile override.** `.grid-2.narrow-left` is
 specificity (0,2,0); the `@media (max-width:900px)` rule that collapses `.grid-2` is
 (0,1,0) and loses. The variants held their desktop columns on a phone across eight

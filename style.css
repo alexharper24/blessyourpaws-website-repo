@@ -143,6 +143,9 @@ a{color:var(--forest)}
    larger. Both variants move together so the About photo and the one below it stay the
    same size as each other. */
 .grid-2.narrow-left{grid-template-columns:.70fr 1.30fr}
+/* a softer lean than narrow-left/right, for a photo that should lead without dominating */
+.grid-2.lean-left{grid-template-columns:1.15fr .85fr}
+.grid-2.lean-right{grid-template-columns:.85fr 1.15fr}
 /* narrow-RIGHT means the right column is the narrow one, so the photo-left rows
    get the wide half. It had been left identical to narrow-left, which is why the
    inverted rows put their photo in the small column. */
@@ -705,7 +708,8 @@ textarea{min-height:8rem}
      `.grid-2.narrow-left` is (0,2,0), so the two narrow variants kept their desktop
      columns on a phone and squeezed the copy into a third of the screen on eight
      pages. Any new .grid-2 modifier has to be named here too. */
-  .grid-2.narrow-left,.grid-2.narrow-right{grid-template-columns:1fr}
+  .grid-2.narrow-left,.grid-2.narrow-right,
+  .grid-2.lean-left,.grid-2.lean-right{grid-template-columns:1fr}
   /* a photo that earns its place beside a fact list on desktop, but which the grid
      directly below repeats once everything is stacked */
   .hide-mobile{display:none}
