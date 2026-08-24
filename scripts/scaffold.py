@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 37
+V = 38
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -1366,7 +1366,9 @@ def build_pages():
       parent_card("cavalier-sire-01", "Our Cavalier sire", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
-                   ("Genetic testing", "Clear")],
+                   # "Clear" was retracted from his detail row and his FAQ answer for want
+                   # of a document. It survived here, on ten pages, saying the opposite.
+                   ("Genetic testing", "Panel being gathered")],
                   "His registered name is being added. " + CHIP_DRAFT))
     D_PARENTS = (
       parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
