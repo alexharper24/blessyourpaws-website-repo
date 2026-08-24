@@ -149,6 +149,10 @@ a{color:var(--forest)}
   font-size:1rem;min-height:48px}
 .btn-primary{background:var(--forest);color:var(--paper)}
 .btn-primary:hover{background:var(--forest-soft)}
+/* forest on rose measures 7.08:1. White on rose is 1.67:1 and is forbidden here, so a
+   pink button keeps a forest label. */
+.btn-pink{background:var(--rose);color:var(--forest);border-color:var(--rose)}
+.btn-pink:hover{background:var(--pink-pale);border-color:var(--pink-pale)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
@@ -232,6 +236,13 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
    itself across the full span, which is what matters when the TEXT is the taller side
    and the spacer rows have collapsed to zero */
 .hic>.hic-head,.hic>.hic-copy{align-self:start}
+/* the heading and the copy are separate rows here, so the grid's row-gap lands between
+   them and stacks with the heading's bottom margin and the paragraph's top margin. Zero
+   the row-gap and let the margins alone set the distance. */
+.grid-2.hic{row-gap:0}
+.hic>.hic-head{margin-bottom:.9rem}
+.hic>.hic-head.col-title{margin-bottom:.9rem}
+.hic>.hic-copy>:first-child{margin-top:0}
 .hic>.hic-photo{align-self:center}
 @media (min-width:901px){
   /* Four rows: a flexible spacer, the heading, the copy, another flexible spacer. The

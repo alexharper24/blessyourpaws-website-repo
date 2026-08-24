@@ -192,6 +192,34 @@ puppy", so grepping for the word "Doberman" alone would have missed it; grep the
 Joy stays on the site. Her number and her name remain; only the breed attribution comes
 off, so labels read "Hope" and "Joy" rather than "Hope, Munchkins" and "Joy, Dobermans".
 
+**Cache-busting must be on the `srcset`, not just the `src`.** The Hope and Joy photo was
+replaced in place under the same filenames, with `?v={V}` on the `src` fallback only.
+Browsers choose from `srcset`, so every visitor kept being served the cached old picture
+and the replacement looked like it had silently failed. Either version every srcset
+candidate or give the new file a new name.
+
+**Three sources of space made one gap.** In a `.hic` the heading and the copy are separate
+grid rows, so the grid's own `row-gap` lands between them and stacks with the heading's
+bottom margin and the paragraph's top margin: 63px where the intended distance was ~14.
+`.grid-2.hic{row-gap:0}` and let the margins alone set it.
+
+## One listing page while there is one breed (2026-08-23)
+
+`puppies.html` and `munchkin-bernedoodles.html` listed the identical seven cards. The prose
+was not duplicated, zero shared sentences, but two thin URLs competing on the same query
+with the same product set is the problem regardless. Measured before deciding: 117 words
+against 208, same 7 cards, while `what-is-a-munchkin-bernedoodle.html` already owns the
+breed keyword properly with 1,039 words.
+
+`puppies.html` survives and absorbs what the litter page carried: the parent lede, the
+facts list, the hero photo, the parents block, and the keyword-bearing title. The nav slot
+that said "Bernedoodles" now says "Breed Guide" and points at the guide. All of it is on
+`SHOW_DOBERMANS`, so restoring Joy's line restores the two-litter index page and the breed
+page together.
+
+Watch the per-puppy breadcrumb when toggling: `breed_page` resolves to `puppies` for
+Munchkins while the flag is off, and back to `munchkin-bernedoodles` when it is on.
+
 ## Troy's genetic report
 
 `source-files/troy genetic report.pdf`, Wisdom Panel, test date 2026-02-21. **`source-files/`

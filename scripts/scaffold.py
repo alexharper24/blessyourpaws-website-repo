@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 25
+V = 26
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -231,6 +231,10 @@ a{color:var(--forest)}
   font-size:1rem;min-height:48px}
 .btn-primary{background:var(--forest);color:var(--paper)}
 .btn-primary:hover{background:var(--forest-soft)}
+/* forest on rose measures 7.08:1. White on rose is 1.67:1 and is forbidden here, so a
+   pink button keeps a forest label. */
+.btn-pink{background:var(--rose);color:var(--forest);border-color:var(--rose)}
+.btn-pink:hover{background:var(--pink-pale);border-color:var(--pink-pale)}
 .btn-ghost{background:transparent;color:var(--forest)}
 .btn-ghost:hover{background:var(--paper-raise)}
 .btn-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
@@ -314,6 +318,13 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
    itself across the full span, which is what matters when the TEXT is the taller side
    and the spacer rows have collapsed to zero */
 .hic>.hic-head,.hic>.hic-copy{align-self:start}
+/* the heading and the copy are separate rows here, so the grid's row-gap lands between
+   them and stacks with the heading's bottom margin and the paragraph's top margin. Zero
+   the row-gap and let the margins alone set the distance. */
+.grid-2.hic{row-gap:0}
+.hic>.hic-head{margin-bottom:.9rem}
+.hic>.hic-head.col-title{margin-bottom:.9rem}
+.hic>.hic-copy>:first-child{margin-top:0}
 .hic>.hic-photo{align-self:center}
 @media (min-width:901px){
   /* Four rows: a flexible spacer, the heading, the copy, another flexible spacer. The
@@ -1036,7 +1047,7 @@ SPRIG = ('<svg class="sprig" width="72" height="25" viewBox="0 0 40 14" aria-hid
 
 NAV = f"""<nav class="nav" aria-label="Main">
   <a href="puppies.html">Puppies</a>
-  <a href="munchkin-bernedoodles.html">Bernedoodles</a>
+  <a href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'what-is-a-munchkin-bernedoodle.html'}">{'Bernedoodles' if SHOW_DOBERMANS else 'Breed Guide'}</a>
 {dob('  <a href="dobermans.html">Dobermans</a>')}
   <a href="our-dogs.html">Our Dogs</a>
   <a href="gallery.html">Gallery</a>
@@ -1069,7 +1080,7 @@ def footer():
     <div class="foot-grid">
       <div><h3>Our puppies</h3><ul>
         <li><a href="puppies.html">All available puppies</a></li>
-        <li><a href="munchkin-bernedoodles.html">Munchkin Bernedoodles</a></li>
+        <li><a href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'puppies.html'}">Munchkin Bernedoodles</a></li>
 {dob('        <li><a href="dobermans.html">Doberman Pinschers</a></li>')}
         <li><a href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a></li>
         <li><a href="gallery.html">Photo gallery</a></li>
@@ -1277,6 +1288,73 @@ def build_pages():
     d_cards = "\n".join(card(s, n, x, c, D_PRICE, "Doberman Pinscher") for s, n, x, c, _ in D_LIST)
     # built here rather than inline in the template: an f-string cannot hold a
     # conditional multi-line block without nesting quotes of the same kind
+    # With two litters this page is an index across both. With one it IS the litter
+    # page, so it absorbs what the retired breed page carried: the parent lede, the
+    # facts list, the hero photo and the parents block. Nothing is dropped, and the
+    # keyword-bearing title moves onto the surviving URL.
+    if SHOW_DOBERMANS:
+        PUPPIES_TITLE = "Available Puppies | Bless Your Paws Puppies"
+        PUPPIES_DESC  = (f"All available {BREEDS_PHRASE} puppies. A ${DEPOSIT} deposit "
+                         f"reserves your puppy.")
+        PUPPIES_INTRO = f'''  <p class="eyebrow">Available now</p>
+  <h1>Our puppies</h1>
+  <p class="lede" style="max-width:70ch">Ten puppies across two litters. Every price
+    includes the vet exam, vaccinations, and the go-home kit. A ${DEPOSIT} deposit
+    holds your puppy.</p>
+
+  <div class="section-head" style="margin-top:2.5rem">
+    <div>
+      <h2 style="margin:0">Munchkin Bernedoodles &middot; ${M_PRICE:,}</h2>
+      <p class="fine" style="margin:.35rem 0 0">Born {M_BORN}. Going home {M_HOME}.
+        {SIZE_DRAFT}</p>
+    </div>
+    <a class="btn btn-pink breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
+  </div>
+  <div class="pgrid cols-4" style="margin-top:1.5rem">{m_cards}</div>
+
+{dob_litter_block}'''
+        PUPPIES_TAIL = ""
+    else:
+        PUPPIES_TITLE = ("Munchkin Bernedoodle Puppies for Sale | "
+                         "Bless Your Paws Puppies")
+        PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle "
+                         f"dam and an AKC Cavalier sire. Born {M_BORN}, home in September. "
+                         f"${M_PRICE:,} with a ${DEPOSIT} deposit.")
+        PUPPIES_INTRO = f'''  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Hope&rsquo;s litter</p>
+      <h1>Munchkin Bernedoodle puppies</h1>
+    </div>
+    {img_tag('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
+    <div class="hic-copy">
+      <p class="lede">Seven puppies from Troy, our Mini Multi Gen Bernedoodle, and our
+        AKC-registered Cavalier King Charles Spaniel sire. Born {M_BORN}, going home
+        {M_HOME}.</p>
+      <ul class="facts">
+        <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
+        <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
+        <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
+        <li><span class="k">Expected adult size</span><span class="v">15 to 25 lbs</span></li>
+      </ul>
+      <p class="fine">{SIZE_DRAFT}</p>
+      <div class="btn-row" style="margin-top:1rem">
+        <a class="btn btn-pink breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
+      </div>
+    </div>
+  </div>
+  <div class="pgrid cols-4" style="margin-top:2.5rem">{m_cards}</div>'''
+        PUPPIES_TAIL = f'''
+<section class="band-raise"><div class="wrap">
+  <div class="section-head">
+    <div><h2 style="margin:0">Meet their parents</h2></div>
+    <a class="btn btn-primary" href="our-dogs.html">Full health details</a>
+  </div>
+  <div class="parent-grid">{M_PARENTS}</div>
+</div></section>'''
+    PUPPIES_BODY = ('<section><div class="wrap">\n' + PUPPIES_INTRO
+                    + '\n</div></section>' + PUPPIES_TAIL)
+
     dob_litter_block = dob(f'''<div class="section-head" style="margin-top:4rem">
     <div>
       <h2 style="margin:0">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
@@ -1361,7 +1439,7 @@ def build_pages():
   {SPRIG}
   <h2 class="center" style="margin-top:1rem">{'Two breeds, one standard of raising' if SHOW_DOBERMANS else 'One breed, one standard of raising'}</h2>
   <div class="grid-2" style="margin-top:2rem;align-items:stretch">
-    <a class="door" href="munchkin-bernedoodles.html">
+    <a class="door" href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'puppies.html'}">
       {img_tag('eden-01', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
       <div class="door-body"><h3>Munchkin Bernedoodles</h3>
       <p class="fine">A small, sweet Bernedoodle and Cavalier cross. Going home in
@@ -1417,29 +1495,10 @@ def build_pages():
 </div></section>""",
       extra_head=f'<script type="application/ld+json">{org_ld}</script>\n')
 
-    page("puppies.html", "Available Puppies | Bless Your Paws Puppies",
-      f"All available {BREEDS_PHRASE} puppies. A ${DEPOSIT} deposit reserves your puppy.",
-      f"""<section><div class="wrap">
-  <p class="eyebrow">Available now</p>
-  <h1>Our puppies</h1>
-  <p class="lede" style="max-width:70ch">Ten puppies across two litters. Every price
-    includes the vet exam, vaccinations, and the go-home kit. A ${DEPOSIT} deposit
-    holds your puppy.</p>
+    page("puppies.html", PUPPIES_TITLE, PUPPIES_DESC, PUPPIES_BODY)
 
-  <div class="section-head" style="margin-top:2.5rem">
-    <div>
-      <h2 style="margin:0">Munchkin Bernedoodles &middot; ${M_PRICE:,}</h2>
-      <p class="fine" style="margin:.35rem 0 0">Born {M_BORN}. Going home {M_HOME}.
-        {SIZE_DRAFT}</p>
-    </div>
-    <a class="btn btn-ghost breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
-  </div>
-  <div class="pgrid cols-4" style="margin-top:1.5rem">{m_cards}</div>
-
-{dob_litter_block}
-</div></section>""")
-
-    page("munchkin-bernedoodles.html", "Munchkin Bernedoodle Puppies for Sale | Bless Your Paws Puppies",
+    if SHOW_DOBERMANS:
+      page("munchkin-bernedoodles.html", "Munchkin Bernedoodle Puppies for Sale | Bless Your Paws Puppies",
       f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle dam and an AKC Cavalier sire. Born {M_BORN}, home in September. ${M_PRICE:,} with a ${DEPOSIT} deposit.",
       f"""<section><div class="wrap">
   <div class="grid-2 narrow-left">
@@ -1634,7 +1693,7 @@ def build_pages():
   </div>
   <div class="section-cta">
     <p>Still deciding? Meet them on a visit or a video call first.</p>
-    <a class="btn btn-primary" href="munchkin-bernedoodles.html">See available puppies</a>
+    <a class="btn btn-primary" href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'puppies.html'}">See available puppies</a>
     <a class="btn btn-ghost" href="waitlist.html">Join the waitlist</a>
   </div>
 </div></section>""",
@@ -1766,7 +1825,7 @@ def build_pages():
     </div>
     <div class="hic-photo">
       <img class="framed wide16" src="img/hope-and-joy.jpg?v={V}"
-        srcset="img/r/hope-and-joy-640.webp 640w, img/r/hope-and-joy-1000.webp 1000w, img/r/hope-and-joy-1400.webp 1400w, img/r/hope-and-joy-1672.webp 1672w"
+        srcset="img/r/hope-and-joy-640.webp?v={V} 640w, img/r/hope-and-joy-1000.webp?v={V} 1000w, img/r/hope-and-joy-1400.webp?v={V} 1400w, img/r/hope-and-joy-1672.webp?v={V} 1672w"
         sizes="(max-width:900px) 94vw, 56vw"
         alt="Hope and Joy, the twin sisters behind Bless Your Paws Puppies"
         width="1672" height="941" decoding="async">
@@ -2190,7 +2249,9 @@ def build_pages():
         sibs = MUNCHKINS if breed.startswith("Munchkin") else DOBERMANS
         sib = " &middot; ".join(f'<a href="puppy-{s}.html">{n}</a>'
                                for s, n, *_ in sibs if s != slug)
-        breed_page = 'munchkin-bernedoodles' if breed.startswith('Munchkin') else 'dobermans'
+        # with one breed the litter page is puppies.html, so the crumb points there
+        breed_page = ('munchkin-bernedoodles' if (is_munchkin and SHOW_DOBERMANS)
+                      else 'puppies' if is_munchkin else 'dobermans')
         ld = json.dumps({"@context": "https://schema.org", "@type": "Product",
             "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{lead(slug)}.jpg",
             "description": f"{name} is a {colour.lower()} {breed} puppy, available now.",
