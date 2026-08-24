@@ -304,6 +304,12 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 .price{font-size:1.2rem;font-weight:700}
 .status{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   color:var(--forest);background:var(--sage-light);padding:.2rem .55rem;border-radius:3px}
+/* forest on rose is 7.08:1. An adopted card has no price, so the badge sits alone and
+   carries the row on its own. */
+.status-adopted{background:var(--rose)}
+.packet-row:has(> .status-adopted:only-child){justify-content:flex-start}
+.packet-link.is-adopted .packet{border-style:solid}
+.packet-link.is-adopted img{filter:saturate(.92)}
 a.packet-link{text-decoration:none}
 a.packet-link:hover .packet{border-color:var(--sage-deep)}
 
@@ -511,6 +517,16 @@ textarea{min-height:8rem}
 .dog-kicker{font-size:.76rem;font-weight:700;letter-spacing:.19em;
   text-transform:uppercase;color:var(--sage-deep);margin:0 0 .35rem}
 .dogrow h3{font-size:clamp(1.5rem,2.2vw,2rem);margin-bottom:.15rem}
+/* set apart from the body copy without shouting: a rule down the side, the display face,
+   and the same sage the rest of the page uses for secondary text */
+/* forest, not sage-deep. sage-deep measures 4.34:1 against --paper, which is under the
+   4.5 floor for normal text: it is fine for the fine print it was chosen for, and not for
+   a paragraph meant to be read. The rule and the display face set this apart, not colour. */
+.faith-note{border-left:3px solid var(--sage-light);padding:.15rem 0 .15rem 1.1rem;
+  margin-top:1.5rem;font-family:var(--display);font-size:1.02rem;line-height:1.6;
+  color:var(--forest)}
+.faith-note a{color:var(--forest)}
+
 .reg-name{font-family:"Lora",Georgia,serif;font-style:italic;color:var(--sage-deep);
   margin:0 0 1rem}
 .health{border-left:3px solid var(--sage);padding:.2rem 0 .2rem 1.15rem;

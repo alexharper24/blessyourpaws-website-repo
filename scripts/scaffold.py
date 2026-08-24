@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 33
+V = 34
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -39,7 +39,18 @@ MUNCHKINS = [
     ("caleb",   "Caleb",   "Boy",  "Red and white parti", ""),
     ("shiloh",  "Shiloh",  "Boy",  "Blue merle phantom",  ""),
     ("jericho", "Jericho", "Boy",  "Blue merle parti",    ""),
+    ("tirzah",  "Tirzah",  "Girl", "Black phantom",       ""),
 ]
+# Puppies already in their homes. They stay on the site so the litter reads as a whole
+# rather than looking like one went missing, and they are never presented as for sale.
+ADOPTED = {"tirzah"}
+
+def n_word(n):
+    return {1:"One",2:"Two",3:"Three",4:"Four",5:"Five",6:"Six",7:"Seven",8:"Eight",
+            9:"Nine",10:"Ten",11:"Eleven",12:"Twelve"}.get(n, str(n))
+
+M_TOTAL     = len(MUNCHKINS)
+M_AVAILABLE = len([m for m in MUNCHKINS if m[0] not in ADOPTED])
 DOBERMANS = [
     ("elowen",  "Elowen",  "Girl", "Black and rust", "Ready for any adventure, and working on crate and leash training."),
     ("malcolm", "Malcolm", "Boy",  "Black and rust", "Eager to please, and doing well learning to sit and stay."),
@@ -379,6 +390,12 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 .price{font-size:1.2rem;font-weight:700}
 .status{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   color:var(--forest);background:var(--sage-light);padding:.2rem .55rem;border-radius:3px}
+/* forest on rose is 7.08:1. An adopted card has no price, so the badge sits alone and
+   carries the row on its own. */
+.status-adopted{background:var(--rose)}
+.packet-row:has(> .status-adopted:only-child){justify-content:flex-start}
+.packet-link.is-adopted .packet{border-style:solid}
+.packet-link.is-adopted img{filter:saturate(.92)}
 a.packet-link{text-decoration:none}
 a.packet-link:hover .packet{border-color:var(--sage-deep)}
 
@@ -586,6 +603,16 @@ textarea{min-height:8rem}
 .dog-kicker{font-size:.76rem;font-weight:700;letter-spacing:.19em;
   text-transform:uppercase;color:var(--sage-deep);margin:0 0 .35rem}
 .dogrow h3{font-size:clamp(1.5rem,2.2vw,2rem);margin-bottom:.15rem}
+/* set apart from the body copy without shouting: a rule down the side, the display face,
+   and the same sage the rest of the page uses for secondary text */
+/* forest, not sage-deep. sage-deep measures 4.34:1 against --paper, which is under the
+   4.5 floor for normal text: it is fine for the fine print it was chosen for, and not for
+   a paragraph meant to be read. The rule and the display face set this apart, not colour. */
+.faith-note{border-left:3px solid var(--sage-light);padding:.15rem 0 .15rem 1.1rem;
+  margin-top:1.5rem;font-family:var(--display);font-size:1.02rem;line-height:1.6;
+  color:var(--forest)}
+.faith-note a{color:var(--forest)}
+
 .reg-name{font-family:"Lora",Georgia,serif;font-style:italic;color:var(--sage-deep);
   margin:0 0 1rem}
 .health{border-left:3px solid var(--sage);padding:.2rem 0 .2rem 1.15rem;
@@ -1263,13 +1290,18 @@ def parent_card(stem, name, role, breed, facts, note=""):
       + note_html + '</div></article>')
 
 def card(slug, name, sex, colour, price, breed):
-    return f"""<a class="packet-link" href="puppy-{slug}.html"><article class="packet">
+    # an adopted puppy shows no price: she is not for sale, and a price beside "Adopted!"
+    # invites the question of whether she still is
+    adopted = slug in ADOPTED
+    left = "" if adopted else f'<span class="price">${price:,}</span>'
+    badge = ('<span class="status status-adopted">Adopted!</span>' if adopted
+             else '<span class="status">Available</span>')
+    return f"""<a class="packet-link{' is-adopted' if adopted else ''}" href="puppy-{slug}.html"><article class="packet">
   {img_tag(lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy')}
   <div class="packet-body">
     <p class="packet-name">{name}</p>
     <p class="packet-meta">{sex} &middot; {colour}</p>
-    <div class="packet-row"><span class="price">${price:,}</span>
-      <span class="status">Available</span></div>
+    <div class="packet-row">{left}{badge}</div>
   </div>
 </article></a>"""
 
@@ -1353,7 +1385,7 @@ def build_pages():
                          f"reserves your puppy.")
         PUPPIES_INTRO = f'''  <p class="eyebrow">Available now</p>
   <h1>Our puppies</h1>
-  <p class="lede" style="max-width:70ch">Ten puppies across two litters. Every price
+  <p class="lede" style="max-width:70ch">{n_word(M_TOTAL + len(DOBERMANS))} puppies across two litters. Every price
     includes the vet exam, vaccinations, and the go-home kit. A ${DEPOSIT} deposit
     holds your puppy.</p>
 
@@ -1382,9 +1414,9 @@ def build_pages():
     </div>
     {img_tag('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
     <div class="hic-copy">
-      <p class="lede">Seven puppies from Troy, our Mini Multi Gen Bernedoodle, and our
-        AKC-registered Cavalier King Charles Spaniel sire. Born {M_BORN}, going home
-        {M_HOME}.</p>
+      <p class="lede">{n_word(M_TOTAL)} puppies from Troy, our Mini Multi Gen
+        Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
+        {M_BORN}, going home {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
@@ -1518,9 +1550,9 @@ def build_pages():
         <p class="eyebrow">Hope's litter</p>
         <h1>Munchkin Bernedoodle puppies</h1>
       </div>
-      <p class="lede">Seven puppies from Troy, our Mini Multi Gen Bernedoodle, and
-        our AKC-registered Cavalier King Charles Spaniel sire. Born {M_BORN},
-        going home {M_HOME}.</p>
+      <p class="lede">{n_word(M_TOTAL)} puppies from Troy, our Mini Multi Gen
+        Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
+        {M_BORN}, going home {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
@@ -1822,6 +1854,10 @@ def build_pages():
         someone at the door, and our puppies grow up the same way. By the time a puppy
         leaves us it has heard the vacuum, the doorbell, and a houseful of children,
         and it has been held every single day.</p>
+      <p class="faith-note">We are Christians, and everything we do here we hope brings
+        glory to God. If you have never heard the good news about Jesus, we would love
+        for you to <a href="https://www.youtube.com/watch?v=mIeRU12STNw&amp;t=200s"
+        target="_blank" rel="noopener">watch this short film</a>.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="contact.html">Say hello</a>
         <a class="btn btn-ghost" href="process.html">How reserving works</a>
@@ -2219,6 +2255,34 @@ def build_pages():
         owner = "Hope" if is_munchkin else "Joy"
         owner_href = PHONE_HREF if is_munchkin else JOY_PHONE_HREF
         owner_phone = PHONE_DISPLAY if is_munchkin else JOY_PHONE_DISPLAY
+        # A puppy already in her home is not for sale. She keeps her page so the litter
+        # reads as a whole, but nothing on it invites a deposit.
+        if slug in ADOPTED:
+            reserve_block = (
+              '<div class="reserve is-adopted">'
+              f'<h3>{name} is home</h3>'
+              f'<p class="fine">{name} was adopted and is with her family. She is here so '
+              'you can see the whole litter, not because she is available.</p>'
+              '<p class="fine">Hoping for one like her? '
+              '<a href="puppies.html">See who is available</a> or '
+              '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
+              '</div>')
+        else:
+            reserve_block = f'''<div class="reserve">
+        <h3>Reserve {name}</h3>
+        <p class="fine">A ${DEPOSIT} deposit holds {him} until go-home day. Pay the
+          deposit now, or the full amount if you prefer.</p>
+        <div class="pay-row">
+          <a class="btn btn-primary pay-link" href="https://buy.stripe.com/REPLACE_DEPOSIT">Deposit &middot; ${DEPOSIT}</a>
+          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_FULL">Full payment</a>
+          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Balance</a>
+        </div>
+        <p class="guard-msg">Online payments are almost ready. To reserve {name}
+          today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
+        <p class="fine">Prefer to talk first? <a href="contact.html">Start an
+          inquiry</a>, or call or text <a href="{owner_href}">{owner_phone}</a>.
+          Visits and video calls are always welcome before you decide.</p>
+      </div>'''
         cnt = COUNTS[slug]
         first = PRIMARY.get(slug, 1)
         order = [first] + [i for i in range(1, cnt + 1) if i != first]
@@ -2263,7 +2327,7 @@ def build_pages():
       <div class="name-row"><h1>{name}</h1><span class="price">${price:,}</span></div>
       <p class="lede">{sex} &middot; {colour} &middot; {breed}</p>
       <ul class="facts">
-        <li><span class="k">Status</span><span class="v">Available</span></li>
+        <li><span class="k">Status</span><span class="v">{'Adopted!' if slug in ADOPTED else 'Available'}</span></li>
         <li><span class="k">Sex</span><span class="v">{sex}</span></li>
         <li><span class="k">Color</span><span class="v">{colour}</span></li>
         <li><span class="k">Born</span><span class="v">{born}</span></li>
@@ -2271,21 +2335,7 @@ def build_pages():
 {extra_facts}
       </ul>
       {f'<p><strong>{note}</strong></p>' if note else ''}
-      <div class="reserve">
-        <h3>Reserve {name}</h3>
-        <p class="fine">A ${DEPOSIT} deposit holds {him} until go-home day. Pay the
-          deposit now, or the full amount if you prefer.</p>
-        <div class="pay-row">
-          <a class="btn btn-primary pay-link" href="https://buy.stripe.com/REPLACE_DEPOSIT">Deposit &middot; ${DEPOSIT}</a>
-          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_FULL">Full payment</a>
-          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Balance</a>
-        </div>
-        <p class="guard-msg">Online payments are almost ready. To reserve {name}
-          today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
-        <p class="fine">Prefer to talk first? <a href="contact.html">Start an
-          inquiry</a>, or call or text <a href="{owner_href}">{owner_phone}</a>.
-          Visits and video calls are always welcome before you decide.</p>
-      </div>
+      {reserve_block}
       <h3>About {name} {CHIP_SAMPLE}</h3>
       <p>{name} is a {colour.lower()} {sex.lower()} growing up in the house, handled
         every day, around kids and other dogs, with early neurological stimulation

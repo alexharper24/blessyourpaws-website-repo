@@ -168,6 +168,34 @@ over fine. Prose and identity do not.
   only what Hope states about her own puppies.
 
 
+## Adopted puppies stay on the site
+
+`ADOPTED = {"tirzah"}` in `scripts/scaffold.py`. An adopted puppy keeps her card and her
+page so the litter reads as a whole rather than looking like puppies went missing, but
+nothing on either invites a purchase: no price on the card, an "Adopted!" badge on rose at
+7.08:1, and her page's reserve block is replaced with a "she is home" note pointing at the
+available puppies and the waitlist. Add a slug to `ADOPTED` and that all follows.
+
+**Say "Adopted!", not "sold"** (Alex, 2026-08-23). One exception left standing on purpose:
+the purchase agreement says the puppy "is sold with the written health guarantee". That is
+contract language on a document already flagged for review, and this repo's rule is that
+legal terms are not paraphrased without asking. Raise it, do not rewrite it.
+
+**Litter counts are derived, never written.** `M_TOTAL`, `M_AVAILABLE` and `n_word()`.
+Adding Tirzah made a hardcoded "Seven puppies" wrong in two places at once, which is the
+argument for computing it.
+
+**A marketplace listing's photo set can include the parents.** Four images were attached to
+Tirzah's product record and the fourth is Troy, the dam, already published elsewhere on the
+site. Scoping the media list to her product was not enough; each photo still had to be
+looked at. Publishing that one as "Tirzah" would have been exactly the mistake the standing
+rule about not drawing conclusions from photographs is there to prevent.
+
+**`--sage-deep` is 4.34:1 on `--paper`, not 4.53.** The 4.53 figure in the palette notes is
+against pure white. On the actual page background it is under the 4.5 floor, so it is fine
+for the fine print and labels it is used for and wrong for a paragraph meant to be read.
+The faith note uses `--forest` at 11.34:1 for that reason.
+
 ## Doberman line is OFF (2026-08-23)
 
 Alex: conflict of interest, temporary, expects it may come back. **Nothing is deleted.**

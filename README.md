@@ -164,8 +164,17 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       angle is part of the brand.
 - [ ] Whether Joy has rights to reuse the Doberman puppy photos, which came off
       Amber's Wix site during the KFC build.
-- [ ] Faith element ON HOLD (Alex, 2026-08-22) pending the client questionnaire.
-      Do not add one; do not rule one out.
+- [x] **RESOLVED 2026-08-23: faith element added** (Alex). A short note at the end of the
+      About bio saying they are Christians who hope their work brings glory to God, with a
+      link to a gospel film (youtube.com/watch?v=mIeRU12STNw). Set apart with a rule and
+      the display face rather than by colour. Nothing doctrinal is asserted beyond that,
+      and it appears on the About page only.
+- [x] **RESOLVED 2026-08-23: Tirzah added as the eighth puppy**, marked Adopted!. Facts
+      pulled from her Puppy Connection listing: girl, black phantom, same litter. Three of
+      her four listing photos are hers; the fourth is Troy and was not carried over. Her
+      description there is Puppy Connection's copy so no note was taken. Litter counts are
+      now derived from the data, not written, so adding or adopting a puppy cannot leave a
+      stale "Seven puppies" behind.
 - [ ] **Mobile hero treatment: pick one.** `hero-options.html` shows four at a real
       phone width with the headroom measured live from the rendered image. A is what is
       live (a mount, ~60px of air, least presence); B, C and D are full bleed and taller
