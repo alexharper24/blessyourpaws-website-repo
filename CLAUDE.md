@@ -214,6 +214,15 @@ template after that assignment, not before.
 only mean something when there are two. With one, the site presents Hope and Joy together;
 the eyebrow reads "Available now". Both strings are on `SHOW_DOBERMANS`.
 
+**Some sections do not need re-centring, they need removing.** Three layouts in a row broke
+the same way when the Doberman line went off: `.contact-pair` sized for two tiles,
+`.tri` sized for three cards, and the home page breed chooser sized for two doors. The
+first two were genuinely layout bugs and got flexible containers. The third was not: a
+chooser exists to offer a choice, and with one breed there is no choice, so centring the
+single card would have been polish on a section with no job. Ask what the section is FOR
+before fixing how it looks. Its markup is stashed verbatim in `BREED_DOORS_HTML` and
+emitted through `dob()`, so the flag restores it.
+
 ## One listing page while there is one breed (2026-08-23)
 
 `puppies.html` and `munchkin-bernedoodles.html` listed the identical seven cards. The prose

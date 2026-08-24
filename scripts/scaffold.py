@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 28
+V = 29
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -1282,6 +1282,11 @@ dob_reg_clause = dob('<li><strong>Registration.</strong> Doberman puppies are so
                      'with AKC registration. Breeding rights are available for an '
                      'additional $' + str(DEPOSIT) + '.</li>')
 
+# The breed chooser that sat on the home page. It only means anything with two
+# breeds to choose between, so it is emitted through dob(). Kept verbatim rather
+# than deleted, so restoring the flag restores the section.
+BREED_DOORS_HTML = '<section><div class="wrap">\n  {SPRIG}\n  <h2 class="center" style="margin-top:1rem">{\'Two breeds, one standard of raising\' if SHOW_DOBERMANS else \'One breed, one standard of raising\'}</h2>\n  <div class="grid-2" style="margin-top:2rem;align-items:stretch">\n    <a class="door" href="{\'munchkin-bernedoodles.html\' if SHOW_DOBERMANS else \'puppies.html\'}">\n      {img_tag(\'eden-01\', alt=\'Eden, a red and white Munchkin Bernedoodle puppy\')}\n      <div class="door-body"><h3>Munchkin Bernedoodles</h3>\n      <p class="fine">A small, sweet Bernedoodle and Cavalier cross. Going home in\n        September.</p></div>\n    </a>\n    {dob(\'\'\'<a class="door" href="dobermans.html">\n      IMGDOB\n      <div class="door-body"><h3>Doberman Pinschers</h3>\n      <p class="fine">Loyal Dobermans from our health-tested dam Mira. Ready to go\n        home now.</p></div>\n    </a>\'\'\').replace(\'IMGDOB\', img_tag(\'griffin-01\', alt=\'Griffin, a Doberman Pinscher puppy\'))}\n  </div>\n</div></section>'
+
 M_PARENTS = None  # filled in build_pages
 D_PARENTS = None
 
@@ -1386,6 +1391,9 @@ def build_pages():
   </div>
   <div class="parent-grid">{M_PARENTS}</div>
 </div></section>'''
+    # a breed chooser needs at least two breeds to choose between
+    breed_doors_section = dob(BREED_DOORS_HTML)
+
     PUPPIES_BODY = ('<section><div class="wrap">\n' + PUPPIES_INTRO
                     + '\n</div></section>' + PUPPIES_TAIL)
 
@@ -1439,24 +1447,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section><div class="wrap">
-  {SPRIG}
-  <h2 class="center" style="margin-top:1rem">{'Two breeds, one standard of raising' if SHOW_DOBERMANS else 'One breed, one standard of raising'}</h2>
-  <div class="grid-2" style="margin-top:2rem;align-items:stretch">
-    <a class="door" href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'puppies.html'}">
-      {img_tag('eden-01', alt='Eden, a red and white Munchkin Bernedoodle puppy')}
-      <div class="door-body"><h3>Munchkin Bernedoodles</h3>
-      <p class="fine">A small, sweet Bernedoodle and Cavalier cross. Going home in
-        September.</p></div>
-    </a>
-    {dob('''<a class="door" href="dobermans.html">
-      IMGDOB
-      <div class="door-body"><h3>Doberman Pinschers</h3>
-      <p class="fine">Loyal Dobermans from our health-tested dam Mira. Ready to go
-        home now.</p></div>
-    </a>''').replace('IMGDOB', img_tag('griffin-01', alt='Griffin, a Doberman Pinscher puppy'))}
-  </div>
-</div></section>
+{breed_doors_section}
 
 <section class="band-forest"><div class="wrap grid-2 hic">
   <div class="hic-head">
