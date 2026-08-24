@@ -231,6 +231,19 @@ single card would have been polish on a section with no job. Ask what the sectio
 before fixing how it looks. Its markup is stashed verbatim in `BREED_DOORS_HTML` and
 emitted through `dob()`, so the flag restores it.
 
+**What the site says about the report must track what the report contains.** It has been
+edited twice: first published whole and described as "all 14 pages, nothing left out", then
+trimmed to drop the profile summary, breed ancestry and family tree. The description moved
+with it each time, and it does not advertise the omission: it says the linked file carries
+every health result the panel returned, which is true. Two rules fall out of that. Do not
+describe a linked document as complete unless it is, since trimming it later turns accurate
+copy into a false claim. And do not state a figure on the page that the linked document no
+longer evidences, which is why the ancestry percentages came off when the ancestry page did.
+
+**Trimming a PDF: use `insert_pdf`, not `delete_pages`.** `delete_pages` leaves the removed
+pages' embedded fonts and images in the file. Trimming 3 pages of 14 that way produced
+853KB from a 572KB original. Copying the wanted range into a fresh document gives 142KB.
+
 ## One listing page while there is one breed (2026-08-23)
 
 `puppies.html` and `munchkin-bernedoodles.html` listed the identical seven cards. The prose
@@ -276,8 +289,10 @@ it contains instead:
 - **Clear on 29 conditions, carrier of 0.** That is a genuinely good result to publish and
   is most of the story.
 - Breed mix 67% Toy/Mini Poodle, 14% Medium/Standard Poodle, 13% Bernese Mountain Dog,
-  5% Bichon Frise, 1% Miniature Schnauzer. Consistent with a multi-gen Bernedoodle, which
-  is mostly Poodle by definition. The Bichon and Schnauzer fractions are worth mentioning
+  5% Bichon Frise, 1% Miniature Schnauzer. **NOT published on the site, and the published
+  report no longer contains the ancestry page** (Alex, 2026-08-23). Kept here for
+  reference only. Consistent with a multi-gen Bernedoodle, which is mostly Poodle by
+  definition. The Bichon and Schnauzer fractions are worth mentioning
   to Hope before anyone else notices them.
 - **Predicted ideal adult weight 22-40 lbs**, against the 21 lbs the site states for her.
   Worth a question; it does not change the puppies' estimate, which comes from the actual

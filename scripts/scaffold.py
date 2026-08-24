@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 32
+V = 33
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -1716,17 +1716,12 @@ def build_pages():
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
         "size and the temperament we breed for. " + CHIP_SAMPLE,
         [("Weight:", "22 lbs, blue merle parti, born January 21, 2024."),
-         ("Ancestry:", "Wisdom Panel puts her at 81% Poodle, 13% Bernese Mountain Dog, "
-          "5% Bichon Frise and 1% Miniature Schnauzer, which is what a multi-generation "
-          "Bernedoodle looks like on a panel."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
           "chondrodystrophy variant, CDDY. It takes only one copy to matter, so it can "
-          "pass to a puppy. The report is linked below and the panel explains it on its "
-          "pages 4 and 5, which are the first two sheets."),
-         ("The report:", "linked here. Every health result the panel returned, pages 4 "
-          "to 14 as the report numbers them. The first three pages, her profile summary "
-          "and breed ancestry, are not included.")],
+          "pass to a puppy. The report is linked below and the panel explains it on "
+          "pages 4 and 5."),
+         ("The report:", "linked here, with every health result the panel returned.")],
         [("View Troy’s Wisdom Panel report (PDF)",
           "records/troy-wisdom-panel-2026-02-21.pdf")]) +
       dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",

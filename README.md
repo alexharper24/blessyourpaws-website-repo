@@ -117,9 +117,11 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       also squares with the Wisdom Panel, which put her predicted ideal at 22-40 lbs. The
       puppy estimate stays 15-25 lbs and still reads as a draft from the 19 lb and 22 lb
       parents, pending Hope.
-- [ ] **Troy's ancestry is now published** as 81% Poodle / 13% Bernese / 5% Bichon Frise /
-      1% Miniature Schnauzer, because the report is public and hiding it while linking the
-      document that contains it would be worse. Flag the Bichon and Schnauzer to Hope.
+- [x] **Troy's ancestry is NOT published** (Alex, 2026-08-23). It was briefly, then the
+      report was trimmed to drop its breed-ancestry page and the percentages came off the
+      site with it, so nothing on the page is unevidenced by the linked document. The
+      figures are in this repo's CLAUDE.md for reference. Still worth Hope knowing the
+      Bichon and Schnauzer fractions exist, in case a buyer runs their own panel.
 - [x] **Dam is a Mini Multi Gen Bernedoodle** (confirmed 2026-08-22). Pawrade said
       "Mini", Puppy Connection said "Multi Gen"; she is both. Multi-gen supports a more
       consistent curl and lower shedding than an F1 — still a per-puppy prediction, never
