@@ -33,3 +33,6 @@ desktop.ini
 
 # Client source documents — health records etc. Not published until reviewed.
 source-files/
+
+# font extracted from the PDF by scripts/renumber_pdf_footers.py, regenerated on demand
+scripts/_extracted-*.ttf

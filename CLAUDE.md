@@ -335,9 +335,82 @@ describe a linked document as complete unless it is, since trimming it later tur
 copy into a false claim. And do not state a figure on the page that the linked document no
 longer evidences, which is why the ancestry percentages came off when the ancestry page did.
 
+**A trimmed PDF still carries the page numbers it was printed with.** Copying pages 4-14
+into a fresh document renumbers nothing, so the published report opened on "page 4 of 14"
+and ended on "page 14 of 14", which reads as a document with pages missing. The footers now
+read 1-11. They are REDACTED rather than covered with a white box: a box leaves the old
+string in the text layer, so ctrl-F, copy-paste and a screen reader would all still say
+"page 4 of 14" while the eye read "page 1 of 11". The replacement is set in the report's own
+font, extracted from the file with `extract_font` (an Identity-H subset of
+UntitledSans-Regular that happens to retain all ten digits); the proof it is the right font
+is that it measures the original string at 44.52pt against the 44.53pt the original span
+occupies. Script: `scripts/renumber_pdf_footers.py`, which is idempotent: it reads whatever
+the footers currently say and rewrites them 1-N, so re-running it after another trim is
+safe.
+
+**A page citation is coupled to the page numbers.** our-dogs.html told readers the panel
+explains CDDY "on pages 4 and 5", which the renumbering made wrong. It is "pages 1 and 2"
+now. Re-check it if the report is ever re-trimmed: a citation pointing at a page that says
+something else is worse than no citation.
+
 **Trimming a PDF: use `insert_pdf`, not `delete_pages`.** `delete_pages` leaves the removed
 pages' embedded fonts and images in the file. Trimming 3 pages of 14 that way produced
 853KB from a 572KB original. Copying the wanted range into a fresh document gives 142KB.
+
+## Photographs: what gets downloaded, and when (2026-08-24)
+
+**`display:none` does not prevent a download.** The browser runs image selection whatever
+the element's rendering, so puppies.html was fetching a 52KB hero at `fetchpriority=high`
+on a 390px screen and then hiding it with `.hide-mobile`. Measured in the browser, not
+assumed. `desktop_only_img()` emits the same photo as a `<picture>` whose `<source>`s carry
+every candidate and whose `<img>` deliberately has no `src` and no `srcset`: below the
+breakpoint nothing matches, so nothing is requested. The jpg keeps its own `<source>` so a
+desktop browser without webp is no worse off than it was.
+
+**The source's media query must be the exact complement of the CSS query.** `.hide-mobile`
+hides at `max-width:900px`; pairing it with `min-width:901px` leaves a sliver between 900
+and 901px, reachable by zoom or display scaling, where the CSS shows the image and no
+source matches it. Visible and unloadable at once. The query is
+`not all and (max-width:900px)`, which is true precisely when the CSS rule is false. Move
+one, move the other.
+
+**`picture{display:contents}` is load-bearing.** Wrapping an `<img>` in a `<picture>` makes
+the PICTURE the grid item, so `.hic>.hic-photo` matched nothing and the puppies.html hero
+fell from 843px to 454px while still looking plausible. `display:contents` drops the
+wrapper's box so the `<img>` is the grid child again and every rule in the stylesheet keeps
+working, with the classes staying on the `<img>` where they were written.
+
+**The cache warmer.** After the load event and an idle main thread, `main.js` quietly
+fetches what the next page will need. Two things keep it honest: it only ever requests URLs
+the next page would request anyway, so the bytes move earlier rather than multiply, and it
+never competes with the current page (nothing before `load`, everything at
+`fetchPriority=low`). Skipped entirely on `saveData`, on 2g, and under
+`prefers-reduced-data`.
+
+Two mechanisms. `warm_for(path)` in `scaffold.py` emits a JSON island, `<script
+type="application/json" id="warm">`, naming documents and `[srcset, sizes, media?]` triples.
+And an intent handler warms whatever link the pointer, finger or keyboard actually lands on,
+which beats any build-time guess; on a puppy card it also warms the large version of the
+photo already in the card, via `data-warm-sizes`.
+
+**The `sizes` hint in a manifest entry must be the DESTINATION page's hint, not the current
+page's.** A different hint picks a different file off the same srcset, so the warm request
+and the real request become two different URLs: the visit pays twice and feels no faster.
+This is why `PUPPY_HERO_SIZES` and `srcset_for()` exist as named, shared things rather than
+being spelled out twice.
+
+**Measured cost, analytically rather than from the network panel.** Warming index.html costs
+**101KB on a desktop** (14KB document, hero 51KB, four card images) and **203KB on a phone**
+(14KB document, four card images at 1000w). The phone costs more because its cards are
+near-full-width, so they resolve to a much larger candidate than a desktop's 289px slot. The
+knob is `CAP` in the warmer, 4 on a phone and 10 on a desktop; entries already loaded by the
+current page are skipped without consuming it.
+
+**Do not measure this with `encodedBodySize`.** It reports the full body size on a cache hit,
+which made a run of warmed-but-cached images look like 86KB of fresh transfer. And a
+memory-cache hit may produce no Resource Timing entry at all, which makes a working warm
+look like it did nothing. Resolve `sizes` against the viewport analytically and sum the files
+on disk, the same cache-proof approach the `sizes` audit above uses.
 
 ## One listing page while there is one breed (2026-08-23)
 

@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 46
+V = 49
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -226,6 +226,13 @@ a{color:var(--forest)}
 
 .hero-split{display:grid;grid-template-columns:.68fr 1.32fr;gap:clamp(2rem,4vw,4rem);
   align-items:center}
+/* A <picture> must not become the layout box. desktop_only_img wraps its <img> in one,
+   which made the PICTURE the grid item and left .hic-photo's placement matching nothing:
+   the puppies.html hero silently fell from 843px to 454px while still looking fine.
+   display:contents drops the wrapper's box so the <img> is the grid child again, which
+   is what every rule in this stylesheet is written against. Keeps the classes, and the
+   thinking behind them, on the <img> where they were. */
+picture{display:contents}
 .framed{width:100%;max-width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
@@ -1074,6 +1081,101 @@ JS = """// Bless Your Paws Puppies - v2
   });
   }
 })();
+
+// ---- warming the next page, after this one is completely finished
+// Nearly everyone who lands on the home page opens the puppies page next, and that page's
+// photographs are the slowest thing on it. Fetching them while the visitor is still
+// reading makes the click feel instant instead of costing another few hundred KB in front
+// of them. Two rules keep this honest. It only ever requests URLs the next page would
+// request anyway, so a visit that continues does not pay any extra: the bytes move
+// earlier, they do not multiply. And it never competes with the page in front of the
+// visitor: nothing starts before the load event, everything waits for an idle main
+// thread, and every request goes out at low priority.
+(function(){
+  var c = navigator.connection || {};
+  // do not spend somebody else's data plan on a guess
+  if (c.saveData === true) return;
+  if (/(^|-)2g$/.test(c.effectiveType || '')) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-data: reduce)').matches) return;
+
+  var seen = {}, held = [], budget = 0;
+  // a phone shows one card per row, so its card images are near full width and cost real
+  // money. A desktop's are about 289px. Same photographs, very different bet.
+  var CAP = (window.innerWidth || 1024) < 700 ? 4 : 10;
+
+  // anything this page has already loaded is already in the cache, so it must not eat
+  // into the cap. Keyed on srcset AND sizes: the same srcset with a different hint
+  // resolves to a different file, which is the whole point of the hint.
+  document.querySelectorAll('img[srcset],source[srcset]').forEach(function(n){
+    seen[n.getAttribute('srcset') + '|' + (n.getAttribute('sizes') || '')] = 1;
+  });
+
+  function doc(href){
+    if (!href || seen['d:' + href]) return;
+    seen['d:' + href] = 1;
+    var l = document.createElement('link');
+    l.rel = 'prefetch';
+    l.as = 'document';
+    l.href = href;
+    document.head.appendChild(l);
+  }
+
+  function pic(srcset, sizes, media){
+    if (!srcset) return;
+    if (media && window.matchMedia && !matchMedia(media).matches) return;
+    var k = srcset + '|' + (sizes || '');
+    if (seen[k] || budget >= CAP) return;
+    seen[k] = 1;
+    budget++;
+    var i = new Image();
+    i.fetchPriority = 'low';   // ignored where unsupported, which is harmless
+    i.decoding = 'async';
+    if (sizes) i.sizes = sizes;   // sizes BEFORE srcset: the candidate is chosen the
+    i.srcset = srcset;            // moment srcset is set, and it chooses using sizes
+    held.push(i);   // a detached Image can be collected mid-flight. Hold the reference.
+  }
+
+  function idle(fn){
+    if (window.requestIdleCallback) requestIdleCallback(fn, {timeout: 3000});
+    else setTimeout(fn, 1500);
+  }
+
+  function manifest(){
+    var el = document.getElementById('warm');
+    if (!el) return;
+    var m;
+    try { m = JSON.parse(el.textContent); } catch (e) { return; }
+    (m.doc || []).forEach(doc);
+    (m.img || []).forEach(function(a){ pic(a[0], a[1], a[2]); });
+  }
+
+  // whatever link the pointer, finger or keyboard is actually on beats any guess baked in
+  // at build time, and costs one document. On a card it also warms the large version of
+  // the photograph already showing in the card: same srcset, the puppy page's own hint.
+  function intent(e){
+    var a = e.target && e.target.closest && e.target.closest('a[href]');
+    if (!a || a.origin !== location.origin) return;
+    if (a.pathname === location.pathname) return;
+    if (/[.](pdf|zip)$/i.test(a.pathname)) return;   // a download, not a navigation
+    // A character class, not a backslash-escaped dot: this JS lives inside a plain
+    // Python string, where that escape is invalid and warns on every build.
+    doc(a.href);
+    var hint = a.getAttribute('data-warm-sizes');
+    if (hint){
+      var im = a.querySelector('img[srcset]');
+      if (im) pic(im.getAttribute('srcset'), hint);
+    }
+  }
+
+  function start(){
+    idle(manifest);
+    ['pointerover', 'touchstart', 'focusin'].forEach(function(t){
+      document.addEventListener(t, intent, {passive: true});
+    });
+  }
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
+})();
 """
 JS = (JS.replace("__WHO__", "Hope raises the Munchkin Bernedoodles and Joy raises the Dobermans."
                  if SHOW_DOBERMANS else "Hope and Joy raise the puppies between them.")
@@ -1157,6 +1259,11 @@ def footer():
 </div></footer>"""
 
 def page(path, title, desc, body, extra_head=""):
+    # a JSON island rather than inline script, so there is nothing to escape and no
+    # execution here at all: main.js reads it if it is present and does nothing if not
+    warm = warm_for(path)
+    warm_tag = ("" if not warm else '<script type="application/json" id="warm">'
+                + json.dumps(warm, separators=(",", ":")) + "</script>\n")
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1185,7 +1292,7 @@ def page(path, title, desc, body, extra_head=""):
 {body}
 </main>
 {footer()}
-<script src="main.js?v={V}" defer></script>
+{warm_tag}<script src="main.js?v={V}" defer></script>
 </body>
 </html>
 """
@@ -1201,20 +1308,29 @@ def asset_v(path):
     except OSError:
         return ""
 
+def srcset_for(stem):
+    """The srcset string for one stem, or "" if it has no derivatives.
+
+    Split out of img_tag because the cache-warming manifest has to name exactly the same
+    candidate URLs the next page will ask for. Two spellings of the same srcset would
+    warm one URL and then request another, which looks like it works and does nothing.
+    """
+    # only reference widths that were actually generated: a narrow original has no
+    # 1600px derivative, and a srcset entry pointing at a missing file is a 404.
+    have = [w for w in (320, 640, 1000, 1600)
+            if os.path.exists(f"img/r/{stem}-{w}.webp")]
+    return ", ".join(f"img/r/{stem}-{w}.webp{asset_v(f'img/r/{stem}-{w}.webp')} {w}w"
+                     for w in have)
+
 def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
             sizes="(max-width:900px) 94vw, 58vw", priority=False):
     q = chr(34)
     parts = ["<img"]
     if hidden: parts.append("hidden")
     if cls: parts.append(f"class={q}{cls}{q}")
-    # only reference widths that were actually generated: a narrow original has no
-    # 1600px derivative, and a srcset entry pointing at a missing file is a 404.
-    have = [w for w in (320, 640, 1000, 1600)
-            if os.path.exists(f"img/r/{stem}-{w}.webp")]
-    if have:
-        parts.append("srcset=" + q + ", ".join(
-            f"img/r/{stem}-{w}.webp{asset_v(f'img/r/{stem}-{w}.webp')} {w}w"
-            for w in have) + q)
+    ss = srcset_for(stem)
+    if ss:
+        parts.append("srcset=" + q + ss + q)
     parts.append(f'sizes={q}{sizes}{q}')
     parts.append(f'src={q}img/{folder}/{stem}.jpg'
                  f'{asset_v(f"img/{folder}/{stem}.jpg")}{q}')
@@ -1226,6 +1342,45 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
         parts.append(f'decoding={q}sync{q}')
     if lazy and not priority: parts.append(f'loading={q}lazy{q}')
     return " ".join(parts) + ">"
+
+def desktop_only_img(stem, folder="puppies", cls="", alt="",
+                     sizes="(max-width:900px) 94vw, 58vw"):
+    """A photo that CSS hides below 901px, emitted so a phone never downloads it.
+
+    `display:none` does NOT prevent a fetch. The browser runs image selection whatever
+    the element's rendering, so puppies.html was pulling a 52KB hero at
+    fetchpriority=high on a 390px screen and then hiding it. Measured, not assumed.
+
+    Inside a <picture> the rules are different. The two <source>s hold every candidate
+    and are gated on the same 901px the CSS uses, and the <img> deliberately carries no
+    src and no srcset, so below that width there is nothing to select and nothing is
+    requested. Above it a source matches and the image loads eagerly, which it must,
+    because on a desktop this is the largest-contentful element.
+
+    The jpg keeps its own source rather than being dropped, so a desktop browser with no
+    webp support still gets the picture, exactly as it did from img_tag.
+
+    The media query and the `.hide-mobile` breakpoint have to stay in step. If one moves,
+    move the other, or the photo becomes either invisible or un-downloadable.
+    """
+    q = chr(34)
+    ss = srcset_for(stem)
+    jpg = f"img/{folder}/{stem}.jpg{asset_v(f'img/{folder}/{stem}.jpg')}"
+    # The EXACT complement of the .hide-mobile query, not "(min-width:901px)". Those
+    # two leave a sliver between 900px and 901px, reachable by zoom or display scaling,
+    # where the CSS shows the image and no source matches it: visible and unloadable at
+    # the same time. "not all and (max-width:900px)" is true precisely when the CSS rule
+    # is false, so the two cannot disagree. If the breakpoint moves, move both.
+    mq = "not all and (max-width:900px)"
+    out = ["<picture>"]
+    if ss:
+        out.append(f'<source media={q}{mq}{q} srcset={q}{ss}{q} '
+                   f'sizes={q}{sizes}{q} type={q}image/webp{q}>')
+    out.append(f'<source media={q}{mq}{q} srcset={q}{jpg}{q}>')
+    out.append(f'<img class={q}{cls}{q} alt={q}{alt}{q} '
+               f'fetchpriority={q}high{q} decoding={q}sync{q}>')
+    out.append("</picture>")
+    return "".join(out)
 
 def dob_carrier_section_html():
     """Reading-a-genetic-panel section. Entirely about Mira's panel and illustrated with
@@ -1316,6 +1471,41 @@ PHOTO_NARROW = "(max-width:900px) 94vw, 29vw"   # narrow-right + flip: copy take
 
 CARD_SIZES = ("(max-width:460px) 92vw, (max-width:760px) 46vw, "
               "(max-width:1100px) 30vw, 22vw")
+# the first carousel slide on a puppy page. Named because the cache warmer has to request
+# the candidate that page will pick, and a different hint picks a different file.
+PUPPY_HERO_SIZES = "(max-width:900px) 94vw, 52vw"
+
+def warm_for(path):
+    """URLs worth fetching quietly once `path` has finished loading, or None.
+
+    Read this as a bet on where the visitor goes next, and keep the bet small. Documents
+    are nearly free, a few KB of HTML each. Photographs are not, so only two pages warm
+    any: the home page, because almost everyone opens the puppies page from it, and it is
+    the one page where we know the next step. Everywhere else the pointer tells us more
+    than a guess can, and main.js warms whatever link it is actually on.
+
+    Entries are [srcset, sizes] or [srcset, sizes, media]. The media condition exists
+    because puppies.html only downloads its hero above 901px now, and warming it on a
+    phone would put back exactly the wasted 52KB that desktop_only_img just removed.
+
+    The sizes hint must be the one the DESTINATION page uses, not this one's. A different
+    hint picks a different file off the same srcset, and then the warm request and the
+    real request are two different URLs: the visit pays twice and feels no faster.
+    """
+    if path == "index.html":
+        cards = [[srcset_for(lead(sl)), CARD_SIZES] for sl, *_ in list(MUNCHKINS) + D_LIST]
+        return {"doc": ["puppies.html"],
+                # the puppies page's largest-contentful element, desktop only
+                "img": [[srcset_for("jericho-01"), PHOTO_WIDE, "(min-width:901px)"]]
+                       + [c for c in cards if c[0]]}
+    if path == "puppies.html":
+        return {"doc": ["what-is-a-munchkin-bernedoodle.html", "contact.html"]}
+    if path.startswith("puppy-"):
+        # whoever reads a whole puppy page is deciding, and both next steps are forms
+        return {"doc": ["contact.html", "waitlist.html"]}
+    if path == "what-is-a-munchkin-bernedoodle.html":
+        return {"doc": ["puppies.html"]}
+    return None
 
 def card(slug, name, sex, colour, price, breed, first=False):
     # an adopted puppy shows no price: she is not for sale, and a price beside "Adopted!"
@@ -1324,7 +1514,7 @@ def card(slug, name, sex, colour, price, breed, first=False):
     left = "" if adopted else f'<span class="price">${price:,}</span>'
     badge = ('<span class="status status-adopted">Adopted!</span>' if adopted
              else '<span class="status">Available</span>')
-    return f"""<a class="packet-link{' is-adopted' if adopted else ''}" href="puppy-{slug}.html"><article class="packet">
+    return f"""<a class="packet-link{' is-adopted' if adopted else ''}" href="puppy-{slug}.html" data-warm-sizes="{PUPPY_HERO_SIZES}"><article class="packet">
   {img_tag(lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy', sizes=CARD_SIZES,
            lazy=not first, priority=first)}
   <div class="packet-body">
@@ -1443,7 +1633,7 @@ def build_pages():
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else 'Available now'}</p>
       <h1>Munchkin Bernedoodle puppies</h1>
     </div>
-    {img_tag('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False, priority=True)}
+    {desktop_only_img('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">{n_word(M_TOTAL)} puppies from Troy, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
@@ -1595,7 +1785,7 @@ def build_pages():
       <p>New to the cross? <a href="what-is-a-munchkin-bernedoodle.html">Read our
         plain-language guide</a> to what a Munchkin Bernedoodle is and what to expect.</p>
     </div>
-    {img_tag('jericho-01', cls='framed hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False, priority=True)}
+    {desktop_only_img('jericho-01', cls='framed hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE)}
   </div>
   <div class="pgrid cols-4" style="margin-top:2.5rem">{m_cards}</div>
 </div></section>
@@ -1636,7 +1826,7 @@ def build_pages():
       <p>Mira's genetic and heart testing is real and linked:
         <a href="our-dogs.html">see the records</a>.</p>
     </div>
-    {img_tag('elowen-01', cls='framed hide-mobile', alt='Elowen, a black and rust Doberman Pinscher puppy', lazy=False, priority=True)}
+    {desktop_only_img('elowen-01', cls='framed hide-mobile', alt='Elowen, a black and rust Doberman Pinscher puppy', sizes=PHOTO_WIDE)}
   </div>
   <div class="pgrid cols-3" style="margin-top:2.5rem">{d_cards}</div>
 </div></section>
@@ -1783,7 +1973,11 @@ def build_pages():
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
           "chondrodystrophy variant, CDDY. It takes only one copy to matter, so it can "
           "pass to a puppy. The report is linked below and the panel explains it on "
-          "pages 4 and 5."),
+          # The published PDF's footers now read 1-11 rather than 4-14, so the CDDY
+          # summary and the detail page are pages 1 and 2. Re-check this if the report is
+          # ever re-trimmed: a citation pointing at a page that says something else is
+          # worse than no citation at all.
+          "pages 1 and 2."),
          ("The report:", "linked here, with every health result the panel returned.")],
         [("View Troy’s Wisdom Panel report (PDF)",
           "records/troy-wisdom-panel-2026-02-21.pdf")], first=True) +
@@ -2327,7 +2521,7 @@ def build_pages():
         slides = "\n".join(
             "        " + img_tag(f"{slug}-{i:02d}", alt=f"{name}, photo {k+1}",
                                  lazy=(k > 0), hidden=(k > 0), priority=(k == 0),
-                                 sizes="(max-width:900px) 94vw, 52vw")
+                                 sizes=PUPPY_HERO_SIZES)
             for k, i in enumerate(order))
         thumbs = "\n".join(
             f'        <button aria-current="{"true" if k==0 else "false"}" '

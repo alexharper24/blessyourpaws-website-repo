@@ -189,3 +189,98 @@
   });
   }
 })();
+
+// ---- warming the next page, after this one is completely finished
+// Nearly everyone who lands on the home page opens the puppies page next, and that page's
+// photographs are the slowest thing on it. Fetching them while the visitor is still
+// reading makes the click feel instant instead of costing another few hundred KB in front
+// of them. Two rules keep this honest. It only ever requests URLs the next page would
+// request anyway, so a visit that continues does not pay any extra: the bytes move
+// earlier, they do not multiply. And it never competes with the page in front of the
+// visitor: nothing starts before the load event, everything waits for an idle main
+// thread, and every request goes out at low priority.
+(function(){
+  var c = navigator.connection || {};
+  // do not spend somebody else's data plan on a guess
+  if (c.saveData === true) return;
+  if (/(^|-)2g$/.test(c.effectiveType || '')) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-data: reduce)').matches) return;
+
+  var seen = {}, held = [], budget = 0;
+  // a phone shows one card per row, so its card images are near full width and cost real
+  // money. A desktop's are about 289px. Same photographs, very different bet.
+  var CAP = (window.innerWidth || 1024) < 700 ? 4 : 10;
+
+  // anything this page has already loaded is already in the cache, so it must not eat
+  // into the cap. Keyed on srcset AND sizes: the same srcset with a different hint
+  // resolves to a different file, which is the whole point of the hint.
+  document.querySelectorAll('img[srcset],source[srcset]').forEach(function(n){
+    seen[n.getAttribute('srcset') + '|' + (n.getAttribute('sizes') || '')] = 1;
+  });
+
+  function doc(href){
+    if (!href || seen['d:' + href]) return;
+    seen['d:' + href] = 1;
+    var l = document.createElement('link');
+    l.rel = 'prefetch';
+    l.as = 'document';
+    l.href = href;
+    document.head.appendChild(l);
+  }
+
+  function pic(srcset, sizes, media){
+    if (!srcset) return;
+    if (media && window.matchMedia && !matchMedia(media).matches) return;
+    var k = srcset + '|' + (sizes || '');
+    if (seen[k] || budget >= CAP) return;
+    seen[k] = 1;
+    budget++;
+    var i = new Image();
+    i.fetchPriority = 'low';   // ignored where unsupported, which is harmless
+    i.decoding = 'async';
+    if (sizes) i.sizes = sizes;   // sizes BEFORE srcset: the candidate is chosen the
+    i.srcset = srcset;            // moment srcset is set, and it chooses using sizes
+    held.push(i);   // a detached Image can be collected mid-flight. Hold the reference.
+  }
+
+  function idle(fn){
+    if (window.requestIdleCallback) requestIdleCallback(fn, {timeout: 3000});
+    else setTimeout(fn, 1500);
+  }
+
+  function manifest(){
+    var el = document.getElementById('warm');
+    if (!el) return;
+    var m;
+    try { m = JSON.parse(el.textContent); } catch (e) { return; }
+    (m.doc || []).forEach(doc);
+    (m.img || []).forEach(function(a){ pic(a[0], a[1], a[2]); });
+  }
+
+  // whatever link the pointer, finger or keyboard is actually on beats any guess baked in
+  // at build time, and costs one document. On a card it also warms the large version of
+  // the photograph already showing in the card: same srcset, the puppy page's own hint.
+  function intent(e){
+    var a = e.target && e.target.closest && e.target.closest('a[href]');
+    if (!a || a.origin !== location.origin) return;
+    if (a.pathname === location.pathname) return;
+    if (/[.](pdf|zip)$/i.test(a.pathname)) return;   // a download, not a navigation
+    // A character class, not a backslash-escaped dot: this JS lives inside a plain
+    // Python string, where that escape is invalid and warns on every build.
+    doc(a.href);
+    var hint = a.getAttribute('data-warm-sizes');
+    if (hint){
+      var im = a.querySelector('img[srcset]');
+      if (im) pic(im.getAttribute('srcset'), hint);
+    }
+  }
+
+  function start(){
+    idle(manifest);
+    ['pointerover', 'touchstart', 'focusin'].forEach(function(t){
+      document.addEventListener(t, intent, {passive: true});
+    });
+  }
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
+})();
