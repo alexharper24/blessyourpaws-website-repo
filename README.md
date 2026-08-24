@@ -112,8 +112,11 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [ ] **Will the puppies themselves be tested for CDDY?** It is a cheap, definitive test
       for a dominant variant, and it would let Hope tell each buyer exactly where their
       puppy stands. No competitor offers that. Hope's decision.
-- [ ] **Troy's weight.** The panel predicts an ideal adult weight of 22-40 lbs; the site
-      states 21 lbs from Hope. Probably just the panel's range being broad, but confirm.
+- [x] **RESOLVED 2026-08-23: Troy is 22 lbs** (Alex). Updated in all eight places it
+      appeared, and the draft chip on her weight is removed since it is confirmed. This
+      also squares with the Wisdom Panel, which put her predicted ideal at 22-40 lbs. The
+      puppy estimate stays 15-25 lbs and still reads as a draft from the 19 lb and 22 lb
+      parents, pending Hope.
 - [ ] **Troy's ancestry is now published** as 81% Poodle / 13% Bernese / 5% Bichon Frise /
       1% Miniature Schnauzer, because the report is public and hiding it while linking the
       document that contains it would be worse. Flag the Bichon and Schnauzer to Hope.

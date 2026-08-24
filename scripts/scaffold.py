@@ -9,12 +9,12 @@ script rather than editing the HTML.
 
 Draft mode: noindex on every page, robots.txt closed, until launch.
 """
-import json, os
+import functools, hashlib, json, os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 30
+V = 31
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -64,7 +64,7 @@ D_BORN, D_HOME = "April 14, 2026", "Ready now"
 CHIP_DRAFT  = '<span class="chip chip-draft">Draft, confirm before launch</span>'
 CHIP_SAMPLE = '<span class="chip chip-sample">Sample copy, waiting on their words</span>'
 CHIP_PHOTO  = '<span class="chip chip-draft">Photo coming</span>'
-SIZE_DRAFT  = ('<span class="chip chip-draft">Draft estimate from the 19 lb and 21 lb '
+SIZE_DRAFT  = ('<span class="chip chip-draft">Draft estimate from the 19 lb and 22 lb '
                'parents, Hope to confirm</span>')
 
 M_KIT = ["Vaccination and health record", "Examination by our vet",
@@ -1068,7 +1068,7 @@ def header():
     return f"""<header class="site-head"><div class="wrap head-row">
   <a class="brand" href="index.html" aria-label="Bless Your Paws Puppies, home">
     <img src="img/brand/logo-primary.png?v={V}"
-      srcset="img/brand/logo-primary-60.png 202w, img/brand/logo-primary-84.png 283w, img/brand/logo-primary-120.png 404w, img/brand/logo-primary-168.png 566w"
+      srcset="img/brand/logo-primary-60.png{asset_v('img/brand/logo-primary-60.png')} 202w, img/brand/logo-primary-84.png{asset_v('img/brand/logo-primary-84.png')} 283w, img/brand/logo-primary-120.png{asset_v('img/brand/logo-primary-120.png')} 404w, img/brand/logo-primary-168.png{asset_v('img/brand/logo-primary-168.png')} 566w"
       sizes="(max-width:900px) 210px, 260px"
       alt="Bless Your Paws Puppies" width="1596" height="474" decoding="async">
   </a>
@@ -1080,7 +1080,7 @@ def footer():
     return f"""<footer class="site-foot"><div class="wrap">
   <div class="foot-top">
     <div class="foot-brand">
-      <img src="img/brand/mark-paw-heart.png" alt="">
+      <img src="img/brand/mark-paw-heart.png{asset_v('img/brand/mark-paw-heart.png')}" alt="">
       <span><span class="fb-name">Bless Your Paws</span>
         <span class="fb-sub">Puppies</span></span>
     </div>
@@ -1154,6 +1154,15 @@ def page(path, title, desc, body, extra_head=""):
     assert "—" not in html, f"em dash slipped into {path}"
     open(path, "w", encoding="utf-8").write(html)
 
+@functools.lru_cache(maxsize=None)
+def asset_v(path):
+    """?v= for one asset, from its own bytes. Empty string if the file is missing."""
+    try:
+        with open(path, "rb") as fh:
+            return "?v=" + hashlib.md5(fh.read()).hexdigest()[:8]
+    except OSError:
+        return ""
+
 def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
             sizes="(max-width:900px) 94vw, 45vw"):
     q = chr(34)
@@ -1166,9 +1175,11 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
             if os.path.exists(f"img/r/{stem}-{w}.webp")]
     if have:
         parts.append("srcset=" + q + ", ".join(
-            f"img/r/{stem}-{w}.webp {w}w" for w in have) + q)
+            f"img/r/{stem}-{w}.webp{asset_v(f'img/r/{stem}-{w}.webp')} {w}w"
+            for w in have) + q)
     parts.append(f'sizes={q}{sizes}{q}')
-    parts.append(f'src={q}img/{folder}/{stem}.jpg{q}')
+    parts.append(f'src={q}img/{folder}/{stem}.jpg'
+                 f'{asset_v(f"img/{folder}/{stem}.jpg")}{q}')
     parts.append(f'alt={q}{alt}{q}')
     if lazy: parts.append(f'loading={q}lazy{q}')
     return " ".join(parts) + ">"
@@ -1313,7 +1324,7 @@ def build_pages():
 
     M_PARENTS = (
       parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
-                  [("Weight", "21 lbs"), ("Color", "Blue merle parti"),
+                  [("Weight", "22 lbs"), ("Color", "Blue merle parti"),
                    ("Born", "January 21, 2024")]) +
       parent_card("cavalier-sire-01", "Our Cavalier sire", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
@@ -1576,9 +1587,9 @@ def build_pages():
 
     faq = [
       ("How big does a Munchkin Bernedoodle get?",
-       "Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at 15 to 25 lbs full grown, based on the 21 lb mom and 19 lb dad. Size varies puppy to puppy, so ask us about the one you love."),
+       "Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at 15 to 25 lbs full grown, based on the 22 lb mom and 19 lb dad. Size varies puppy to puppy, so ask us about the one you love."),
       ("How does a Munchkin Bernedoodle end up so small?",
-       "By breeding down through generations and crossing in a naturally smaller parent breed. Ours come from a 21 lb Mini Multi Gen Bernedoodle mother and a 19 lb Cavalier father. " + CHIP_DRAFT),
+       "By breeding down through generations and crossing in a naturally smaller parent breed. Ours come from a 22 lb Mini Multi Gen Bernedoodle mother and a 19 lb Cavalier father. " + CHIP_DRAFT),
       ("How is this different from a Mini or Micro Bernedoodle?",
        "A Mini or Micro Bernedoodle usually gets small by crossing to a smaller Poodle. A Munchkin adds Cavalier King Charles Spaniel, which brings the size down and brings the Cavalier's calm, affectionate temperament with it."),
       ("Do they shed? Are they hypoallergenic?",
@@ -1637,13 +1648,13 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <div class="grid-2 narrow-right hic hic-flip">
     <div class="col-title hic-head"><h2>Where the small size comes from</h2></div>
-    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 21 lb Mini Multi Gen Bernedoodle dam')}
+    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 22 lb Mini Multi Gen Bernedoodle dam')}
     <div class="hic-copy">
       <p>The name confuses people, so here is the honest version. "Munchkin"
         describes small overall size. A Munchkin Bernedoodle is a little dog that keeps
         the Bernedoodle look, usually somewhere between 10 and 25 lbs full grown, where
         a standard Bernedoodle can reach 70 lbs or more.</p>
-      <p>Ours come from a small mom at 21 lbs bred to a small dad at 19 lbs. We publish
+      <p>Ours come from a small mom at 22 lbs bred to a small dad at 19 lbs. We publish
         each parent's testing on the <a href="our-dogs.html">our dogs</a> page so you can
         read it for yourself rather than take our word for it. {CHIP_DRAFT}</p>
     </div>
@@ -1700,10 +1711,10 @@ def build_pages():
 
     M_DOGS = (
       dog_row("troy-01", "Troy", "Mini Multi Gen Bernedoodle", None,
-        "Troy is the mother of our Munchkin Bernedoodle litter. At 21 lbs she is a "
+        "Troy is the mother of our Munchkin Bernedoodle litter. At 22 lbs she is a "
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
         "size and the temperament we breed for. " + CHIP_SAMPLE,
-        [("Weight:", "21 lbs, blue merle parti, born January 21, 2024. " + CHIP_DRAFT),
+        [("Weight:", "22 lbs, blue merle parti, born January 21, 2024."),
          ("Ancestry:", "Wisdom Panel puts her at 81% Poodle, 13% Bernese Mountain Dog, "
           "5% Bichon Frise and 1% Miniature Schnauzer, which is what a multi-generation "
           "Bernedoodle looks like on a panel."),
@@ -2219,7 +2230,8 @@ def build_pages():
             for k, i in enumerate(order))
         thumbs = "\n".join(
             f'        <button aria-current="{"true" if k==0 else "false"}" '
-            f'aria-label="Photo {k+1}"><img src="img/r/{slug}-{i:02d}-320.webp" alt="" '
+            f'aria-label="Photo {k+1}"><img src="img/r/{slug}-{i:02d}-320.webp'
+            f'{asset_v(f"img/r/{slug}-{i:02d}-320.webp")}" alt="" '
             f'loading="lazy"></button>' for k, i in enumerate(order))
         sibs = MUNCHKINS if breed.startswith("Munchkin") else DOBERMANS
         sib = " &middot; ".join(f'<a href="puppy-{s}.html">{n}</a>'

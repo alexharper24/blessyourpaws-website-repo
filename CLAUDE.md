@@ -192,6 +192,14 @@ puppy", so grepping for the word "Doberman" alone would have missed it; grep the
 Joy stays on the site. Her number and her name remain; only the breed attribution comes
 off, so labels read "Hope" and "Joy" rather than "Hope, Munchkins" and "Joy, Dobermans".
 
+**Images are cache-busted per file, from their own bytes.** `asset_v(path)` returns
+`?v=<md5[:8]>` and `img_tag` appends it to every srcset candidate and to the src. Keyed on
+content rather than the global `V`, so replacing one photograph gives that photograph a new
+URL while a stylesheet bump leaves the other thousand-odd image URLs alone. The logo srcset
+and the per-puppy carousel thumbnails are hand-written tags and needed it added by hand;
+if another hand-written `<img>` appears, it needs `asset_v` too. The check is: every
+`src`/`srcset` URL ending in webp/jpg/png carries `?v=`, and there are 1,079 of them.
+
 **Cache-busting must be on the `srcset`, not just the `src`.** The Hope and Joy photo was
 replaced in place under the same filenames, with `?v={V}` on the `src` fallback only.
 Browsers choose from `srcset`, so every visitor kept being served the cached old picture
