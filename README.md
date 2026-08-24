@@ -228,6 +228,58 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       Pages serves from `main` / root, HTTPS enforced. Still in **draft mode**
       (noindex on all 26 pages + `robots.txt` closed), so the link is shareable but
       not indexable.
-- [ ] Google Business Profile + Search Console after launch.
+- [ ] Google Business Profile + Search Console after launch. See the full GBP checklist
+      below — the profile is the single highest-leverage item on this list.
+
+### Search, local and AEO
+
+Method and reasoning: `.claude/guides/local-seo-aeo.md`. Read the "does NOT fit our sites"
+section first — this is a **considered purchase**, not a proximity one. Families drive hours
+for a specific puppy, so the breed term carries far more weight than the map pack.
+**Do not build the "Core 30", per-city pages, or landmark pages here.** They are right for a
+plumber and would be thin content for a breeder with one category and one product.
+
+Free, needs nothing from Hope and Joy:
+
+- [ ] `areaServed` in `LocalBusiness` schema is a free-text sentence
+      (`"Warsaw and Winona Lake, Indiana"`). Make it structured `Place` entries.
+- [ ] Add `priceRange` to `LocalBusiness`. We have real prices.
+- [ ] Add **editorial internal links** — in-paragraph contextual links, not just nav and
+      footer. Homepage prose into the breed guide, breed guide into the available puppies.
+      Cheap, and contextual links are weighted more than navigational ones.
+- [ ] Homepage title and H1 should carry the primary GBP category plus the region once the
+      category is actually chosen. Title already leads with the keyword.
+- [ ] Grow the FAQ from real questions — Google "People also ask" and Reddit breed threads.
+      **Reword rather than copying questions verbatim**; the lift-them-exactly pattern is
+      recognised now. Anything touching Hope and Joy's own practices has to be asked, not
+      inferred.
+
+Needs Hope and Joy:
+
+- [ ] `sameAs` in schema, pointing at their real social profiles. A primary entity-alignment
+      signal for Google and the AI assistants alike. Blocked on the socials.
+- [ ] Review widget and `aggregateRating`/`Review` schema. Blocked on reviews plus
+      permission to publish them.
+
+GBP setup, when Alex creates it:
+
+- [ ] **Service-area business. Enter the address to verify, then HIDE it.** Effectively
+      irreversible once public.
+- [ ] Pick categories **from Google's actual dropdown**. Do not trust an AI-suggested
+      category name, including "Pet Breeder" as suggested in this session — models invent
+      categories that are not in the list. Use several where genuinely relevant, not one.
+- [ ] Fill every box. Description to the full 750 characters, 20+ photos, every applicable
+      attribute answered.
+- [ ] Phone must match the site character for character: `(574) 377-8023`.
+- [ ] **Skip two of the standard "consistency signals" on purpose**: no Google Maps embed
+      and no address on the site. There is no public pin for a hidden home address. Recorded
+      as a deliberate departure, do not "fix" it back.
+- [ ] **Do not geotag photos taken at the house.** Standard local-SEO advice recommends
+      weekly geotagged photo uploads; for a home-based business that encodes their home
+      address into files they are handing out.
+- [ ] Local authority links worth having: Kosciusko County chamber of commerce, and any
+      sponsorship they would genuinely want to do anyway. **Do not buy links** — paying for
+      links that pass PageRank is a link scheme under Google's spam policies and the risk
+      lands on the client, not the vendor.
 - [ ] Phase 2 only: Cloudflare Worker + D1 admin, two logins, photo upload, and the
       **Stripe webhook that auto-marks a puppy reserved when a deposit clears**.
