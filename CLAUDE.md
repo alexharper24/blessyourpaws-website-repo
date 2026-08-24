@@ -26,7 +26,8 @@ Deposit $500. Quote tentatively accepted; Phase 1 build authorized.
 copy and mark it visibly; where images are missing, ship branded placeholders. The
 health guarantee and purchase agreement get DRAFT pages flagged for review before
 launch. Expected adult weight may be shown as a DRAFT estimate from the 19 lb and
-21 lb parents (15–25 lbs), clearly marked to be confirmed by Hope. Faith element is
+the parents' weights. SUPERSEDED 2026-08-23: it is 15–20 lbs per Alex, held in
+`M_SIZE`, still chip-marked for confirmation. Faith element is
 ON HOLD pending the questionnaire; do not add or rule out.
 
 A **Maltipoo** line is roughly 18 months out and is deliberately NOT in the launch

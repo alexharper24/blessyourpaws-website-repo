@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 36
+V = 37
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -76,8 +76,11 @@ D_BORN, D_HOME = "April 14, 2026", "Ready now"
 CHIP_DRAFT  = '<span class="chip chip-draft">Draft, confirm before launch</span>'
 CHIP_SAMPLE = '<span class="chip chip-sample">Sample copy, waiting on their words</span>'
 CHIP_PHOTO  = '<span class="chip chip-draft">Photo coming</span>'
-SIZE_DRAFT  = ('<span class="chip chip-draft">Draft estimate from the 19 lb and 22 lb '
-               'parents, Hope to confirm</span>')
+M_SIZE = "15 to 20 lbs"
+# The provenance changed with the figure: 15 to 20 is narrower than anything the parents'
+# weights alone imply, so the chip no longer claims to be derived from them. It still
+# flags the number for confirmation before launch.
+SIZE_DRAFT  = ('<span class="chip chip-draft">Expected size, confirm before launch</span>')
 
 M_KIT = ["Vaccination and health record", "Examination by our vet",
          "Small bag of the food they know", "Collar and leash", "A toy"]
@@ -1423,7 +1426,7 @@ def build_pages():
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
-        <li><span class="k">Expected adult size</span><span class="v">15 to 25 lbs</span></li>
+        <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
       </ul>
       <p class="fine">{SIZE_DRAFT}</p>
       <div class="btn-row" style="margin-top:1rem">
@@ -1559,7 +1562,7 @@ def build_pages():
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
-        <li><span class="k">Expected adult size</span><span class="v">15 to 25 lbs</span></li>
+        <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
       </ul>
       <p class="fine">{SIZE_DRAFT}</p>
       <p>New to the cross? <a href="what-is-a-munchkin-bernedoodle.html">Read our
@@ -1621,7 +1624,7 @@ def build_pages():
 
     faq = [
       ("How big does a Munchkin Bernedoodle get?",
-       "Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at 15 to 25 lbs full grown, based on the 22 lb mom and 19 lb dad. Size varies puppy to puppy, so ask us about the one you love."),
+       f"Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at {M_SIZE} full grown. Size varies puppy to puppy, so ask us about the one you love."),
       ("How does a Munchkin Bernedoodle end up so small?",
        "By breeding down through generations and crossing in a naturally smaller parent breed. Ours come from a 22 lb Mini Multi Gen Bernedoodle mother and a 19 lb Cavalier father. " + CHIP_DRAFT),
       ("How is this different from a Mini or Micro Bernedoodle?",
@@ -2376,7 +2379,8 @@ def build_pages():
 </div></section>""",
           extra_head=f'<script type="application/ld+json">{ld}</script>\n')
 
-    m_facts = '        <li><span class="k">Expected adult size</span><span class="v">15 to 25 lbs (draft)</span></li>'
+    m_facts = ('        <li><span class="k">Expected adult size</span>'
+               f'<span class="v">{M_SIZE} (draft)</span></li>')
     d_facts = ('        <li><span class="k">Registration</span><span class="v">AKC</span></li>\n'
                '        <li><span class="k">Breeding rights</span><span class="v">$500 extra</span></li>')
     for s, n, x, c, note in MUNCHKINS:

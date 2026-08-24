@@ -115,8 +115,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [x] **RESOLVED 2026-08-23: Troy is 22 lbs** (Alex). Updated in all eight places it
       appeared, and the draft chip on her weight is removed since it is confirmed. This
       also squares with the Wisdom Panel, which put her predicted ideal at 22-40 lbs. The
-      puppy estimate stays 15-25 lbs and still reads as a draft from the 19 lb and 22 lb
-      parents, pending Hope.
+      puppy estimate is 15-20 lbs (Alex, 2026-08-23), superseding the 15-25 I had
+      derived from the parents' weights.
 - [x] **Troy's ancestry is NOT published** (Alex, 2026-08-23). It was briefly, then the
       report was trimmed to drop its breed-ancestry page and the percentages came off the
       site with it, so nothing on the page is unevidenced by the linked document. The
@@ -130,9 +130,12 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [x] **Per-puppy records complete for all seven Munchkin Bernedoodles** — real names
       Joshua, Eden, Havilah, Jordan, Caleb, Shiloh, Jericho, with sex and colour. Born
       22 July 2026, home 16 September 2026. Full table in the litter dossier.
-- [ ] **Expected adult weight: shown as a DRAFT estimate (15–25 lbs from the 19 and
-      21 lb parents) per Alex's direction 2026-08-22.** Marked visibly on every page it
-      appears. Hope confirms or corrects before launch.
+- [ ] **Expected adult size is 15 to 20 lbs** (Alex, 2026-08-23). Held in one constant,
+      `M_SIZE`, and shown on ten pages. Still carries a visible chip reading "Expected
+      size, confirm before launch". **Open question: is 15-20 Hope's confirmed figure?**
+      If so the chip comes off, the way Troy's weight chip did. The chip no longer claims
+      the number is derived from the parents' weights, because 15-20 is narrower than
+      anything 19 and 22 lbs alone imply, so it came from somewhere else.
 - [ ] Doberman per-puppy detail (Elowen, Malcolm, Griffin) — carried from the KFC build.
 - [x] **Prices set for launch (Alex, 2026-08-22): Munchkins $2,000, Dobermans $2,200.**
       The market case for raising the Munchkin price later stays in the audit docs.
