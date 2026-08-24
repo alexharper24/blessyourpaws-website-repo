@@ -72,8 +72,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       $1,500 site now, $1,500 admin later, $500 Maltipoo line later.
 - [ ] Confirm the five swatches in `img/brand/` are the final brand palette and not
       just inspiration.
-- [ ] Logo: does one exist? If Harper Studio is designing the wordmark and floral
-      mark, that is a separate line item from the build.
+- [x] **RESOLVED: logo package supplied and in use**, navy recoloured to forest per Alex.
+      Primary lockup in the header, paw-heart mark in the footer and favicon.
 
 ### Content from Joy and Hope
 
@@ -90,9 +90,7 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       note calling Troy the Cavalier sire was wrong.
 - [ ] **The Cavalier sire's NAME is now the unknown.** AKC, 19 lbs, ruby, born
       24 Dec 2024. Ask Hope.
-- [ ] **Doberman sire** — name, registration, health testing. No sire is listed
-      anywhere on the KFC site; only dams. Two unidentified adult photos there were
-      staged but never confirmed.
+- [ ] PARKED with the Doberman line (off since 2026-08-23): Doberman sire name, registration and health testing.
 - [x] Parent facts on file: dam Troy (Mini Multi Gen Bernedoodle, 21 lbs) and the
       AKC Cavalier sire (19 lbs, ruby).
 - [x] **RESOLVED 2026-08-23: Troy has a full Wisdom Panel and it is now published.**
@@ -136,7 +134,7 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       If so the chip comes off, the way Troy's weight chip did. The chip no longer claims
       the number is derived from the parents' weights, because 15-20 is narrower than
       anything 19 and 22 lbs alone imply, so it came from somewhere else.
-- [ ] Doberman per-puppy detail (Elowen, Malcolm, Griffin) — carried from the KFC build.
+- [ ] PARKED with the Doberman line (off since 2026-08-23): Doberman per-puppy detail.
 - [x] **Prices set for launch (Alex, 2026-08-22): Munchkins $2,000, Dobermans $2,200.**
       The market case for raising the Munchkin price later stays in the audit docs.
 - [ ] **Deposit amount and refund/transfer terms.** Never guess.
@@ -165,8 +163,7 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       over from KFC.
 - [ ] Their story: how each came to breeding, in their own words. Whether the twin
       angle is part of the brand.
-- [ ] Whether Joy has rights to reuse the Doberman puppy photos, which came off
-      Amber's Wix site during the KFC build.
+- [ ] PARKED with the Doberman line (off since 2026-08-23): rights to the Doberman puppy photos.
 - [x] **RESOLVED 2026-08-23: faith element added** (Alex). A short note at the end of the
       About bio saying they are Christians who hope their work brings glory to God, with a
       link to a gospel film (youtube.com/watch?v=mIeRU12STNw). Set apart with a rule and
@@ -178,16 +175,11 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       description there is Puppy Connection's copy so no note was taken. Litter counts are
       now derived from the data, not written, so adding or adopting a puppy cannot leave a
       stale "Seven puppies" behind.
-- [ ] **Mobile hero treatment: pick one.** `hero-options.html` shows four at a real
-      phone width with the headroom measured live from the rendered image. A is what is
-      live (a mount, ~60px of air, least presence); B, C and D are full bleed and taller
-      (~20-28px of air, far more presence, and no border for him to bump against). B, C
-      and D are all taller than the 3:2 source so they crop the sides and show the full
-      height, meaning nothing can ever be cut off his head or paws. Recommendation is C.
-      Separate question: whether to keep havilah-01 at all, given it has only 5.4%
-      headroom. Highest-headroom alternatives are griffin-01, malcolm-03, malcolm-01,
-      jericho-09, jordan-04 — the first three are Joy's Dobermans, so it is a business
-      call about which litter fronts the site, not a design one.
+- [x] **RESOLVED 2026-08-23: mobile hero is option B**, full bleed with the caption over
+      the foot of the photograph. Only the eyebrow, headline and buttons sit on the
+      picture; the lede is below it on paper. `hero-options.html` can be deleted.
+      Still open, and a business call rather than a design one: whether to keep
+      havilah-01, which has only 5.4% headroom above the puppy's crown.
 - [ ] **Floral motif: pick the placements.** Hope asked for flowers. Five assets are
       prepared and committed (`img/brand/floral-*.webp`: two corner sprays, a
       horizontal swag, a single sprig, a wreath) but **nothing is wired into the
@@ -214,10 +206,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       `source-photos/kfc-original-map.json`.
 - [ ] **Munchkin Bernedoodle parent photos** — Troy (the dam) and the Cavalier sire.
       Hope is getting photos of Troy. Branded placeholders ship meanwhile.
-- [ ] The two unidentified adult Dobermans on the Kingdom site (`adult-dog-1/2.jpg`) are
-      **deliberately not carried over** — never confirmed as anyone's dogs. Ask Joy.
-- [ ] The Golden Retrievers (Diamond, Scarlet) stay out. Joy co-owns the Doberman line;
-      working assumption is the Goldens are Amber's.
+- [ ] PARKED with the Doberman line (off since 2026-08-23): the two unidentified adult Dobermans.
+- [ ] PARKED with the Doberman line (off since 2026-08-23): the Golden Retrievers.
 - [x] **Service area: Warsaw and Winona Lake, Indiana** (confirmed 2026-08-22).
 - [ ] Confirm both are comfortable with faces and first names on a public site.
 
