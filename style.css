@@ -139,11 +139,14 @@ a{color:var(--forest)}
 .framed.wide16{aspect-ratio:1672/941;object-fit:cover}
 /* .78/1.22 puts a feature photo near 780px in a 1339 wrap. .62/1.38 gave 894px,
    which overwhelmed the paragraph beside it. */
-.grid-2.narrow-left{grid-template-columns:.78fr 1.22fr}
+/* 1.30fr rather than 1.22fr: the photographs sit in this column and were asked to be
+   larger. Both variants move together so the About photo and the one below it stay the
+   same size as each other. */
+.grid-2.narrow-left{grid-template-columns:.70fr 1.30fr}
 /* narrow-RIGHT means the right column is the narrow one, so the photo-left rows
    get the wide half. It had been left identical to narrow-left, which is why the
    inverted rows put their photo in the small column. */
-.grid-2.narrow-right{grid-template-columns:1.22fr .78fr}
+.grid-2.narrow-right{grid-template-columns:1.30fr .70fr}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
   font-size:1rem;min-height:48px}

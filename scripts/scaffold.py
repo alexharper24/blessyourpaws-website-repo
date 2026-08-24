@@ -14,7 +14,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 26
+V = 27
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -221,11 +221,14 @@ a{color:var(--forest)}
 .framed.wide16{aspect-ratio:1672/941;object-fit:cover}
 /* .78/1.22 puts a feature photo near 780px in a 1339 wrap. .62/1.38 gave 894px,
    which overwhelmed the paragraph beside it. */
-.grid-2.narrow-left{grid-template-columns:.78fr 1.22fr}
+/* 1.30fr rather than 1.22fr: the photographs sit in this column and were asked to be
+   larger. Both variants move together so the About photo and the one below it stay the
+   same size as each other. */
+.grid-2.narrow-left{grid-template-columns:.70fr 1.30fr}
 /* narrow-RIGHT means the right column is the narrow one, so the photo-left rows
    get the wide half. It had been left identical to narrow-left, which is why the
    inverted rows put their photo in the small column. */
-.grid-2.narrow-right{grid-template-columns:1.22fr .78fr}
+.grid-2.narrow-right{grid-template-columns:1.30fr .70fr}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
   font-size:1rem;min-height:48px}
@@ -1288,6 +1291,37 @@ def build_pages():
     d_cards = "\n".join(card(s, n, x, c, D_PRICE, "Doberman Pinscher") for s, n, x, c, _ in D_LIST)
     # built here rather than inline in the template: an f-string cannot hold a
     # conditional multi-line block without nesting quotes of the same kind
+    dob_litter_block = dob(f'''<div class="section-head" style="margin-top:4rem">
+    <div>
+      <h2 style="margin:0">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
+      <p class="fine" style="margin:.35rem 0 0">Born {D_BORN}.
+        <strong>Ready to go home now.</strong> AKC registered, tails docked, dew claws
+        removed, microchipped.</p>
+    </div>
+    <a class="btn btn-ghost breed-link" href="dobermans.html">About Doberman Pinschers</a>
+  </div>
+  <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>''')
+
+    M_PARENTS = (
+      parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
+                  [("Weight", "21 lbs"), ("Color", "Blue merle parti"),
+                   ("Born", "January 21, 2024")]) +
+      parent_card("cavalier-sire-01", "Our Cavalier sire", "Dad",
+                  "Cavalier King Charles Spaniel, AKC",
+                  [("Weight", "19 lbs"), ("Color", "Ruby"),
+                   ("Genetic testing", "Clear")],
+                  "His registered name is being added. " + CHIP_DRAFT))
+    D_PARENTS = (
+      parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
+                  [("Registered", "Kingdom's Miraculous Grace"),
+                   ("Weight", "70 lbs"), ("Color", "Black and rust"),
+                   ("Genetic panel", "Clear, DCM3 carrier"),
+                   ("OFA", "Heart and eyes")]) +
+      parent_card("doberman-sire-01", "Our Doberman sire", "Dad", "Doberman Pinscher",
+                  [("Weight", "100 lbs"), ("Color", "Red and rust"),
+                   ("Genetic testing", "Clear")],
+                  "His registered name is being added. " + CHIP_DRAFT))
+
     # With two litters this page is an index across both. With one it IS the litter
     # page, so it absorbs what the retired breed page carried: the parent lede, the
     # facts list, the hero photo and the parents block. Nothing is dropped, and the
@@ -1322,7 +1356,7 @@ def build_pages():
                          f"${M_PRICE:,} with a ${DEPOSIT} deposit.")
         PUPPIES_INTRO = f'''  <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
-      <p class="eyebrow">Hope&rsquo;s litter</p>
+      <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else 'Available now'}</p>
       <h1>Munchkin Bernedoodle puppies</h1>
     </div>
     {img_tag('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False)}
@@ -1343,7 +1377,7 @@ def build_pages():
       </div>
     </div>
   </div>
-  <div class="pgrid cols-4" style="margin-top:2.5rem">{m_cards}</div>'''
+  <div class="pgrid cols-4" style="margin-top:clamp(2.75rem,4.5vw,4rem)">{m_cards}</div>'''
         PUPPIES_TAIL = f'''
 <section class="band-raise"><div class="wrap">
   <div class="section-head">
@@ -1355,36 +1389,6 @@ def build_pages():
     PUPPIES_BODY = ('<section><div class="wrap">\n' + PUPPIES_INTRO
                     + '\n</div></section>' + PUPPIES_TAIL)
 
-    dob_litter_block = dob(f'''<div class="section-head" style="margin-top:4rem">
-    <div>
-      <h2 style="margin:0">Doberman Pinschers &middot; ${D_PRICE:,}</h2>
-      <p class="fine" style="margin:.35rem 0 0">Born {D_BORN}.
-        <strong>Ready to go home now.</strong> AKC registered, tails docked, dew claws
-        removed, microchipped.</p>
-    </div>
-    <a class="btn btn-ghost breed-link" href="dobermans.html">About Doberman Pinschers</a>
-  </div>
-  <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>''')
-
-    M_PARENTS = (
-      parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
-                  [("Weight", "21 lbs"), ("Color", "Blue merle parti"),
-                   ("Born", "January 21, 2024")]) +
-      parent_card("cavalier-sire-01", "Our Cavalier sire", "Dad",
-                  "Cavalier King Charles Spaniel, AKC",
-                  [("Weight", "19 lbs"), ("Color", "Ruby"),
-                   ("Genetic testing", "Clear")],
-                  "His registered name is being added. " + CHIP_DRAFT))
-    D_PARENTS = (
-      parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
-                  [("Registered", "Kingdom's Miraculous Grace"),
-                   ("Weight", "70 lbs"), ("Color", "Black and rust"),
-                   ("Genetic panel", "Clear, DCM3 carrier"),
-                   ("OFA", "Heart and eyes")]) +
-      parent_card("doberman-sire-01", "Our Doberman sire", "Dad", "Doberman Pinscher",
-                  [("Weight", "100 lbs"), ("Color", "Red and rust"),
-                   ("Genetic testing", "Clear")],
-                  "His registered name is being added. " + CHIP_DRAFT))
 
     hp = """<div style="position:absolute;left:-9999px" aria-hidden="true">
       <label for="{i}-hp">Leave this field empty</label>

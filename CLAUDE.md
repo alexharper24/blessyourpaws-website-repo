@@ -203,6 +203,17 @@ grid rows, so the grid's own `row-gap` lands between them and stacks with the he
 bottom margin and the paragraph's top margin: 63px where the intended distance was ~14.
 `.grid-2.hic{row-gap:0}` and let the margins alone set it.
 
+**An f-string interpolates at the point it is written, not where it is used.** The merged
+puppies page built its parents block 22 lines before `M_PARENTS` was assigned, so
+`{M_PARENTS}` picked up the module-level `None` and the live page rendered the literal word
+"None" under the "Meet their parents" heading. It passed site-checks, because "None" is
+valid HTML. When a template pulls in a variable filled in later by `build_pages`, build the
+template after that assignment, not before.
+
+**No per-sister attribution while one line is off.** "Hope's litter" and "Joy's litter"
+only mean something when there are two. With one, the site presents Hope and Joy together;
+the eyebrow reads "Available now". Both strings are on `SHOW_DOBERMANS`.
+
 ## One listing page while there is one breed (2026-08-23)
 
 `puppies.html` and `munchkin-bernedoodles.html` listed the identical seven cards. The prose
