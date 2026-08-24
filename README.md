@@ -26,7 +26,7 @@ seed-packet cards with arch-top photos, unhurried vintage serifs.
 
 | Line | Owner | Status |
 |---|---|---|
-| Munchkin Bernedoodle (Mini Multi Gen Bernedoodle × Cavalier King Charles Spaniel) | Hope | Born 22 Jul 2026. 8 whelped, 1 sold off the waitlist, **7 available**. Home 16–23 Sep 2026 |
+| Munchkin Bernedoodle (Mini Multi Gen Bernedoodle × Cavalier King Charles Spaniel) | Hope | Born 22 Jul 2026. 8 whelped, 1 sold off the waitlist, **7 available**. Home 16 Sep 2026 |
 | Doberman Pinscher | Joy (co-owned with Amber) | 3 available: Elowen, Malcolm, Griffin |
 | Maltipoo | TBC | ~18 months out. **Deliberately not in the launch build** |
 
@@ -129,7 +129,7 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [x] **Sire is 19 lbs** (confirmed). Puppy Connection's 18 lbs is wrong.
 - [x] **Per-puppy records complete for all seven Munchkin Bernedoodles** — real names
       Joshua, Eden, Havilah, Jordan, Caleb, Shiloh, Jericho, with sex and colour. Born
-      22 July 2026, home 16–23 September 2026. Full table in the litter dossier.
+      22 July 2026, home 16 September 2026. Full table in the litter dossier.
 - [ ] **Expected adult weight: shown as a DRAFT estimate (15–25 lbs from the 19 and
       21 lb parents) per Alex's direction 2026-08-22.** Marked visibly on every page it
       appears. Hope confirms or corrects before launch.

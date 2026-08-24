@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 34
+V = 35
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -69,7 +69,7 @@ def dob(html):
     return html if SHOW_DOBERMANS else ""
 
 M_PRICE, D_PRICE, DEPOSIT = 2000, 2200, 500
-M_BORN, M_HOME = "July 22, 2026", "September 16 to 23, 2026"
+M_BORN, M_HOME = "July 22, 2026", "September 16, 2026"
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
 CHIP_DRAFT  = '<span class="chip chip-draft">Draft, confirm before launch</span>'
