@@ -285,14 +285,40 @@ also owned and should 301 to it. Both are already on Cloudflare nameservers.
 into it. This account cannot read that directory, which breaks `npm` itself, not just
 wrangler: every command dies with `EPERM lstat C:\Users\Admin-AlexHarper\AppData`.
 
-There is a working Node at `C:\Program Files\nodejs`. Put it ahead of `C:\nvm4w\nodejs` in
-PATH permanently, or prefix each shell:
+There is a working Node at `C:\Program Files\nodejs`. Prepend it per shell session.
+
+PowerShell (the usual shell here):
+
+```powershell
+$env:PATH = "C:\Program Files\nodejs;$env:PATH"
+```
+
+Git Bash:
 
 ```bash
 export PATH="/c/Program Files/nodejs:$PATH"
 ```
 
-Confirm with `npm --version` (expect 11.x) before going further.
+Confirm with `npm --version` (expect 11.x) before going further. Verified 2026-08-24:
+node v24.18.0, npm 11.16.0, resolving to `C:\Program Files\nodejs\node.exe`.
+
+**Adding it to the User PATH does not work, and it looks like it should.** Both broken
+entries live in the **Machine** PATH:
+
+```
+C:\Users\Admin-AlexHarper\AppData\Local\nvm
+C:\nvm4w\nodejs
+```
+
+Windows resolves the Machine PATH before the User PATH, so a User entry is appended after
+those two and loses. There are no nodejs entries in the User PATH at all.
+
+Two real options. **Per session**, as above, which is what the commands in this runbook
+assume. Or **persistently without admin**, by prepending it in the PowerShell profile
+(`$PROFILE`, which did not exist as of 2026-08-24) — note that path is inside
+OneDrive-synced Documents, so it follows the account to other machines. The actual fix is to
+reorder or remove the stale `Admin-AlexHarper` nvm entries in the Machine PATH, which needs
+the admin account.
 
 ### 1. Create the Pages project — dashboard, not CLI
 
