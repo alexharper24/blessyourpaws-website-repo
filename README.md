@@ -269,6 +269,138 @@ Needs Hope and Joy:
 - [ ] Review widget and `aggregateRating`/`Review` schema. Blocked on reviews plus
       permission to publish them.
 
+## Deployment runbook — Cloudflare Pages, email send and forward
+
+Ordered, and split by what actually blocks what. **Email does not depend on moving the
+site.** Onboarding the domain for sending and routing only adds mail records; the website
+keeps resolving wherever it already does. Only step 5 changes where the site lives.
+
+Canonical domain: **blessyourpawspuppies.com** (decided 2026-08-24). `blessyourpaws.com` is
+also owned and should 301 to it. Both are already on Cloudflare nameservers.
+
+### Before anything: fix the PATH on this machine
+
+`nvm4w` is installed under the **`Admin-AlexHarper`** profile
+(`NVM_HOME=C:\Users\Admin-AlexHarper\AppData\Local\nvm`) and `C:\nvm4w\nodejs` symlinks
+into it. This account cannot read that directory, which breaks `npm` itself, not just
+wrangler: every command dies with `EPERM lstat C:\Users\Admin-AlexHarper\AppData`.
+
+There is a working Node at `C:\Program Files\nodejs`. Put it ahead of `C:\nvm4w\nodejs` in
+PATH permanently, or prefix each shell:
+
+```bash
+export PATH="/c/Program Files/nodejs:$PATH"
+```
+
+Confirm with `npm --version` (expect 11.x) before going further.
+
+### 1. Create the Pages project — dashboard, not CLI
+
+`wrangler pages deploy` can only do **direct upload**, and a direct-upload project
+**cannot be converted to Git-connected later**. Doing it the quick way burns the project
+name. So this step is manual, once:
+
+Dashboard → Workers & Pages → Create → Pages → Connect to Git →
+`alexharper24/blessyourpaws-website-repo`
+
+| Setting | Value |
+|---|---|
+| Production branch | `main` |
+| Framework preset | None |
+| Build command | *empty* |
+| Build output directory | `/` |
+| Root directory | *empty* |
+
+No build step: `scripts/scaffold.py` is run locally and the HTML is committed. Cloudflare
+only serves files.
+
+- [ ] Project created, first deploy green, `*.pages.dev` URL loads.
+- [ ] Confirm `_headers` took effect: an image should come back with
+      `cache-control: public, max-age=31536000, immutable` and an HTML page with
+      `max-age=0, must-revalidate`. **This is the whole reason for moving** — GitHub Pages
+      forces `max-age=600` on everything and cannot be configured.
+- [ ] Confirm `_redirects` works: `/CLAUDE.md` and `/README.md` should 404.
+
+### 2. Email Sending (outbound, for the form)
+
+```bash
+npx wrangler email sending enable blessyourpawspuppies.com
+```
+
+Adds SPF/DKIM to the zone. Safe: the domain had no MX, SPF or apex record when checked on
+2026-08-24, so there is no existing mail to break. Verify with
+`npx wrangler email sending list`.
+
+- [ ] Domain shows as enabled for sending.
+
+### 3. Email Routing (inbound, to Hope)
+
+`info@blessyourpawspuppies.com` → Hope's Gmail. This is what makes the branded address
+usable without anyone buying a mailbox.
+
+```bash
+npx wrangler email routing enable blessyourpawspuppies.com
+npx wrangler email routing addresses create <hope-gmail>
+```
+
+- [ ] **Hope has to click the verification link** before Routing will deliver. Nothing works
+      until she does, and the email goes to her, not to Alex.
+- [ ] Rule created: `info@blessyourpawspuppies.com` → her verified address.
+- [ ] Send a test to `info@` and confirm it lands.
+
+Routing adds MX records for the zone. Note the consequence: **once MX points at Cloudflare,
+all mail for the domain flows through Routing**, so any future mailbox has to be set up
+through it.
+
+### 4. Deploy the Worker and wire the forms
+
+D1 is already created and wired: `form-submissions`,
+`d46e2279-632b-45ad-959a-d3e515d47ae2`, schema applied. `blessyourpaws` is registered in
+`SITES` in `form-backend-worker/src/index.js` with the notify address, the `from`, and
+origins covering both GitHub Pages and the domain.
+
+```bash
+cd ../form-backend-worker
+npx wrangler secret put TURNSTILE_SECRET     # paste the widget's secret key
+npx wrangler deploy
+```
+
+- [ ] Create a Turnstile widget first and note both keys. The site key goes in the form
+      markup, the secret goes in the command above. **If no secret is set the Worker skips
+      spam verification entirely** and the honeypot is the only defence, which is not
+      enough for a public form.
+- [ ] Point both forms at the Worker URL and add the hidden `site` field. Today they still
+      POST to `https://formspree.io/f/REPLACE_FORM_ID`, so **the forms do not work at all
+      right now** — anything submitted is discarded silently.
+- [ ] The Worker needs `site`, `name`, `email`. `message` is optional and any other field is
+      folded into the notification, so the waitlist form's `line` and `timing` come through
+      without a Worker change. That was a bug fixed 2026-08-24: it used to require
+      `message` and would have rejected every waitlist submission with an error the visitor
+      had no field to fix.
+- [ ] Test both forms end to end and confirm a row lands in D1 as well as an email:
+      `npx wrangler d1 execute form-submissions --remote --command "SELECT * FROM submissions"`
+
+### 5. The cutover (the part that waits until the site is ready)
+
+- [ ] Add `blessyourpawspuppies.com` and `www` as custom domains **in the Pages project
+      before touching DNS**. Standing rule, learned the hard way on an earlier build.
+- [ ] Let the certificate issue, then enable Enforce HTTPS.
+- [ ] 301 `blessyourpaws.com` → `blessyourpawspuppies.com` (a redirect rule on that zone).
+- [ ] **Change `BASE` in `scripts/scaffold.py`** from the github.io URL to
+      `https://blessyourpawspuppies.com`, bump `V`, regenerate, commit. Every canonical, the
+      sitemap and every OG tag derive from it. Do this at cutover, not before: earlier, and
+      the canonicals point at a domain that is not serving yet.
+- [ ] Leave GitHub Pages live until the domain resolves correctly through Cloudflare. The
+      rollback is repointing DNS.
+- [ ] Update the GBP website field to the domain. No re-verification needed.
+
+### 6. Launch, as a separate deliberate step
+
+- [ ] Remove the `noindex` meta from every page and open `robots.txt`. Currently closed on
+      purpose. This is the easiest thing in the whole list to forget, because by then
+      everything looks finished.
+- [ ] Submit the sitemap in Search Console.
+
 ## Google Business Profile — the setup sheet
 
 Worked out 2026-08-24, ready to work from. Method and reasoning:
