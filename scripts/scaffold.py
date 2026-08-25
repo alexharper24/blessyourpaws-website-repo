@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 51
+V = 52
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -1985,7 +1985,7 @@ def build_pages():
       extra_head=f'<script type="application/ld+json">{faq_ld}</script>\n')
 
     M_DOGS = (
-      dog_row("troy-01", "Troy", "Mini Multi Gen Bernedoodle", None,
+      dog_row("troy-01", "Troy", "Mini Multi Gen Bernedoodle", "Agatha Troy",
         "Troy is the mother of our <a href=\"what-is-a-munchkin-bernedoodle.html\">"
         "Munchkin Bernedoodle</a> litter. At 22 lbs she is a "
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
@@ -2000,9 +2000,16 @@ def build_pages():
           # ever re-trimmed: a citation pointing at a page that says something else is
           # worse than no citation at all.
           "pages 1 and 2."),
-         ("The report:", "linked here, with every health result the panel returned.")],
+         ("Eyes:", "OFA eye examination on August 14, 2026: <strong>normal</strong>. "
+          "The certificate records her as free of observable inherited eye disease. "
+          "OFA number HY-EYE13395/30F-VPI. An eye certification is valid for one year "
+          "from the exam, so this one runs to August 14, 2027 and is then re-examined."),
+         ("The records:", "both linked here. The panel carries every health result it "
+          "returned, and the eye certificate can be verified independently at ofa.org.")],
         [("View Troy’s Wisdom Panel report (PDF)",
-          "records/troy-wisdom-panel-2026-02-21.pdf")], first=True) +
+          "records/troy-wisdom-panel-2026-02-21.pdf"),
+         ("View Troy’s OFA eye certificate (PDF)",
+          "records/troy-ofa-eyes-2026-08-14.pdf")], first=True) +
       dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",
         None,
         "Our sire is an AKC-registered ruby Cavalier, 19 lbs, and the reason these "
