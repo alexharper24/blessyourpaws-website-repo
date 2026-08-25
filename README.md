@@ -241,14 +241,18 @@ plumber and would be thin content for a breeder with one category and one produc
 
 Free, needs nothing from Hope and Joy:
 
-- [ ] `areaServed` in `LocalBusiness` schema is a free-text sentence
-      (`"Warsaw and Winona Lake, Indiana"`). Make it structured `Place` entries.
-- [ ] Add `priceRange` to `LocalBusiness`. We have real prices.
-- [ ] Add **editorial internal links** — in-paragraph contextual links, not just nav and
-      footer. Homepage prose into the breed guide, breed guide into the available puppies.
-      Cheap, and contextual links are weighted more than navigational ones.
-- [ ] Homepage title and H1 should carry the primary GBP category plus the region once the
-      category is actually chosen. Title already leads with the keyword.
+- [x] **DONE 2026-08-24.** `areaServed` is now structured `City`/`State` entries rather than
+      a free-text sentence. Still no `address` and no `geo`, permanently.
+- [x] **DONE 2026-08-24.** `priceRange` and `logo` added to `LocalBusiness`.
+- [x] **DONE 2026-08-24.** Seven editorial links added by anchoring words ALREADY in the
+      copy, so not one sentence was rewritten. Verified: exactly one word changed across all
+      22 pages, and that was the intended H1. `about.html` still has no inbound body link;
+      there is no natural anchor for it anywhere and inventing a sentence to create one would
+      have cost more in voice than the link is worth.
+- [x] **DONE 2026-08-24.** H1 is now "Munchkin Bernedoodle puppies raised in the middle of
+      real family life" — the distinctive clause kept word for word, the breed on the front.
+      The region was already in the eyebrow directly above, so only the breed was missing.
+      Revisit only if the chosen GBP category differs from the breed name.
 - [ ] Grow the FAQ from real questions — Google "People also ask" and Reddit breed threads.
       **Reword rather than copying questions verbatim**; the lift-them-exactly pattern is
       recognised now. Anything touching Hope and Joy's own practices has to be asked, not

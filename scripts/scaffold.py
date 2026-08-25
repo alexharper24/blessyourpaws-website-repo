@@ -14,7 +14,7 @@ import functools, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 50
+V = 51
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -1641,7 +1641,7 @@ def build_pages():
     </div>
     {desktop_only_img('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
-      <p class="lede">{n_word(M_TOTAL)} puppies from Troy, our Mini Multi Gen
+      <p class="lede">{n_word(M_TOTAL)} puppies from <a href="our-dogs.html">Troy</a>, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
         {M_BORN}, going home {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
       <ul class="facts">
@@ -1678,10 +1678,25 @@ def build_pages():
       <input id="{i}-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
     """
 
+    # No "address" and no "geo", deliberately and permanently: this is a home-based
+    # business and the standard advice to publish a street address does not apply. See the
+    # departures section of .claude/guides/local-seo-aeo.md. areaServed carries the
+    # geography instead, as structured Places rather than the sentence it used to be, so a
+    # machine can read where they operate without anyone reading where they live.
+    # "sameAs" is deliberately absent rather than empty: it belongs there the day Hope and
+    # Joy hand over their social profiles, and an empty array asserts they have none.
     org_ld = json.dumps({"@context": "https://schema.org", "@type": "LocalBusiness",
         "name": "Bless Your Paws Puppies",
         "description": f"Family-raised {BREEDS_PHRASE} puppies in Warsaw and Winona Lake, Indiana.",
-        "telephone": "+1-574-377-8023", "email": EMAIL, "areaServed": AREA,
+        "telephone": "+1-574-377-8023", "email": EMAIL,
+        "areaServed": [
+            {"@type": "City",  "name": "Warsaw",       "addressRegion": "IN",
+             "addressCountry": "US"},
+            {"@type": "City",  "name": "Winona Lake",  "addressRegion": "IN",
+             "addressCountry": "US"},
+            {"@type": "State", "name": "Indiana",      "addressCountry": "US"}],
+        "priceRange": f"${M_PRICE:,}",
+        "logo": BASE + "/img/brand/logo-horizontal-forest.png",
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
 
     page("index.html", f"{BREEDS_SHORT} Puppies in Indiana | {BRAND}",
@@ -1694,8 +1709,8 @@ def build_pages():
     <div class="wrap">
       <div class="hero-copy">
         <p class="eyebrow">Family-raised in Warsaw and Winona Lake</p>
-        <h1>Puppies raised in the middle of real family life</h1>
-        <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else 'Munchkin Bernedoodles'} underfoot in our homes, around our kids, the vacuum, the doorbell,
+        <h1>{BREEDS_SHORT} puppies raised in the middle of real family life</h1>
+        <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else '<a href="what-is-a-munchkin-bernedoodle.html">Munchkin Bernedoodles</a>'} underfoot in our homes, around our kids, the vacuum, the doorbell,
           and everything else a family sounds like. {CHIP_SAMPLE}</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="puppies.html">See available puppies</a>
@@ -1873,7 +1888,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "Troy has a full Wisdom Panel and we publish it in full, including the one variant she carries. Our Cavalier sire is AKC registered and we are gathering his panel to publish the same way. " + CHIP_DRAFT
+       "<a href=\"our-dogs.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Our Cavalier sire is AKC registered and we are gathering his panel to publish the same way. " + CHIP_DRAFT
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, and a toy."
@@ -1971,7 +1986,8 @@ def build_pages():
 
     M_DOGS = (
       dog_row("troy-01", "Troy", "Mini Multi Gen Bernedoodle", None,
-        "Troy is the mother of our Munchkin Bernedoodle litter. At 22 lbs she is a "
+        "Troy is the mother of our <a href=\"what-is-a-munchkin-bernedoodle.html\">"
+        "Munchkin Bernedoodle</a> litter. At 22 lbs she is a "
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
         "size and the temperament we breed for. " + CHIP_SAMPLE,
         [("Weight:", "22 lbs, blue merle parti, born January 21, 2024."),
@@ -2105,8 +2121,8 @@ def build_pages():
     <p>A puppy's first eight weeks decide a lot about the dog they become. That is
       why ours are never raised apart from the household. They meet children, other
       dogs, the vacuum, and visitors before they ever meet you. {CHIP_SAMPLE}</p>
-    <p>We would love for you to meet the puppies, and their parents, before you
-      decide. Visits are by appointment, and video calls work well for families
+    <p>We would love for you to meet the puppies, and <a href="our-dogs.html">their
+      parents</a>, before you decide. Visits are by appointment, and video calls work well for families
       further away.</p>
   </div>
 </div></section>
@@ -2158,7 +2174,8 @@ def build_pages():
 
     steps = [
       ("Say hello", "havilah-02",
-       "Browse the available puppies, then call, text, or send the inquiry form. Tell us "
+       "Browse the <a href=\"puppies.html\">available puppies</a>, then call, text, or "
+       "send the inquiry form. Tell us "
        "a little about your family and who caught your eye. There is no application fee "
        "and no pressure.",
        'Most families text a photo of the puppy they like and go from there. '
@@ -2218,7 +2235,7 @@ def build_pages():
     {kit_cards}
   </div>
   <div class="section-cta">
-    <p>{'Both litters come with a written health guarantee.' if SHOW_DOBERMANS else 'Every puppy comes with a written health guarantee.'}</p>
+    <p>{'Both litters come with a' if SHOW_DOBERMANS else 'Every puppy comes with a'} <a href="health-guarantee.html">written health guarantee</a>.</p>
     <a class="btn btn-primary" href="health-guarantee.html">Read the guarantee</a>
   </div>
 </div></section>

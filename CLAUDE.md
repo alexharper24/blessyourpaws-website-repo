@@ -647,7 +647,7 @@ eyebrow and headline to two each, so overlaying the whole copy block put text ov
 the photograph starting 28% down. It measured as correct at every check I ran, because
 nothing overflowed and everything sat inside the photo. It was still wrong. Only the
 eyebrow, headline and buttons go on the picture; the lede sits below it on paper, which is
-easier to read anyway. The caption now covers 34-55% depending on width.
+easier to read anyway. The caption now covers 35-56% depending on width. That band was re-measured after the H1 gained the breed name for search (47 to 68 characters, three lines at 390px): 35% at 430px, 44% at 390, 54% at 320, and 56% at 320 with type forced to 1.25x. The buttons stay inside the photo in every one of those. **Any edit to the hero H1 has to be re-measured across that range**, not just looked at once, because the overlay is sized by the copy.
 
 The mechanism: `.hero-drift>.wrap` and `.hero-copy` are `display:contents` on mobile so
 their children become grid items of the drift directly, which is what lets the lede sit in
