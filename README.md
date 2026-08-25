@@ -359,7 +359,17 @@ only serves files.
 npx wrangler email sending enable blessyourpawspuppies.com
 ```
 
-- [ ] **BLOCKED 2026-08-25: `Unauthorized [code: 2036]`.** Not zone-specific and not a typo
+- [ ] **BLOCKED 2026-08-25: `Unauthorized [code: 2036]`, and it is NOT an auth problem.**
+      Re-authenticating was tried and changed nothing: `wrangler logout` then `login`, the
+      fresh token still lists `email_sending (write)` in `whoami`, and the identical token
+      reads and writes Email **Routing** on both zones without complaint. Scope granted,
+      token valid, Routing fine, Sending 2036 on the account-level endpoint. That points at
+      the Email Sending product not being enabled or entitled on the account rather than
+      anything wrangler can fix. **Do not retry the CLI or another login** — look for
+      Email Services / Email Sending in the dashboard and complete whatever onboarding it
+      offers. Original note below, kept for the reasoning:
+
+- [ ] Earlier reading of the same failure: Not zone-specific and not a typo
       — even the read-only `email sending list` at account level fails the same way, while
       every Email **Routing** call on the same token succeeds. So the OAuth token cannot
       reach the Email Sending API even though `wrangler whoami` lists `email_sending
