@@ -9,12 +9,12 @@ script rather than editing the HTML.
 
 Draft mode: noindex on every page, robots.txt closed, until launch.
 """
-import functools, hashlib, json, os
+import functools, hashlib, json, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 52
+V = 54
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -1264,6 +1264,27 @@ def footer():
   </div>
 </div></footer>"""
 
+# Every path page() writes, in the order it wrote them. The sitemap is built from this
+# rather than from a directory listing, because a glob picks up hand-written files too.
+GENERATED = []
+
+def pretty_path(path):
+    """"puppies.html" -> "puppies", and "index.html" -> "" (the site root)."""
+    return "" if path == "index.html" else path[:-5] if path.endswith(".html") else path
+
+def prettify_links(text):
+    """Rewrite bare .html hrefs to the extensionless form Cloudflare Pages serves.
+
+    Applied to finished output rather than threaded through every template, because the
+    links are spread across dozens of f-strings, the nav, the footer, the Doberman-flag
+    blocks and main.js. One pass over the result cannot miss one.
+
+    Only BARE filenames match, so `records/troy-...pdf`, `img/...`, `fonts/...` and any
+    absolute URL are untouched: the pattern allows no slash and no dot inside the name.
+    """
+    text = text.replace('href="index.html"', 'href="/"')
+    return re.sub(r'href="([a-z0-9-]+)\.html"', r'href="\1"', text)
+
 def page(path, title, desc, body, extra_head=""):
     # a JSON island rather than inline script, so there is nothing to escape and no
     # execution here at all: main.js reads it if it is present and does nothing if not
@@ -1280,7 +1301,7 @@ def page(path, title, desc, body, extra_head=""):
 <meta name="robots" content="noindex, nofollow">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<link rel="canonical" href="{BASE}/{path if path != 'index.html' else ''}">
+<link rel="canonical" href="{BASE}/{pretty_path(path)}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:image" content="{BASE}/img/og-card.png">
@@ -1303,7 +1324,8 @@ def page(path, title, desc, body, extra_head=""):
 </html>
 """
     assert "—" not in html, f"em dash slipped into {path}"
-    open(path, "w", encoding="utf-8").write(html)
+    open(path, "w", encoding="utf-8").write(prettify_links(html))
+    GENERATED.append(path)
 
 @functools.lru_cache(maxsize=None)
 def asset_v(path):
@@ -1500,17 +1522,17 @@ def warm_for(path):
     """
     if path == "index.html":
         cards = [[srcset_for(lead(sl)), CARD_SIZES] for sl, *_ in list(MUNCHKINS) + D_LIST]
-        return {"doc": ["puppies.html"],
+        return {"doc": [pretty_path("puppies.html") or "/"],
                 # the puppies page's largest-contentful element, desktop only
                 "img": [[srcset_for("jericho-01"), PHOTO_WIDE, "(min-width:901px)"]]
                        + [c for c in cards if c[0]]}
     if path == "puppies.html":
-        return {"doc": ["what-is-a-munchkin-bernedoodle.html", "contact.html"]}
+        return {"doc": ["what-is-a-munchkin-bernedoodle", "contact"]}
     if path.startswith("puppy-"):
         # whoever reads a whole puppy page is deciding, and both next steps are forms
-        return {"doc": ["contact.html", "waitlist.html"]}
+        return {"doc": ["contact", "waitlist"]}
     if path == "what-is-a-munchkin-bernedoodle.html":
-        return {"doc": ["puppies.html"]}
+        return {"doc": ["puppies"]}
     return None
 
 def card(slug, name, sex, colour, price, breed, first=False):
@@ -2657,7 +2679,7 @@ def build_pages():
 
 def build_assets():
     open("style.css", "w", encoding="utf-8").write(CSS)
-    open("main.js", "w", encoding="utf-8").write(JS)
+    open("main.js", "w", encoding="utf-8").write(prettify_links(JS))
     os.makedirs("img/placeholder", exist_ok=True)
 
     def ph(fname, label, sub="Photo coming soon"):
@@ -2703,17 +2725,16 @@ def build_meta():
         "# Draft mode: closed until launch. At launch switch to Allow: / and\n"
         "# remove the noindex meta from every page.\n"
         "User-agent: *\nDisallow: /\n")
-    # The sitemap is globbed from the directory, so anything hand-written into the
-    # root lands in it. This project builds throwaway comparison pages by convention
-    # (hero-options.html, theme-preview.html, floral-preview.html) and those must
-    # never be submitted for indexing, so the convention's own suffixes are excluded
-    # rather than named one at a time.
+    # Built from what page() actually generated, NOT from a directory glob. A glob picks
+    # up every hand-written file in the root too, and this project creates throwaway
+    # comparison pages by convention (hero-options.html, floral-preview.html,
+    # floral-applied.html). Excluding them by filename suffix was tried and leaked:
+    # the list covered "-preview.html" and "-options.html", so floral-applied.html was
+    # submitted for indexing for as long as it existed. A page that was never generated
+    # cannot be in the list, which is a rule that does not need maintaining.
     skip = ("404.html",)
-    skip_suffix = ("-preview.html", "-options.html")
-    pages = [p for p in sorted(os.listdir("."))
-             if p.endswith(".html") and p not in skip
-             and not p.endswith(skip_suffix)]
-    urls = "\n".join(f"  <url><loc>{BASE}/{'' if p=='index.html' else p}</loc></url>" for p in pages)
+    pages = [p for p in sorted(GENERATED) if p not in skip]
+    urls = "\n".join(f"  <url><loc>{BASE}/{pretty_path(p)}</loc></url>" for p in pages)
     open("sitemap.xml", "w", encoding="utf-8").write(
         f'<?xml version="1.0" encoding="UTF-8"?>\n'
         f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}\n</urlset>\n')
