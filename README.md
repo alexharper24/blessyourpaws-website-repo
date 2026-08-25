@@ -340,12 +340,18 @@ Dashboard → Workers & Pages → Create → Pages → Connect to Git →
 No build step: `scripts/scaffold.py` is run locally and the HTML is committed. Cloudflare
 only serves files.
 
-- [ ] Project created, first deploy green, `*.pages.dev` URL loads.
-- [ ] Confirm `_headers` took effect: an image should come back with
-      `cache-control: public, max-age=31536000, immutable` and an HTML page with
-      `max-age=0, must-revalidate`. **This is the whole reason for moving** — GitHub Pages
+- [x] **DONE 2026-08-25.** Project live at `blessyourpaws-website-repo.pages.dev`,
+      automatic deployments from `main` enabled. Note the dashboard's "Create" button now
+      defaults to the **Worker** flow; the Pages flow is a separate tab and is the one to
+      use.
+- [x] **`_headers` verified working.** Images and fonts return
+      `cache-control: public, max-age=31536000, immutable`, HTML returns
+      `max-age=0, must-revalidate`. That is the whole reason for moving: GitHub Pages
       forces `max-age=600` on everything and cannot be configured.
-- [ ] Confirm `_redirects` works: `/CLAUDE.md` and `/README.md` should 404.
+- [x] **`_redirects` fixed.** The first version used `404` as the status and was **silently
+      ignored** — `/CLAUDE.md` kept returning HTTP 200 while the rules looked correct in
+      the file. `_redirects` only supports 3xx, so they are 301s to `/` now. Verified
+      against the live deployment, not assumed.
 
 ### 2. Email Sending (outbound, for the form)
 
@@ -353,25 +359,43 @@ only serves files.
 npx wrangler email sending enable blessyourpawspuppies.com
 ```
 
-Adds SPF/DKIM to the zone. Safe: the domain had no MX, SPF or apex record when checked on
-2026-08-24, so there is no existing mail to break. Verify with
-`npx wrangler email sending list`.
+- [ ] **BLOCKED 2026-08-25: `Unauthorized [code: 2036]`.** Not zone-specific and not a typo
+      — even the read-only `email sending list` at account level fails the same way, while
+      every Email **Routing** call on the same token succeeds. So the OAuth token cannot
+      reach the Email Sending API even though `wrangler whoami` lists `email_sending
+      (write)` among its scopes. Email Sending is a newer product in open beta; the likely
+      fixes are onboarding it once in the dashboard, or re-running `wrangler login` to
+      re-consent the scope. Both need a browser, so this one is Alex's.
+- [ ] Then verify with `npx wrangler email sending list` and confirm the domain is enabled.
 
-- [ ] Domain shows as enabled for sending.
+**Nothing sends until this is resolved**, including the contact form: the Worker's
+notification is an Email Sending call.
 
 ### 3. Email Routing (inbound, to Hope)
 
 `info@blessyourpawspuppies.com` → Hope's Gmail. This is what makes the branded address
 usable without anyone buying a mailbox.
 
+- [x] **DONE 2026-08-25.** Routing enabled, status ready. MX now points at
+      `route1/2/3.mx.cloudflare.net` and SPF is `v=spf1 include:_spf.mx.cloudflare.net
+      ~all`. Nothing was displaced: the zone had no MX, SPF or apex record beforehand.
+- [x] **Destination address created** and the verification email sent to Hope.
+      **Her address is NOT recorded in this repo** — it lives only in the Cloudflare
+      routing config. The Worker notifies `info@blessyourpawspuppies.com` and Routing
+      decides where that lands, so her personal address never needs to be in a public file
+      and must not be added to one.
+- [ ] **Waiting on Hope to click the verification link.** Creating the forwarding rule fails
+      with `Destination address is not verified [code: 2054]` until she does. Worth giving
+      her a heads-up so a Cloudflare email is not a surprise.
+- [ ] Then create the rule:
+
 ```bash
-npx wrangler email routing enable blessyourpawspuppies.com
-npx wrangler email routing addresses create <hope-gmail>
+npx wrangler email routing rules create blessyourpawspuppies.com \
+  --name "info to Hope" \
+  --match-type literal --match-field to --match-value info@blessyourpawspuppies.com \
+  --action-type forward --action-value <hope-gmail>
 ```
 
-- [ ] **Hope has to click the verification link** before Routing will deliver. Nothing works
-      until she does, and the email goes to her, not to Alex.
-- [ ] Rule created: `info@blessyourpawspuppies.com` → her verified address.
 - [ ] Send a test to `info@` and confirm it lands.
 
 Routing adds MX records for the zone. Note the consequence: **once MX points at Cloudflare,
@@ -412,6 +436,19 @@ npx wrangler deploy
       before touching DNS**. Standing rule, learned the hard way on an earlier build.
 - [ ] Let the certificate issue, then enable Enforce HTTPS.
 - [ ] 301 `blessyourpaws.com` → `blessyourpawspuppies.com` (a redirect rule on that zone).
+- [ ] **Decide the URL shape, and change it in the same commit as `BASE`.** Cloudflare
+      Pages strips `.html` and issues a **308 to the extensionless form**: `/puppies.html`
+      redirects to `/puppies`. GitHub Pages does the opposite — it serves `/puppies.html`
+      and 404s `/puppies`. Right now the site has **669 internal links and 21 sitemap
+      entries** ending in `.html`, so on Pages every internal click costs a redirect hop and
+      every canonical points at a URL that redirects.
+
+      **Do NOT "fix" this early.** Extensionless links 404 on GitHub Pages, which is still
+      the live host, so the two hosts want opposite things and the change is only safe at
+      the moment the domain moves. Everything is generated, so it is a `scaffold.py` change
+      (link generation, canonicals and sitemap together), not 669 manual edits. Cheap to do
+      once, actively harmful to do sooner.
+
 - [ ] **Change `BASE` in `scripts/scaffold.py`** from the github.io URL to
       `https://blessyourpawspuppies.com`, bump `V`, regenerate, commit. Every canonical, the
       sitemap and every OG tag derive from it. Do this at cutover, not before: earlier, and
