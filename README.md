@@ -230,6 +230,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       not indexable.
 - [ ] Google Business Profile + Search Console after launch. See the full GBP checklist
       below — the profile is the single highest-leverage item on this list.
+- [ ] Phase 2 only: Cloudflare Worker + D1 admin, two logins, photo upload, and the
+      **Stripe webhook that auto-marks a puppy reserved when a deposit clears**.
 
 ### Search, local and AEO
 
@@ -265,25 +267,139 @@ Needs Hope and Joy:
 - [ ] Review widget and `aggregateRating`/`Review` schema. Blocked on reviews plus
       permission to publish them.
 
-GBP setup, when Alex creates it:
+## Google Business Profile — the setup sheet
 
-- [ ] **Service-area business. Enter the address to verify, then HIDE it.** Effectively
-      irreversible once public.
-- [ ] Pick categories **from Google's actual dropdown**. Do not trust an AI-suggested
-      category name, including "Pet Breeder" as suggested in this session — models invent
-      categories that are not in the list. Use several where genuinely relevant, not one.
-- [ ] Fill every box. Description to the full 750 characters, 20+ photos, every applicable
-      attribute answered.
-- [ ] Phone must match the site character for character: `(574) 377-8023`.
-- [ ] **Skip two of the standard "consistency signals" on purpose**: no Google Maps embed
-      and no address on the site. There is no public pin for a hidden home address. Recorded
-      as a deliberate departure, do not "fix" it back.
-- [ ] **Do not geotag photos taken at the house.** Standard local-SEO advice recommends
-      weekly geotagged photo uploads; for a home-based business that encodes their home
-      address into files they are handing out.
-- [ ] Local authority links worth having: Kosciusko County chamber of commerce, and any
+Worked out 2026-08-24, ready to work from. Method and reasoning:
+`.claude/guides/local-seo-aeo.md`.
+
+**Get it as close to final as possible on the first save.** A burst of edits straight after
+verification is a known re-review trigger.
+
+### The address: enter it, never display it
+
+- [ ] Google requires a real address to verify and there is no way around that. Enter it.
+- [ ] Answer that **customers are served outside the business location**, which makes it a
+      service-area business and lets the address be cleared from public display. Google
+      keeps it on file; visitors see the service area instead of a pin.
+- [ ] **Do this on the first save, not as a cleanup later.** A published address is copied
+      within days by data aggregators that never re-check. Hiding it in Google afterwards
+      does nothing about the places that already took it. This is the one step in the whole
+      process that cannot be undone.
+- [ ] **Never substitute a different address** — a relative's house, a virtual office, a
+      mailbox store, a PO box. PO boxes and mailbox stores are disallowed outright, and a
+      location the business does not operate from is a guideline violation. Suspensions are
+      common and appeals are slow.
+- [ ] Accept the cost knowingly: **no map pin, and a tighter ranking radius**, because
+      proximity is still measured from the real address even while it is hidden. For a home
+      with children in it that is the right trade.
+- [ ] **Same rule on every other directory**: Bing Places, Apple Business Connect, Yelp,
+      breeder directories. One of them carrying the home address makes it public AND breaks
+      consistency with everywhere else. The consistency baseline is name and phone only:
+      `Bless Your Paws Puppies` / `(574) 377-8023`.
+- [ ] Expect **video verification**, and expect it to want a look at the premises. Worth
+      warning Hope so it is not a surprise mid-call.
+- [ ] Watch the entity filing separately: if Hope forms an LLC, Indiana records are public
+      and a home address on them is permanently searchable. A registered agent service is
+      the normal way around it. Raise it with whoever advises her; it is the same privacy
+      problem arriving through a different door.
+
+### Service area: pick for accuracy, not reach
+
+**Listing a city does not make you rank there.** Google ranks a service-area business by
+proximity between the searcher and the real (hidden) address. The service-area list is a
+qualification and display signal for humans, not a ranking lever, and an over-broad area
+invites scrutiny.
+
+- [ ] Roughly a one-hour ring around Warsaw. Verify the drive times; these are approximate.
+      Warsaw, Winona Lake, Leesburg, Pierceton, Claypool, Silver Lake, Mentone, Syracuse,
+      Milford, North Webster, Columbia City, Nappanee, Goshen, Wabash, Rochester, Plymouth,
+      **Fort Wayne** (~50 min), **South Bend** (~1 hr). Kosciusko County works as a single
+      entry.
+- [ ] **Do not list Chicago** (~2.5-3 hrs) or Indianapolis (~2 hrs). Google caps the list at
+      20 areas and expects a plausible operating radius.
+- [ ] Remember which channel does what: **the GBP reaches the local ring, the website
+      reaches everyone else.** A family in Chicago finds them by searching the breed and
+      then drives. That is `what-is-a-munchkin-bernedoodle.html` doing its job. Do not try to
+      make the GBP do work the breed guide already does better.
+
+### The fields
+
+- [ ] **Name: `Bless Your Paws Puppies`**, exactly, nothing appended. Adding
+      "Munchkin Bernedoodle Breeder Warsaw IN" is keyword stuffing and one of the most
+      reliable ways to get suspended.
+- [ ] **Primary category:** likely **"Dog breeder"**; "Pet breeder" may also exist. Take the
+      most specific one **that is actually in the dropdown**. Models invent categories that
+      are not in the list, so treat any AI suggestion, including the ones in this README, as
+      unverified until seen in the interface.
+- [ ] **Secondary categories:** only where genuinely true. For a single-breed breeder there
+      may be none, and that is fine. Do not stuff.
+- [ ] **Phone:** `(574) 377-8023`, character for character with the site.
+- [ ] **Website:** the github.io URL now, swapped to the domain later. Changing it does not
+      require re-verification.
+- [ ] **Hours:** not 24/7. Hours they will genuinely answer, plus the appointment attribute.
+- [ ] **Attributes:** "identifies as women-owned" is likely true and worth having, but that
+      is Hope and Joy's claim to make, not ours to assume.
+- [ ] **Products/services:** list services such as "Munchkin Bernedoodle puppies" and
+      "Waitlist for future litters". Avoid transacting through Google: several Google
+      surfaces restrict live-animal listings and where that line falls for GBP specifically
+      is unconfirmed. Check before relying on it.
+
+### Photos: the one place the standard advice is wrong here
+
+- [ ] 20+ photos. They already have plenty: puppies, the dams, indoor family context.
+- [ ] **No exterior shots of the house, the street, or anything that identifies it.** Every
+      local-SEO guide says upload exterior photos. That defeats the entire reason the
+      address is hidden.
+- [ ] **Do not geotag.** The standard advice to upload weekly geotagged photos would encode
+      their home coordinates into files they are handing out. (The advice is dubious anyway:
+      the source recommending it admits Google strips EXIF on upload.)
+
+### Description — 680 characters of 750, ready to paste
+
+Written in the site's voice and consistent with what is already published:
+
+> Bless Your Paws Puppies is a small, family-run breeder in northern Indiana. We are Hope
+> and Joy, twin sisters, and we raise Munchkin Bernedoodles in our homes rather than in a
+> kennel. Our puppies grow up underfoot, around children, other dogs, the vacuum and the
+> doorbell, so they are used to the sound of a family before they ever leave us. Every puppy
+> goes home with a vet exam, current vaccinations and a health record. Our dogs' health
+> testing is published in full on our website, so you can read it for yourself before you
+> decide. Visits are by appointment and video calls work well for families further away.
+> Serving Warsaw, Winona Lake and families across northern Indiana.
+
+- [ ] Confirm with Hope that the go-home items are accurate as stated, and that she is
+      comfortable being named alongside Joy.
+- [ ] **Deliberately omitted, do not add them back:** the address; the health guarantee,
+      whose terms are still unconfirmed; and any coat or shedding claim.
+- [ ] **Deliberately NOT claiming the Wisdom Panel in detail yet.** An earlier draft said
+      the panel is published "in full, including the one variant she carries". Two reasons
+      it is not in there. A description is a headline with no room for the context the
+      website gives the finding, and a cold reader meets CDDY with none of the explanation
+      around it. More importantly **the Cavalier sire's panel is not in hand**, CDDY needs
+      only one copy to matter, and many Cavalier panels do not test FGF4 at all — so leading
+      with genetic transparency invites the first question a knowledgeable buyer asks and
+      the one that currently has no answer. The wording used instead says the testing is
+      published without characterising a result. Note it does not say "health tested" on its
+      own either, which unqualified reads as *tested clear*, the exact claim that came off
+      the site.
+- [ ] **Revisit when the sire's panel arrives.** If he is clear of FGF4 the stronger claim
+      becomes available and is worth making. How a heritable at-risk finding is presented is
+      Hope's decision, not ours.
+- [ ] Whatever it ends up saying, **the description and the site have to keep agreeing.**
+      Consistency between profile and site is exactly what Google and the AI assistants
+      check.
+
+### Deliberate departures (do not "fix" these back)
+
+- [ ] **No Google Maps embed** on the site and **no address**, dropping two of the seven
+      standard "consistency signals". There is no public pin for a hidden home address, and
+      a service-area business shows its area rather than its location.
+
+### After the profile is live
+
+- [ ] Search Console, and citations on Bing Places and Apple Business Connect — address
+      handled the same way as above.
+- [ ] Local authority links worth having: the Kosciusko County chamber of commerce, and any
       sponsorship they would genuinely want to do anyway. **Do not buy links** — paying for
-      links that pass PageRank is a link scheme under Google's spam policies and the risk
+      links that pass PageRank is a link scheme under Google's spam policies, and the risk
       lands on the client, not the vendor.
-- [ ] Phase 2 only: Cloudflare Worker + D1 admin, two logins, photo upload, and the
-      **Stripe webhook that auto-marks a puppy reserved when a deposit clears**.
