@@ -1,0 +1,32 @@
+# Cloudflare Pages response headers. GitHub Pages ignores this file, so it is safe to
+# commit before the move.
+#
+# The whole point of moving: GitHub Pages sends Cache-Control: max-age=600 on everything
+# and cannot be configured. Every asset here is already content-addressed — style.css and
+# main.js carry ?v=<V>, and every image carries ?v=<md5 of its own bytes> — so a changed
+# file is a changed URL and the old one can be cached forever without ever going stale.
+# HTML is the exception and must stay revalidated, because its URL never changes.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/style.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/main.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML has a stable URL, so it must always be revalidated or a puppy stays "available"
+# in someone's browser after she is adopted.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
