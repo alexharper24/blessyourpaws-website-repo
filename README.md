@@ -182,7 +182,13 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       picture; the lede is below it on paper. `hero-options.html` can be deleted.
       Still open, and a business call rather than a design one: whether to keep
       havilah-01, which has only 5.4% headroom above the puppy's crown.
-- [ ] **Floral motif: pick the placements.** Hope asked for flowers. Five assets are
+- [ ] **Floral motif: pick the placements.** NOTE 2026-08-25: the comparison pages
+      (`floral-preview.html`, `floral-applied.html`) were deleted per the standing
+      convention that previews do not ship. The decision is still open, so if Hope
+      needs to see the options again, restore them from commit `e44e775` rather than
+      rebuilding them:
+      `git checkout e44e775 -- floral-preview.html floral-applied.html`
+- [ ] Original item: Hope asked for flowers. Five assets are
       prepared and committed (`img/brand/floral-*.webp`: two corner sprays, a
       horizontal swag, a single sprig, a wreath) but **nothing is wired into the
       site**. `floral-preview.html` shows seven candidate placements against the real
