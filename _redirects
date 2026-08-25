@@ -1,0 +1,5 @@
+# These are repo files, not site pages. Cloudflare Pages serves everything in the
+# output directory, so the internal docs and the generator get 404d explicitly.
+/CLAUDE.md   /404.html  404
+/README.md   /404.html  404
+/scripts/*   /404.html  404

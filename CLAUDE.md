@@ -471,15 +471,28 @@ it contains instead:
   claims off the site.
 - **Clear on 29 conditions, carrier of 0.** That is a genuinely good result to publish and
   is most of the story.
-- Breed mix 67% Toy/Mini Poodle, 14% Medium/Standard Poodle, 13% Bernese Mountain Dog,
-  5% Bichon Frise, 1% Miniature Schnauzer. **NOT published on the site, and the published
-  report no longer contains the ancestry page** (Alex, 2026-08-23). Kept here for
-  reference only. Consistent with a multi-gen Bernedoodle, which is mostly Poodle by
-  definition. The Bichon and Schnauzer fractions are worth mentioning
-  to Hope before anyone else notices them.
-- **Predicted ideal adult weight 22-40 lbs**, against the 21 lbs the site states for her.
-  Worth a question; it does not change the puppies' estimate, which comes from the actual
-  parent weights.
+- Breed-mix percentages and the panel's predicted adult weight: **deliberately not in this
+  file.** They are in `source-files/troy-panel-notes.md`, which is gitignored. Everything
+  committed to this repo is publicly served at a predictable URL, and these are the exact
+  figures Alex decided not to publish. See the note below on why this file is not private.
+
+## This file is PUBLIC. Write it accordingly.
+
+`CLAUDE.md`, `README.md` and everything under `scripts/` are served by the host at a
+predictable URL, on GitHub Pages and on Cloudflare Pages alike. Verified 2026-08-24:
+`/CLAUDE.md` returned HTTP 200 on the live site, containing the breed-ancestry percentages
+that had just been removed from the published report and from the site copy. The report was
+trimmed, the copy was corrected, and the same numbers sat one URL away the whole time.
+
+That is the recurring failure in this project written into the tooling itself: fix a claim
+in the obvious place and a copy survives in a quieter one. So:
+
+- **No client confidences here.** No figures withheld from publication, no candid notes
+  about the client, nothing said about a real person they would not want to read. Those go
+  in `source-files/`, which is gitignored.
+- `_redirects` 404s these paths on Cloudflare Pages, which helps but is not the control.
+  The control is not writing it down here in the first place, because the repo itself is
+  public on GitHub regardless of what the host serves.
 
 ## Never guess these
 
