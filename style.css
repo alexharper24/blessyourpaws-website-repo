@@ -442,6 +442,10 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .guard-msg{display:none;background:var(--pink-pale);border-radius:3px;
   padding:.8rem 1rem;font-size:.92rem;margin-top:.6rem}
 .guard-msg.show{display:block}
+/* the same box carries the reply after a real submission. Forest on pale pink is 7.91:1;
+   the error state keeps forest type and only changes the ground, because white on either
+   pink is under 2:1 and is forbidden in this palette. */
+.guard-msg.is-error{background:var(--rose)}
 
 /* ---------- share row ---------- */
 .share-row{display:flex;gap:.8rem;margin-top:1.75rem;align-items:center;flex-wrap:wrap}

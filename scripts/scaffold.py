@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 55
+V = 56
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -23,6 +23,15 @@ JOY_PHONE_DISPLAY = "(574) 265-1060"      # Joy, Dobermans. Confirmed by Alex 20
 JOY_PHONE_HREF = "tel:5742651060"
 SMS_HREF = "sms:5743778023"
 EMAIL = "info@blessyourpawspuppies.com"
+# Formspree endpoints (Alex, 2026-08-26). Notifications land on the address above, which
+# Email Routing forwards to Hope. Free tier is 50 submissions a month, which is not a
+# constraint for one litter, and Formspree keeps its own copy of every submission, so a
+# lead survives an email being spam-filtered or deleted.
+#
+# The submit guard in main.js keys on the literal string REPLACE in a form action, so
+# putting real ids here is what takes the forms live. Put REPLACE back to disable them.
+FORM_INQUIRY  = "https://formspree.io/f/mnpaegkw"
+FORM_WAITLIST = "https://formspree.io/f/xbgrnzvq"
 AREA = "Warsaw and Winona Lake, Indiana"
 COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
@@ -533,6 +542,10 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .guard-msg{display:none;background:var(--pink-pale);border-radius:3px;
   padding:.8rem 1rem;font-size:.92rem;margin-top:.6rem}
 .guard-msg.show{display:block}
+/* the same box carries the reply after a real submission. Forest on pale pink is 7.91:1;
+   the error state keeps forest type and only changes the ground, because white on either
+   pink is under 2:1 and is forbidden in this palette. */
+.guard-msg.is-error{background:var(--rose)}
 
 /* ---------- share row ---------- */
 .share-row{display:flex;gap:.8rem;margin-top:1.75rem;align-items:center;flex-wrap:wrap}
@@ -995,15 +1008,49 @@ JS = """// Bless Your Paws Puppies - v2
     }
   });
 
-  // ---- guard: forms stay friendly until the Formspree id exists
+  // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
   document.querySelectorAll('form[data-guard]').forEach(function(f){
+    var msg = f.querySelector('.guard-msg');
+
+    // No endpoint yet. Never let a real inquiry vanish into a placeholder: stop the
+    // submit and point them at the phone instead.
     if (f.action.indexOf('REPLACE') !== -1){
       f.addEventListener('submit', function(e){
         e.preventDefault();
-        var msg = f.querySelector('.guard-msg');
         if (msg) msg.classList.add('show');
       });
+      return;
     }
+
+    // A native POST to Formspree navigates away to formspree.io. Asking Formspree for
+    // JSON instead keeps the visitor on the page they were reading. The form keeps its
+    // real action and method, so with JavaScript off the native POST still works: this
+    // is an upgrade, not the only path.
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn = f.querySelector('button[type=submit]');
+      var said = btn ? btn.textContent : '';
+      if (btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      function done(text, ok){
+        if (msg){
+          msg.textContent = text;
+          msg.classList.add('show');
+          msg.classList.toggle('is-error', !ok);
+        }
+        if (ok){ f.reset(); if (btn) btn.remove(); }
+        else if (btn){ btn.disabled = false; btn.textContent = said; }
+      }
+      fetch(f.action, {
+        method: 'POST',
+        body: new FormData(f),
+        headers: { Accept: 'application/json' }
+      }).then(function(r){
+        if (r.ok) done('Thank you. That came through, and Hope will be in touch soon.', true);
+        else done('That did not go through. Please call or text Hope at __PHONE__ and she will get right back to you.', false);
+      }).catch(function(){
+        done('That did not go through. Please call or text Hope at __PHONE__ and she will get right back to you.', false);
+      });
+    });
   });
 
   // ---- gallery: two independent filters, by litter and by puppy
@@ -2299,7 +2346,8 @@ def build_pages():
         and we will get right back to you.</p>
       <div class="formcard">
         <h2 style="margin-top:0">Send an inquiry</h2>
-        <form data-guard action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
+        <form data-guard action="{FORM_INQUIRY}" method="POST">
+        <input type="hidden" name="_subject" value="New puppy inquiry from your website">
         {hp.format(i="c")}<div class="field"><label for="name">Your name</label><input id="name" name="name" required></div>
         <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
         <div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="phone"></div>
@@ -2350,7 +2398,8 @@ def build_pages():
   </div>
   <div class="formcard">
     <h2 style="margin-top:0">Add your name</h2>
-    <form data-guard action="https://formspree.io/f/REPLACE_WAITLIST_ID" method="POST">
+    <form data-guard action="{FORM_WAITLIST}" method="POST">
+    <input type="hidden" name="_subject" value="New waitlist signup from your website">
     {hp.format(i="w")}<div class="field"><label for="wname">Your name</label><input id="wname" name="name" required></div>
     <div class="field"><label for="wemail">Email</label><input id="wemail" name="email" type="email" required></div>
     <div class="field"><label for="wphone">Phone (optional)</label><input id="wphone" name="phone"></div>

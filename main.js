@@ -98,15 +98,49 @@
     }
   });
 
-  // ---- guard: forms stay friendly until the Formspree id exists
+  // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
   document.querySelectorAll('form[data-guard]').forEach(function(f){
+    var msg = f.querySelector('.guard-msg');
+
+    // No endpoint yet. Never let a real inquiry vanish into a placeholder: stop the
+    // submit and point them at the phone instead.
     if (f.action.indexOf('REPLACE') !== -1){
       f.addEventListener('submit', function(e){
         e.preventDefault();
-        var msg = f.querySelector('.guard-msg');
         if (msg) msg.classList.add('show');
       });
+      return;
     }
+
+    // A native POST to Formspree navigates away to formspree.io. Asking Formspree for
+    // JSON instead keeps the visitor on the page they were reading. The form keeps its
+    // real action and method, so with JavaScript off the native POST still works: this
+    // is an upgrade, not the only path.
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn = f.querySelector('button[type=submit]');
+      var said = btn ? btn.textContent : '';
+      if (btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      function done(text, ok){
+        if (msg){
+          msg.textContent = text;
+          msg.classList.add('show');
+          msg.classList.toggle('is-error', !ok);
+        }
+        if (ok){ f.reset(); if (btn) btn.remove(); }
+        else if (btn){ btn.disabled = false; btn.textContent = said; }
+      }
+      fetch(f.action, {
+        method: 'POST',
+        body: new FormData(f),
+        headers: { Accept: 'application/json' }
+      }).then(function(r){
+        if (r.ok) done('Thank you. That came through, and Hope will be in touch soon.', true);
+        else done('That did not go through. Please call or text Hope at (574) 377-8023 and she will get right back to you.', false);
+      }).catch(function(){
+        done('That did not go through. Please call or text Hope at (574) 377-8023 and she will get right back to you.', false);
+      });
+    });
   });
 
   // ---- gallery: two independent filters, by litter and by puppy
