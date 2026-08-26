@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 87
+V = 89
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -38,8 +38,8 @@ EMAIL = "info@blessyourpawspuppies.com"
 FORM_INQUIRY  = "https://formspree.io/f/mnpaegkw"
 FORM_WAITLIST = "https://formspree.io/f/xbgrnzvq"
 FORM_APPLY    = "https://formspree.io/f/xppavger"
-# Dual pricing (Alex, 2026-08-26). The LIST price is the card price and paying by check or
-# cash earns a discount. The two numbers are the same either way; the framing is not.
+# Dual pricing (Alex, 2026-08-26). The LIST price is the card price and paying cash earns
+# a discount. No checks: card or cash only (Alex, 2026-08-26). The two numbers are the same either way; the framing is not.
 #
 # A cash DISCOUNT is permitted in every state, has no rate cap, needs no notice to the card
 # networks, and draws no distinction between debit and credit. A card SURCHARGE brings all
@@ -1876,7 +1876,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
-        <li><span class="k">Check or cash</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
@@ -2029,7 +2029,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
-        <li><span class="k">Check or cash</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
@@ -2072,7 +2072,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${D_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
-        <li><span class="k">Check or cash</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{D_BORN}</span></li>
         <li><span class="k">Status</span><span class="v">Ready now</span></li>
@@ -2495,8 +2495,8 @@ def build_pages():
   <div class="hic-copy">
     <p><strong>How do payments work?</strong> The ${DEPOSIT} deposit reserves your puppy
       online and comes off the balance. The balance is due before or at pickup. The price
-      is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} if you pay the balance by check
-      or cash, so paying that way saves you ${CASH_DISCOUNT}.</p>
+      is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} if you pay the balance in cash,
+      which saves you ${CASH_DISCOUNT}. We take card or cash, not checks.</p>
     <p><strong>Can we visit first?</strong> Yes, and we encourage it. Video calls work
       well for families further away.</p>
     <p><strong>Will my puppy shed?</strong> It varies by puppy, even in one litter. We
@@ -2626,7 +2626,7 @@ def build_pages():
       change my mind about which puppy, it can be moved to another available puppy.</span></label>
     <label class="ack"><input type="checkbox" name="ack_price" value="yes" required>
       <span>I understand the price is ${M_PRICE:,}, that <strong>sales tax is added</strong>,
-      and that paying by check or cash is ${M_PRICE_CASH:,}.</span></label>
+      and that the cash price is ${M_PRICE_CASH:,}.</span></label>
     <label class="ack"><input type="checkbox" name="ack_home" value="yes" required>
       <span>I understand puppies go home at <strong>eight weeks or after</strong>, and that
       if a puppy is returned to us the purchase price is not refunded except where our
@@ -2790,7 +2790,7 @@ def build_pages():
     reservation, for the puppy identified by name and litter.</p>
   <ul>
     <li><strong>Price and deposit.</strong> The purchase price is ${M_PRICE:,}, or
-      ${M_PRICE_CASH:,} where the balance is paid by check or cash. Sales tax is added.
+      ${M_PRICE_CASH:,} where the balance is paid in cash. Sales tax is added.
       A ${DEPOSIT} deposit reserves the puppy and is applied to the balance. The balance
       is due before or at pickup.</li>
     <li><strong>Deposit terms.</strong> The deposit is transferable to another
@@ -2870,7 +2870,7 @@ def build_pages():
             reserve_block = f'''<div class="reserve">
         <h3>Reserve {name}</h3>
         <p class="terms">A ${DEPOSIT} deposit holds {him}. ${M_PRICE:,} plus sales tax,
-          or ${M_PRICE_CASH:,} by check or cash.</p>
+          or ${M_PRICE_CASH:,} in cash.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
