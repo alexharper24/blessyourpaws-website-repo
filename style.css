@@ -556,9 +556,8 @@ textarea{min-height:8rem}
 .health .btn{margin-top:.55rem;padding:.55rem 1.1rem;font-size:.88rem;min-height:44px}
 /* stretch rather than flex-start so both record links take the width of the wider one.
    Two links of different widths stacked on top of each other read as an accident. */
-.health-btns{display:flex;flex-direction:column;align-items:stretch;gap:.45rem;
-  max-width:22rem}
-.health-btns .btn{justify-content:center}
+.health-btns{display:flex;flex-wrap:wrap;gap:.6rem}
+.health-btns .btn{flex:1 1 auto;justify-content:center}
 .health-qr{margin:0;text-align:center;flex:none;width:132px}
 .health-qr img{width:132px;height:132px;border:1px solid var(--rule);
   border-radius:4px;background:#fff}

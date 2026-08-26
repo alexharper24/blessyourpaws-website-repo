@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 54
+V = 55
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -647,9 +647,8 @@ textarea{min-height:8rem}
 .health .btn{margin-top:.55rem;padding:.55rem 1.1rem;font-size:.88rem;min-height:44px}
 /* stretch rather than flex-start so both record links take the width of the wider one.
    Two links of different widths stacked on top of each other read as an accident. */
-.health-btns{display:flex;flex-direction:column;align-items:stretch;gap:.45rem;
-  max-width:22rem}
-.health-btns .btn{justify-content:center}
+.health-btns{display:flex;flex-wrap:wrap;gap:.6rem}
+.health-btns .btn{flex:1 1 auto;justify-content:center}
 .health-qr{margin:0;text-align:center;flex:none;width:132px}
 .health-qr img{width:132px;height:132px;border:1px solid var(--rule);
   border-radius:4px;background:#fff}
@@ -2016,21 +2015,19 @@ def build_pages():
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
           "chondrodystrophy variant, CDDY. It takes only one copy to matter, so it can "
-          "pass to a puppy. The report is linked below and the panel explains it on "
+          "pass to a puppy. The panel explains it on "
           # The published PDF's footers now read 1-11 rather than 4-14, so the CDDY
           # summary and the detail page are pages 1 and 2. Re-check this if the report is
           # ever re-trimmed: a citation pointing at a page that says something else is
           # worse than no citation at all.
           "pages 1 and 2."),
-         ("Eyes:", "OFA eye examination on August 14, 2026: <strong>normal</strong>. "
-          "The certificate records her as free of observable inherited eye disease. "
-          "OFA number HY-EYE13395/30F-VPI. An eye certification is valid for one year "
-          "from the exam, so this one runs to August 14, 2027 and is then re-examined."),
-         ("The records:", "both linked here. The panel carries every health result it "
-          "returned, and the eye certificate can be verified independently at ofa.org.")],
-        [("View Troy’s Wisdom Panel report (PDF)",
+         ("Eyes:", "OFA eye examination, August 14, 2026: <strong>normal</strong>, free "
+          "of observable inherited eye disease. Certificate HY-EYE13395/30F-VPI, valid "
+          "one year from the exam."),
+         ],
+        [("Wisdom Panel report (PDF)",
           "records/troy-wisdom-panel-2026-02-21.pdf"),
-         ("View Troy’s OFA eye certificate (PDF)",
+         ("OFA eye certificate (PDF)",
           "records/troy-ofa-eyes-2026-08-14.pdf")], first=True) +
       dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",
         None,
