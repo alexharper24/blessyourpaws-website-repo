@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 61
+V = 64
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -32,7 +32,7 @@ EMAIL = "info@blessyourpawspuppies.com"
 # putting real ids here is what takes the forms live. Put REPLACE back to disable them.
 FORM_INQUIRY  = "https://formspree.io/f/mnpaegkw"
 FORM_WAITLIST = "https://formspree.io/f/xbgrnzvq"
-AREA = "Warsaw and Winona Lake, Indiana"
+AREA = "northern Indiana"   # visible copy. Precise towns stay in areaServed schema.
 COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
 PRIMARY = {"malcolm": 2}
@@ -1149,7 +1149,6 @@ JS = """// Bless Your Paws Puppies - v2
   panel.innerHTML = '<h3>Talk puppies with us</h3>'
     + '<p>Call or text is the fastest way to reach us. __WHO__</p>'
     + '<div class="row"><span class="lbl">Hope</span><a href="__PHONE_HREF__">__PHONE__</a></div>'
-    + '<div class="row"><span class="lbl">Joy</span><a href="__JOY_HREF__">__JOY_PHONE__</a></div>'
     + '<div class="row"><span class="lbl">Email</span><a href="mailto:__EMAIL__">__EMAIL__</a></div>'
     + '<div class="row"><span class="lbl">Inquiry</span><a href="contact.html">Start an inquiry</a></div>'
     + '<div class="row"><span class="lbl">Waitlist</span><a href="waitlist.html">Join the waitlist</a></div>';
@@ -1328,7 +1327,7 @@ def footer():
       </ul></div>
       <div><h3>Get in touch</h3><ul>
         <li>{'Hope, Munchkin Bernedoodles' if SHOW_DOBERMANS else 'Hope'}<br><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></li>
-        <li>{'Joy, Dobermans' if SHOW_DOBERMANS else 'Joy'}<br><a href="{JOY_PHONE_HREF}">{JOY_PHONE_DISPLAY}</a></li>
+{dob('        <li>Joy, Dobermans<br><a href=' + chr(34) + JOY_PHONE_HREF + chr(34) + '>' + JOY_PHONE_DISPLAY + '</a></li>')}
         <li><a href="mailto:{EMAIL}">{EMAIL}</a></li>
         <li>{AREA}</li>
         <li class="fine">Visits by appointment. Our location is shared once your
@@ -1788,7 +1787,7 @@ def build_pages():
     # Joy hand over their social profiles, and an empty array asserts they have none.
     org_ld = json.dumps({"@context": "https://schema.org", "@type": "LocalBusiness",
         "name": "Bless Your Paws Puppies",
-        "description": f"Family-raised {BREEDS_PHRASE} puppies in Warsaw and Winona Lake, Indiana.",
+        "description": f"Family-raised {BREEDS_PHRASE} puppies in northern Indiana.",
         "telephone": "+1-574-377-8023", "email": EMAIL,
         "areaServed": [
             {"@type": "City",  "name": "Warsaw",       "addressRegion": "IN",
@@ -1809,7 +1808,7 @@ def build_pages():
     </div>
     <div class="wrap">
       <div class="hero-copy">
-        <p class="eyebrow">Family-raised in Warsaw and Winona Lake</p>
+        <p class="eyebrow">Family-raised in northern Indiana</p>
         <h1>{BREEDS_SHORT} puppies raised in the middle of real family life</h1>
         <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else '<a href="what-is-a-munchkin-bernedoodle.html">Munchkin Bernedoodles</a>'} underfoot in our homes, around our nieces and nephews, the vacuum, the doorbell,
           and everything else a family sounds like. {CHIP_SAMPLE}</p>
@@ -2106,9 +2105,9 @@ def build_pages():
           "records/troy-ofa-eyes-2026-08-14.pdf")], first=True) +
       dog_row("cavalier-sire-01", "Bip Finch", "Cavalier King Charles Spaniel",
         None,
-        "Our sire is an AKC-registered ruby Cavalier, 19 lbs, and the reason these "
-        "puppies are as small and as calm as they are. The Cavalier side is where the "
-        "lap-dog nature comes from. " + CHIP_SAMPLE,
+        "Bip Finch is an outside stud rather than one of our own dogs. We chose him "
+        "carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, "
+        "and the Cavalier side is where the lap-dog nature comes from. " + CHIP_SAMPLE,
         [("Registration:", "AKC registered."),
          ("Weight:", "19 lbs, ruby, born December 24, 2024."),
          ("Genetic testing:", "we are gathering his panel and will link it here in full, "
@@ -2222,8 +2221,8 @@ def build_pages():
     <p>A puppy's first eight weeks decide a lot about the dog they become. That is
       why ours are never raised apart from the household. They meet children, other
       dogs, the vacuum, and visitors before they ever meet you. {CHIP_SAMPLE}</p>
-    <p>We would love for you to meet the puppies, and <a href="our-dogs.html">their
-      parents</a>, before you decide. Visits are by appointment, and video calls work well for families
+    <p>We would love for you to meet the puppies, and <a href="our-dogs.html">the parents
+      who live with us</a>, before you decide. Visits are by appointment, and video calls work well for families
       further away.</p>
   </div>
 </div></section>
@@ -2238,10 +2237,7 @@ def build_pages():
         <span class="ct-label">{'Hope, Munchkins' if SHOW_DOBERMANS else 'Hope'}</span>
         <span class="ct-value">{PHONE_DISPLAY}</span>
       </a>
-      <a class="contact-tile" href="{JOY_PHONE_HREF}">
-        <span class="ct-label">{'Joy, Dobermans' if SHOW_DOBERMANS else 'Joy'}</span>
-        <span class="ct-value">{JOY_PHONE_DISPLAY}</span>
-      </a>
+{dob('      <a class=' + chr(34) + 'contact-tile' + chr(34) + ' href=' + chr(34) + JOY_PHONE_HREF + chr(34) + '>' + chr(10) + '        <span class=' + chr(34) + 'ct-label' + chr(34) + '>Joy, Dobermans</span>' + chr(10) + '        <span class=' + chr(34) + 'ct-value' + chr(34) + '>' + JOY_PHONE_DISPLAY + '</span>' + chr(10) + '      </a>')}
       <a class="contact-tile" href="mailto:{EMAIL}">
         <span class="ct-label">Email us</span>
         <span class="ct-value">{EMAIL}</span>
@@ -2392,10 +2388,9 @@ def build_pages():
       <div class="formcard">
         <h2 style="margin-top:0">How to reach us</h2>
         <ul class="facts">
-          <li><span class="k">Hope, Munchkin Bernedoodles</span>
+          <li><span class="k">{'Hope, Munchkin Bernedoodles' if SHOW_DOBERMANS else 'Hope'}</span>
             <span class="v"><a href="{PHONE_HREF}">{PHONE_DISPLAY}</a></span></li>
-          <li><span class="k">{'Joy, Dobermans' if SHOW_DOBERMANS else 'Joy'}</span>
-            <span class="v"><a href="{JOY_PHONE_HREF}">{JOY_PHONE_DISPLAY}</a></span></li>
+{dob('          <li><span class=' + chr(34) + 'k' + chr(34) + '>Joy, Dobermans</span>' + chr(10) + '            <span class=' + chr(34) + 'v' + chr(34) + '><a href=' + chr(34) + JOY_PHONE_HREF + chr(34) + '>' + JOY_PHONE_DISPLAY + '</a></span></li>')}
           <li><span class="k">Email</span>
             <span class="v"><a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
           <li><span class="k">Where</span><span class="v">{AREA}</span></li>
