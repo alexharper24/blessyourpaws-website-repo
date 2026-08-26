@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 78
+V = 79
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -585,6 +585,9 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    there is no room to put the button beside the text. Filling the column is the next best
    use of the space: it removed a ragged 127px gap to the right of a 227px button. */
 .apply-gate{display:grid}
+/* Back inside the box, under the action. A hairline rather than a margin alone, so the
+   softer alternative reads as a footnote to the button and not as more of the same. */
+.reserve .talk-first{margin:1rem 0 0;padding-top:.9rem;border-top:1px solid var(--rule)}
 .apply-gate .btn{width:100%;justify-content:center}
 /* The block was a heading and then nothing but small grey text, so it had two extremes
    and no middle. The terms line is the commercial fact and reads at body size. */
@@ -2839,10 +2842,10 @@ def build_pages():
         </div>
         <p class="guard-msg">Online payments are almost ready. To reserve {name}
           today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
-      </div>
-      <p class="fine">Prefer to talk first? <a href="contact.html">Start an
-        inquiry</a>, or call or text <a href="{owner_href}">{owner_phone}</a>.
-        Visits and video calls are always welcome before you decide.</p>'''
+        <p class="fine talk-first">Prefer to talk first? <a href="contact.html">Start an
+          inquiry</a>, or call or text <a href="{owner_href}">{owner_phone}</a>.
+          Visits and video calls are always welcome before you decide.</p>
+      </div>'''
         cnt = COUNTS[slug]
         first = PRIMARY.get(slug, 1)
         order = [first] + [i for i in range(1, cnt + 1) if i != first]

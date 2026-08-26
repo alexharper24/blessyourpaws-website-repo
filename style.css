@@ -481,6 +481,9 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    there is no room to put the button beside the text. Filling the column is the next best
    use of the space: it removed a ragged 127px gap to the right of a 227px button. */
 .apply-gate{display:grid}
+/* Back inside the box, under the action. A hairline rather than a margin alone, so the
+   softer alternative reads as a footnote to the button and not as more of the same. */
+.reserve .talk-first{margin:1rem 0 0;padding-top:.9rem;border-top:1px solid var(--rule)}
 .apply-gate .btn{width:100%;justify-content:center}
 /* The block was a heading and then nothing but small grey text, so it had two extremes
    and no middle. The terms line is the commercial fact and reads at body size. */
