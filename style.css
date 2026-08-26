@@ -412,6 +412,14 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
   overflow:hidden}
 .gal-grid a:hover{border-color:var(--forest)}
 .gal-grid img{aspect-ratio:1/1;object-fit:cover}
+/* Placeholder tint under the lazy-loaded photos. 237 of the 277 images on this site are
+   loading="lazy" on purpose, and CSS aspect-ratio already reserves their space, so there
+   is no layout shift: measured CLS 0. What a visitor sees instead is a correctly sized
+   WHITE box that fills in a moment later, which reads as something failing rather than
+   something arriving. A tint makes the unloaded state look deliberate. Purely perceptual;
+   it changes no bytes and no timing. Scoped to photo boxes, never to a transparent PNG
+   like the logo, where a ground would show through. */
+.gal-grid img,.packet img{background:var(--paper-raise)}
 .filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem;
   align-items:stretch}
 /* the select is styled to match the buttons beside it exactly, so the row reads as

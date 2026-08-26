@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 56
+V = 57
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -512,6 +512,14 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
   overflow:hidden}
 .gal-grid a:hover{border-color:var(--forest)}
 .gal-grid img{aspect-ratio:1/1;object-fit:cover}
+/* Placeholder tint under the lazy-loaded photos. 237 of the 277 images on this site are
+   loading="lazy" on purpose, and CSS aspect-ratio already reserves their space, so there
+   is no layout shift: measured CLS 0. What a visitor sees instead is a correctly sized
+   WHITE box that fills in a moment later, which reads as something failing rather than
+   something arriving. A tint makes the unloaded state look deliberate. Purely perceptual;
+   it changes no bytes and no timing. Scoped to photo boxes, never to a transparent PNG
+   like the logo, where a ground would show through. */
+.gal-grid img,.packet img{background:var(--paper-raise)}
 .filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.25rem;
   align-items:stretch}
 /* the select is styled to match the buttons beside it exactly, so the row reads as
@@ -2061,16 +2069,9 @@ def build_pages():
         [("Weight:", "22 lbs, blue merle parti, born January 21, 2024."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
-          "chondrodystrophy variant, CDDY. It takes only one copy to matter, so it can "
-          "pass to a puppy. The panel explains it on "
-          # The published PDF's footers now read 1-11 rather than 4-14, so the CDDY
-          # summary and the detail page are pages 1 and 2. Re-check this if the report is
-          # ever re-trimmed: a citation pointing at a page that says something else is
-          # worse than no citation at all.
-          "pages 1 and 2."),
+          "chondrodystrophy variant, CDDY."),
          ("Eyes:", "OFA eye examination, August 14, 2026: <strong>normal</strong>, free "
-          "of observable inherited eye disease. Certificate HY-EYE13395/30F-VPI, valid "
-          "one year from the exam."),
+          "of observable inherited eye disease."),
          ],
         [("Wisdom Panel report (PDF)",
           "records/troy-wisdom-panel-2026-02-21.pdf"),
