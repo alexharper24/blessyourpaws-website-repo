@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 68
+V = 69
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -71,7 +71,7 @@ DOBERMANS = [
 # Doberman line: OFF since 2026-08-23 (Alex, conflict of interest). Nothing is
 # deleted. Flip this to True and re-run to restore the whole line: the breed page,
 # the three puppy pages, the nav and footer links, the litter section on
-# puppies.html, Mira and the sire on our-dogs, the gallery filter, and the prose
+# puppies.html, Mira and the sire on parents.html, the gallery filter, and the prose
 # that names the breed. Photos and data stay in the repo either way.
 SHOW_DOBERMANS = False
 D_LIST = list(DOBERMANS) if SHOW_DOBERMANS else []
@@ -1284,7 +1284,7 @@ NAV = f"""<nav class="nav" aria-label="Main">
   <a href="puppies.html">Puppies</a>
   <a href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'what-is-a-munchkin-bernedoodle.html'}">{'Bernedoodles' if SHOW_DOBERMANS else 'Breed Guide'}</a>
 {dob('  <a href="dobermans.html">Dobermans</a>')}
-  <a href="our-dogs.html">Our Dogs</a>
+  <a href="parents.html">Parents</a>
   <a href="gallery.html">Gallery</a>
   <a href="about.html">About</a>
   <a href="process.html">How It Works</a>
@@ -1323,7 +1323,7 @@ def footer():
       </ul></div>
       <div><h3>Before you visit</h3><ul>
         <li><a href="process.html">How it works</a></li>
-        <li><a href="our-dogs.html">Our dogs and their health</a></li>
+        <li><a href="parents.html">The parents and their health</a></li>
         <li><a href="about.html">About Hope and Joy</a></li>
         <li><a href="waitlist.html">Join the waitlist</a></li>
         <li><a href="health-guarantee.html">Health guarantee</a></li>
@@ -1692,7 +1692,7 @@ def build_pages():
     M_PARENTS = (
       parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
                   [("Weight", "22 lbs"), ("Color", "Blue merle parti"),
-                   ("Born", "January 21, 2024")]) +
+                   ]) +
       parent_card("cavalier-sire-01", "Bip Finch", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
@@ -1749,7 +1749,7 @@ def build_pages():
     </div>
     {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt=f'The litter of {n_word(M_TOTAL).lower()} Munchkin Bernedoodle puppies together', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
-      <p class="lede">{n_word(M_TOTAL)} puppies from <a href="our-dogs.html">Troy</a>, our Mini Multi Gen
+      <p class="lede">{n_word(M_TOTAL)} puppies from <a href="parents.html">Troy</a>, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
         {M_BORN}, going home {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
       <ul class="facts">
@@ -1771,7 +1771,7 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <div class="section-head">
     <div><h2 style="margin:0">Meet their parents</h2></div>
-    <a class="btn btn-primary" href="our-dogs.html">Full health details</a>
+    <a class="btn btn-primary" href="parents.html">Full health details</a>
   </div>
   <div class="parent-grid">{M_PARENTS}</div>
 </div></section>'''
@@ -1873,7 +1873,7 @@ def build_pages():
       <p class="lede" style="max-width:62ch;margin:0">Each dog's testing listed on
         their own card. Where a record exists, we link the record.</p>
     </div>
-    <a class="btn btn-primary" href="our-dogs.html">Meet our dogs</a>
+    <a class="btn btn-primary" href="parents.html">Meet the parents</a>
   </div>
   <div class="parent-grid">
 {M_PARENTS}{D_PARENTS if SHOW_DOBERMANS else ''}
@@ -1924,7 +1924,7 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <div class="section-head">
     <div><h2 style="margin:0">Meet their parents</h2></div>
-    <a class="btn btn-primary" href="our-dogs.html">Full health details</a>
+    <a class="btn btn-primary" href="parents.html">Full health details</a>
   </div>
   <div class="parent-grid">{M_PARENTS}</div>
 </div></section>
@@ -1956,7 +1956,7 @@ def build_pages():
         <li><span class="k">Breeding rights</span><span class="v">${DEPOSIT} extra</span></li>
       </ul>
       <p>Mira's genetic and heart testing is real and linked:
-        <a href="our-dogs.html">see the records</a>.</p>
+        <a href="parents.html">see the records</a>.</p>
     </div>
     {desktop_only_img('elowen-01', cls='framed hide-mobile', alt='Elowen, a black and rust Doberman Pinscher puppy', sizes=PHOTO_WIDE)}
   </div>
@@ -1966,7 +1966,7 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <div class="section-head">
     <div><h2 style="margin:0">Meet their parents</h2></div>
-    <a class="btn btn-primary" href="our-dogs.html">Full health details</a>
+    <a class="btn btn-primary" href="parents.html">Full health details</a>
   </div>
   {dob('<div class="parent-grid">' + str(D_PARENTS) + '</div>')}
 </div></section>""")
@@ -1999,7 +1999,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "<a href=\"our-dogs.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
+       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
@@ -2041,7 +2041,7 @@ def build_pages():
         the Bernedoodle look, usually somewhere between 10 and 25 lbs full grown, where
         a standard Bernedoodle can reach 70 lbs or more.</p>
       <p>Ours come from a small mom at 22 lbs bred to a small dad at 19 lbs. Troy's full
-        panel is on the <a href="our-dogs.html">our dogs</a> page so you can read it for
+        panel is on the <a href="parents.html">parents</a> page so you can read it for
         yourself rather than take our word for it, and Bip Finch's will go up the same way
         once we have a legible copy of it.</p>
     </div>
@@ -2102,7 +2102,7 @@ def build_pages():
         "Munchkin Bernedoodle</a> litter. At 22 lbs she is a "
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
         "size and the temperament we breed for.",
-        [("Weight:", "22 lbs, blue merle parti, born January 21, 2024."),
+        [("Weight:", "22 lbs, blue merle parti."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
           "chondrodystrophy variant, CDDY."),
@@ -2119,7 +2119,7 @@ def build_pages():
         "carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, "
         "and the Cavalier side is where the lap-dog nature comes from.",
         [("Registration:", "AKC registered, TS65827904."),
-         ("Weight:", "19 lbs, ruby, born December 24, 2024."),
+         ("Weight:", "19 lbs, ruby."),
          # Hope's own statement, given 2026-08-26. She has seen his results; what she does
          # not yet have is a legible copy to publish, because his breeder can only fax.
          # CDDY is named because it is the one that matters here: Troy carries a copy and
@@ -2151,7 +2151,7 @@ def build_pages():
          ("Registration:", "name and AKC number being added. " + CHIP_DRAFT)],
         []))
 
-    page("our-dogs.html", "Our Dogs and Their Health | Bless Your Paws Puppies",
+    page("parents.html", f"The Parents and Their Health | {BRAND}",
       ("Meet the parents: Troy the Mini Multi Gen Bernedoodle, our AKC Cavalier sire, "
        "Mira the health-tested Doberman dam, and our Doberman sire, with testing and "
        "records for each." if SHOW_DOBERMANS else
@@ -2159,7 +2159,7 @@ def build_pages():
        "sire, with testing and records for each."),
       f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">The parents</p>
-  <h1>Our dogs, and what they are tested for</h1>
+  <h1>The parents, and what they are tested for</h1>
   <p class="lede" style="max-width:74ch">Health claims are easy to make and hard to
     check. So each dog gets their own testing listed here, and where a record exists we
     link the record itself and put a QR beside it. Scan it with your phone and read the
@@ -2240,7 +2240,7 @@ def build_pages():
     <p>They grow up in the room where we groom, so the blow dryer is an ordinary noise to
       them. The vacuum runs. There is usually music on. They have hard floors under their
       feet and time out on the deck, and grass comes a little later.</p>
-    <p>We would love for you to meet the puppies, and <a href="our-dogs.html">the parents
+    <p>We would love for you to meet the puppies, and <a href="parents.html">the parents
       who live with us</a>, before you decide. Visits are by appointment, and video calls work well for families
       further away.</p>
   </div>
@@ -2737,7 +2737,7 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <h2>{name}'s parents</h2>
   <div class="parent-grid" style="margin-top:1.5rem">{parents_html}</div>
-  <div class="btn-row"><a class="btn btn-ghost" href="our-dogs.html">Full health details</a></div>
+  <div class="btn-row"><a class="btn btn-ghost" href="parents.html">Full health details</a></div>
 </div></section>
 
 <section><div class="wrap">
