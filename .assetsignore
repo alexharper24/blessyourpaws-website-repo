@@ -1,0 +1,22 @@
+# Never uploaded as site assets. This is the real control for the internal docs: on Pages
+# they had to be redirected away because everything in the output directory was served,
+# and a rule that only redirects still ships the file. Here they never leave the machine.
+#
+# NOTE: this does not make the repo private. It is public on GitHub either way, so the
+# standing rule stands: no client confidences in tracked files. See CLAUDE.md.
+# .git first: without it wrangler reads the whole repo history as site assets and
+# fails on the pack file, which is larger than the 25 MiB per-asset limit.
+.git/
+.github/
+.claude/
+scripts/
+worker/
+node_modules/
+source-files/
+source-photos/
+CLAUDE.md
+README.md
+wrangler.jsonc
+.assetsignore
+package.json
+package-lock.json

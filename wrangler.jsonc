@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "blessyourpaws",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-08-25",
+  "observability": { "enabled": true },
+
+  // Off deliberately, same reasoning as roanoke-baptist. A preview URL is a different
+  // hostname, so an Access application covering /admin on the production hostname does
+  // not apply to it. The Worker verifies the Access token itself, but that is meant to be
+  // the second line of defence rather than the only one.
+  "preview_urls": false,
+
+  "assets": {
+    // The static site is the repo root. .assetsignore keeps the generator, the internal
+    // docs and the Worker source out of the uploaded set, which is stronger than the
+    // _redirects rules Pages needed: a file that was never uploaded cannot be served.
+    "directory": ".",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+
+    // html_handling is left at the default, auto-trailing-slash, ON PURPOSE. It serves
+    // /puppies directly and 307s /puppies.html to it, which is exactly what this site's
+    // links already expect: every internal link, canonical and sitemap entry here is
+    // extensionless. Note this is the OPPOSITE of roanoke-baptist, which sets "none"
+    // because its links all end in .html. Match the mode to the links, not to habit.
+
+    // Only these paths cost a Worker invocation. Every page, the stylesheet, the images
+    // and the PDFs are served straight from the edge.
+    "run_worker_first": ["/admin", "/admin/*", "/api/*"]
+  }
+
+  // No D1, R2 or Access vars yet. They arrive with the admin: see README Phase 2.
+}
