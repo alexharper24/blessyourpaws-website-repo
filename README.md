@@ -275,6 +275,61 @@ Needs Hope and Joy:
 - [ ] Review widget and `aggregateRating`/`Review` schema. Blocked on reviews plus
       permission to publish them.
 
+## Hosting: Workers static assets, not Pages (decided 2026-08-25)
+
+The site is served by a **Worker** (`blessyourpaws`), the same shape as
+`roanoke-baptist`, because an admin surface behind auth is coming and that decision is
+expensive to reverse once a domain points at the old one.
+
+Live for testing at `https://blessyourpaws.alexharper.workers.dev`. The Pages project
+(`blessyourpaws-website-repo.pages.dev`) still exists and still builds from `main`;
+retire it once the domain is attached to the Worker, so there is no ambiguity about which
+host is live.
+
+**Why a Worker rather than Pages + a separate Worker.** Both work. A separate Worker never
+needs to intercept a page request, which is exactly what `form-backend-worker` does for
+every client site. But an admin needs the opposite: a route on the same origin, protected
+by Cloudflare Access, possibly rendering a page server-side. Pages Functions could do it;
+Workers static assets is what the other project already proves out, so the patterns and the
+Access code are reusable rather than invented twice.
+
+What runs where: only `/admin`, `/admin/*` and `/api/*` cost a Worker invocation
+(`run_worker_first`). Every page, the stylesheet, the images and the PDFs are served
+straight from the edge.
+
+**`html_handling` is left at the default, and that is a decision.** It serves `/puppies`
+directly with a 200 and 307s `/puppies.html` to it, which matches this site's extensionless
+links, canonicals and sitemap. `roanoke-baptist` sets `"none"` for the opposite reason: its
+links all end in `.html` and any other mode would put a 307 in front of the whole site.
+**Match the mode to the links.** Verified on the deployed Worker: `/`, `/puppies`,
+`/our-dogs`, `/puppy-eden` and `/contact` all return 200 with no redirect, and
+`/puppies.html` returns 307 then 200.
+
+**`.assetsignore` is the real control for the internal docs.** On Pages everything in the
+output directory was served and the docs had to be redirected away, which still ships the
+file. Here they are never uploaded: 523 files of the 1268 in the tree. `.git/` is listed
+first, because without it wrangler reads the whole repository history as site assets and
+fails on a pack file far over the 25 MiB per-asset limit. This does **not** make the repo
+private; it is public on GitHub regardless, so no client confidences in tracked files.
+
+**`_headers` does not apply to responses the Worker generates**, only to served assets.
+Anything returned from `worker/index.js` sets its own headers. Verified that assets still
+get `immutable` for a year and HTML still revalidates.
+
+### Still to do for the admin
+
+- [ ] Connect Workers Builds so `main` deploys automatically, the same push-to-deploy the
+      Pages project has. This is the "Create a Worker → Connect to Git" flow in the
+      dashboard, which is the screen that was confusing earlier: it was the right wizard
+      for this, and the wrong one for Pages.
+- [ ] Create the Cloudflare Access application covering `/admin` on the production
+      hostname, then add `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` to `wrangler.jsonc`. The
+      Zero Trust team domain already in use is `shy-truth-7b36`.
+- [ ] Verify the Access JWT in the Worker as a second line of defence, not the only one.
+      `roanoke-website-repo/worker/access.js` is the working example to copy.
+- [ ] `preview_urls` is off deliberately: a preview hostname is not covered by an Access
+      application scoped to the production hostname.
+
 ## Deployment runbook — Cloudflare Pages, email send and forward
 
 Ordered, and split by what actually blocks what. **Email does not depend on moving the
