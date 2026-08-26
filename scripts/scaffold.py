@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 60
+V = 61
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -1685,7 +1685,7 @@ def build_pages():
       parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
                   [("Weight", "22 lbs"), ("Color", "Blue merle parti"),
                    ("Born", "January 21, 2024")]) +
-      parent_card("cavalier-sire-01", "Our Cavalier sire", "Dad",
+      parent_card("cavalier-sire-01", "Bip Finch", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
                    # "Clear" was retracted from his detail row and his FAQ answer for want
@@ -1747,6 +1747,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
@@ -1810,7 +1811,7 @@ def build_pages():
       <div class="hero-copy">
         <p class="eyebrow">Family-raised in Warsaw and Winona Lake</p>
         <h1>{BREEDS_SHORT} puppies raised in the middle of real family life</h1>
-        <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else '<a href="what-is-a-munchkin-bernedoodle.html">Munchkin Bernedoodles</a>'} underfoot in our homes, around our kids, the vacuum, the doorbell,
+        <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else '<a href="what-is-a-munchkin-bernedoodle.html">Munchkin Bernedoodles</a>'} underfoot in our homes, around our nieces and nephews, the vacuum, the doorbell,
           and everything else a family sounds like. {CHIP_SAMPLE}</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="puppies.html">See available puppies</a>
@@ -1851,7 +1852,7 @@ def build_pages():
       and pans, the vacuum. Early neurological stimulation starts in the first weeks,
       and grass potty training starts before go-home.</p>
     <p>Each puppy leaves with a vet exam, current vaccinations, a health record, a bag
-      of the food they know, and a toy that smells like home.
+      of the food they know, a blanket, and toys that smell like home.
       <a href="process.html">See how reserving works</a>.</p>
   </div>
 </div></section>
@@ -1898,6 +1899,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
@@ -1939,6 +1941,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${D_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{D_BORN}</span></li>
         <li><span class="k">Status</span><span class="v">Ready now</span></li>
         <li><span class="k">Registration</span><span class="v">AKC</span></li>
@@ -1991,10 +1994,10 @@ def build_pages():
        "<a href=\"our-dogs.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Our Cavalier sire is AKC registered and we are gathering his panel to publish the same way. " + CHIP_DRAFT
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
-       "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, and a toy."
+       "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
        + (" Doberman puppies also come with AKC registration, a one year genetic health guarantee, microchipping, tail docked and dew claws removed." if SHOW_DOBERMANS else "")),
       ("How do I reserve one, and is the deposit refundable?",
-       "A $500 deposit reserves your puppy. It applies to your balance and is transferable to another available puppy if your plans change. Our refund terms are being finalised, so ask us before you put a deposit down and we will tell you plainly."),
+       "A $500 deposit reserves your puppy and applies to your balance. The deposit is non-refundable. If you change your mind about which puppy, you can move it to another available puppy."),
     ]
     faq_ld = json.dumps({"@context": "https://schema.org", "@type": "FAQPage",
       "mainEntity": [{"@type": "Question", "name": q,
@@ -2101,7 +2104,7 @@ def build_pages():
           "records/troy-wisdom-panel-2026-02-21.pdf"),
          ("OFA eye certificate (PDF)",
           "records/troy-ofa-eyes-2026-08-14.pdf")], first=True) +
-      dog_row("cavalier-sire-01", "Our Cavalier sire", "Cavalier King Charles Spaniel",
+      dog_row("cavalier-sire-01", "Bip Finch", "Cavalier King Charles Spaniel",
         None,
         "Our sire is an AKC-registered ruby Cavalier, 19 lbs, and the reason these "
         "puppies are as small and as calm as they are. The Cavalier side is where the "
@@ -2195,7 +2198,7 @@ def build_pages():
     <div class="hic-copy">
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
         northern Indiana homes. {'Hope raises the Munchkin Bernedoodles and Joy raises the Doberman Pinschers, and every litter' if SHOW_DOBERMANS else 'Every litter'} is raised the same way: in the house,
-        around our kids, in the middle of everything. {CHIP_SAMPLE}</p>
+        around our nieces and nephews, in the middle of everything. {CHIP_SAMPLE}</p>
       <p>We grew up in a big family where there was always something cooking and
         someone at the door, and our puppies grow up the same way. By the time a puppy
         leaves us it has heard the vacuum, the doorbell, and a houseful of children,
@@ -2287,14 +2290,15 @@ def build_pages():
        f"A ${DEPOSIT} deposit holds your puppy while they finish growing up with us. It "
        "applies to your balance, and it is transferable to another available puppy if "
        "your plans change.",
-       f'Refund terms are being finalised. {CHIP_DRAFT}'),
+       'The deposit is non-refundable. You can move it to another available puppy.'),
       ("Watch them grow", "jericho-02",
        "We send photos and updates right up to go-home day, and you can ask for more "
        "any time. Plenty of families end up on a first-name basis with us before they "
        "ever pick the puppy up.",
        "Ask us anything in between. We would rather over-communicate."),
       ("Go-home day", "shiloh-02",
-       "Puppies go home from eight weeks, after their final vet check. You leave with the "
+       "Puppies go home at eight weeks or after, once they have had their vet check. You "
+       "leave with the "
        "health records, the paperwork, and a puppy who already knows what a family sounds "
        "like.",
        f'Pickup is by appointment. Delivery options are being finalised. {CHIP_DRAFT}'),
