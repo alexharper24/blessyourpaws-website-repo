@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 81
+V = 83
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1919,7 +1919,7 @@ def build_pages():
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
 
     page("index.html", f"{BREEDS_SHORT} Puppies in Indiana | {BRAND}",
-      f"Family-raised {BREEDS_PHRASE} puppies from two sisters in northern Indiana. Raised in the home, around kids, with early socialization.",
+      f"Family-raised {BREEDS_PHRASE} puppies from two sisters in northern Indiana. Raised in the home, around nieces and nephews, with early socialization.",
       f"""<section class="hero">
   <div class="hero-drift">
     <div class="hero-photo">
@@ -2942,7 +2942,8 @@ def build_pages():
       {reserve_block}
       <h3>About {name}</h3>
       <p>{name} is a {colour.lower()} {sex.lower()} growing up in the house, handled
-        every day, around kids and other dogs, with early neurological stimulation
+        every day, around nieces and nephews and other dogs, with early neurological
+        stimulation
         from the first weeks. Ask us anything about {him}; we are happy to send more
         photos or hop on a video call.</p>
       {share_row(name, f'puppy-{slug}.html', f'img/puppies/{lead(slug)}.jpg')}
