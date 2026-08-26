@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 72
+V = 73
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -594,7 +594,9 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .ack{display:flex;gap:.7rem;align-items:flex-start;padding:.5rem 0;font-size:.95rem}
 .ack + .ack{border-top:1px solid var(--rule)}
 .ack input{margin-top:.28rem;width:1.15rem;height:1.15rem;flex:none}
-.apply-gate{margin:.35rem 0 .25rem}
+/* .35rem/.25rem left the button cramped between two paragraphs that both use a 1rem
+   rhythm. Match the rhythm instead of inventing a tighter one. */
+.apply-gate{margin:1.1rem 0 1.15rem}
 
 /* ---------- share row ---------- */
 .share-row{display:flex;gap:.8rem;margin-top:1.75rem;align-items:center;flex-wrap:wrap}
@@ -626,6 +628,16 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 
 /* ---------- forms ---------- */
 form{display:flex;flex-direction:column;gap:1rem;max-width:36rem}
+/* A submit button is a flex item of that column, and a flex item BLOCKIFIES: the .btn
+   rule's inline-flex becomes flex, and the default align-items:stretch then runs it the
+   full width of the form. At 576px that reads as a banner rather than a button, and no
+   width rule exists to find, which is what made it puzzling. align-self is the fix.
+   Full width is right on a phone, where a stacked CTA should fill its container, so the
+   stretch comes back below the breakpoint. */
+form button[type=submit]{align-self:flex-start}
+@media (max-width:900px){form button[type=submit]{align-self:stretch}}
+/* the form is a flex container, so its gap does not reach a sibling paragraph after it */
+form + .fine,form + p{margin-top:1.35rem}
 /* a bordered card keeps the form visually anchored beside a facts column instead
    of floating as loose fields */
 .formcard{background:var(--card,#fff);border:1.5px solid var(--rule);border-radius:5px;
