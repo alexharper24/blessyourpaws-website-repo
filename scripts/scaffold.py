@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 65
+V = 66
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -1689,7 +1689,7 @@ def build_pages():
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
                    # "Clear" was retracted from his detail row and his FAQ answer for want
                    # of a document. It survived here, on ten pages, saying the opposite.
-                   ("Genetic testing", "Panel being gathered")],
+                   ("Genetic testing", "Clear, results being gathered")],
                   "His registered name is being added. " + CHIP_DRAFT))
     D_PARENTS = (
       parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
@@ -1990,7 +1990,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "<a href=\"our-dogs.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Our Cavalier sire is AKC registered and we are gathering his panel to publish the same way. " + CHIP_DRAFT
+       "<a href=\"our-dogs.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way. " + CHIP_DRAFT
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
@@ -2109,11 +2109,15 @@ def build_pages():
         "Bip Finch is an outside stud rather than one of our own dogs. We chose him "
         "carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, "
         "and the Cavalier side is where the lap-dog nature comes from.",
-        [("Registration:", "AKC registered."),
+        [("Registration:", "AKC registered, TS65827904."),
          ("Weight:", "19 lbs, ruby, born December 24, 2024."),
-         ("Genetic testing:", "we are gathering his panel and will link it here in full, "
-          "the same way we have for Troy. Until it is in our hands we are not going to "
-          "characterise his results. " + CHIP_DRAFT)],
+         # Hope's own statement, given 2026-08-26. She has seen his results; what she does
+         # not yet have is a legible copy to publish, because his breeder can only fax.
+         # CDDY is named because it is the one that matters here: Troy carries a copy and
+         # it takes only one to pass on, so his status is the question a buyer should ask.
+         ("Genetic testing:", "clear, including for chondrodystrophy (CDDY). We are "
+          "gathering his full results to publish here the same way we publish Troy&rsquo;s. "
+          + CHIP_DRAFT)],
         []))
     D_DOGS = (
       dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",

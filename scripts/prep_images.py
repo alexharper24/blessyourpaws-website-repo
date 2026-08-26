@@ -2,6 +2,17 @@
 """Split the Bernedoodle parents out of the puppy galleries, then regenerate
 every derivative.
 
+    !!  DO NOT RUN THIS AGAIN WITHOUT READING THIS PARAGRAPH.  !!
+
+This script is DESTRUCTIVE and it is now STALE. main() deletes img/dogs and img/puppies
+outright and rebuilds them from source-photos/puppy-connection. The repo has since gained
+images that do not come from that scrape: Tirzah's three photos, the Hope and Joy portrait
+and its derivatives, img/dogs/archive, and Hope's own photo of the sire. Running it on
+2026-08-26 destroyed 21 tracked files, recovered with `git checkout HEAD -- img/`.
+
+If you need to re-derive ONE image, do that one image. Do not run main().
+
+
 Puppy Connection repeats the same two parent photos in all seven puppy
 galleries. Detected by content hash, not by eye or by index: whichever files
 appear in every gallery are the parents.
