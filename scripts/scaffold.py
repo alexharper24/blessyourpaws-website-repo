@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 76
+V = 78
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -579,7 +579,13 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 /* Solid, not dashed. A dashed outline is the visual language of a placeholder, which is
    the wrong signal on the one box that asks for $500. */
 .reserve{background:var(--paper-raise);border:1px solid var(--sage-light);
-  border-radius:6px;padding:1.5rem;margin:1.75rem 0}
+  border-radius:6px;padding:1.25rem 1.3rem;margin:1.5rem 0}
+.reserve h3{margin-bottom:.35rem}
+/* The reserve box sits in the narrow puppy-info column, about 353px of usable width, so
+   there is no room to put the button beside the text. Filling the column is the next best
+   use of the space: it removed a ragged 127px gap to the right of a 227px button. */
+.apply-gate{display:grid}
+.apply-gate .btn{width:100%;justify-content:center}
 /* The block was a heading and then nothing but small grey text, so it had two extremes
    and no middle. The terms line is the commercial fact and reads at body size. */
 .reserve .terms{font-size:1rem;color:var(--forest);margin:0 0 .2rem}
@@ -2821,10 +2827,8 @@ def build_pages():
         else:
             reserve_block = f'''<div class="reserve">
         <h3>Reserve {name}</h3>
-        <p class="terms">A ${DEPOSIT} deposit holds {him} until go-home day, and a
-          short <a href="apply.html">application</a> comes first.</p>
-        <p class="fine">${M_PRICE:,} plus sales tax. Paying by card adds
-          {CARD_FEE_PCT}.</p>
+        <p class="terms">A ${DEPOSIT} deposit holds {him}. ${M_PRICE:,} plus sales tax,
+          and {CARD_FEE_PCT} if you pay by card.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
