@@ -381,7 +381,15 @@ OneDrive-synced Documents, so it follows the account to other machines. The actu
 reorder or remove the stale `Admin-AlexHarper` nvm entries in the Machine PATH, which needs
 the admin account.
 
-### 1. Create the Pages project — dashboard, not CLI
+### 1. Hosting — SUPERSEDED 2026-08-25, the host is a Worker
+
+The site is served by the `blessyourpaws` Worker, not by Pages. See "Hosting:
+Workers static assets" above for the reasoning and the verified behaviour. The
+Pages project was deleted on 2026-08-25 so there is no ambiguity about which host
+is live. What remains from this step is connecting Workers Builds so `main`
+deploys automatically.
+
+Historic detail, kept because the reasoning still applies to the next static site:
 
 `wrangler pages deploy` can only do **direct upload**, and a direct-upload project
 **cannot be converted to Git-connected later**. Doing it the quick way burns the project
@@ -455,19 +463,12 @@ usable without anyone buying a mailbox.
       routing config. The Worker notifies `info@blessyourpawspuppies.com` and Routing
       decides where that lands, so her personal address never needs to be in a public file
       and must not be added to one.
-- [ ] **Waiting on Hope to click the verification link.** Creating the forwarding rule fails
-      with `Destination address is not verified [code: 2054]` until she does. Worth giving
-      her a heads-up so a Cloudflare email is not a surprise.
-- [ ] Then create the rule:
-
-```bash
-npx wrangler email routing rules create blessyourpawspuppies.com \
-  --name "info to Hope" \
-  --match-type literal --match-field to --match-value info@blessyourpawspuppies.com \
-  --action-type forward --action-value <hope-gmail>
-```
-
-- [ ] Send a test to `info@` and confirm it lands.
+- [x] **DONE 2026-08-26. Hope verified her address** (00:02 UTC) and the forwarding rule
+      is live: `info@blessyourpawspuppies.com` → her Gmail, rule
+      `6be02efe1e204b00a7a856705c17bca0`, enabled.
+- [x] Catch-all is **disabled and set to drop**, which is what we want: only `info@`
+      forwards and nothing else on the domain leaks through to her inbox.
+- [ ] Send a test to `info@` and confirm it lands (worth doing before anyone relies on it).
 
 Routing adds MX records for the zone. Note the consequence: **once MX points at Cloudflare,
 all mail for the domain flows through Routing**, so any future mailbox has to be set up
