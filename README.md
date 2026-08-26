@@ -221,7 +221,21 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 
 ### Technical
 
-- [ ] Contact form backend: Formspree ID, or the shared `form-backend-worker`.
+- [x] **DONE 2026-08-26. Formspree, activated.** Inquiry `mnpaegkw`, waitlist `xbgrnzvq`,
+      held in `FORM_INQUIRY` / `FORM_WAITLIST`. Notifications go to
+      `info@blessyourpawspuppies.com`, which Email Routing forwards to Hope.
+      **Chosen over the Worker deliberately:** the Worker's notification is a Cloudflare
+      Email Sending call, and Email Sending requires the Workers Paid plan ($5/mo) — which
+      is what the `Unauthorized [code: 2036]` was all along, not scopes and not onboarding.
+      Formspree is free at 50 submissions a month, which is not a constraint for one
+      litter, and unlike a pure relay it keeps its own copy of every submission, so a lead
+      survives an email being spam-filtered.
+
+      The trade, recorded so it can be revisited: a third party sees buyer names, emails,
+      phone numbers and what families write about their children, and the submission
+      archive lives under Formspree's retention rather than ours. Moving to the Worker
+      later means Workers Paid, a Turnstile widget, and pointing the two form actions at
+      it — `blessyourpaws` is already registered in the Worker's `SITES`.
 - [ ] Stripe account (Hope's). **Stripe does not require an LLC** — sole proprietors
       can open an account with an SSN. Whether she *should* form one is a liability
       and tax question for an attorney or CPA, not for this project.
@@ -318,10 +332,33 @@ get `immutable` for a year and HTML still revalidates.
 
 ### Still to do for the admin
 
-- [ ] Connect Workers Builds so `main` deploys automatically, the same push-to-deploy the
-      Pages project has. This is the "Create a Worker → Connect to Git" flow in the
-      dashboard, which is the screen that was confusing earlier: it was the right wizard
-      for this, and the wrong one for Pages.
+- [x] **DONE 2026-08-26. Workers Builds connected** to `alexharper24/blessyourpaws-website-repo`
+      on `main`, so a push deploys. Settings, for when the next site needs this:
+
+      | Field | Value |
+      |---|---|
+      | Build command | *empty* (no build step, the HTML is committed) |
+      | Deploy command | `npx wrangler deploy` |
+      | Path | `/` |
+      | Enable Preview builds | **off** |
+
+      **Preview builds are off deliberately.** `preview_urls` is `false` in
+      `wrangler.jsonc`, so the non-production deploy command would create versions with no
+      URL to open: build minutes spent on something unviewable. There is also only `main`
+      in this repo, so nothing would trigger it. Revisit with the admin, together with
+      whether Access can cover a preview hostname.
+
+      **Give each project its own build token.** The dashboard offered a token named for
+      another project. Reusing it couples the two: rotating or revoking it for one silently
+      breaks the other's deploys, and the name stops meaning anything. This Worker needs
+      exactly **Account → Workers Scripts → Edit** and nothing else, since its only binding
+      is static assets, which upload as part of the script. Add D1 or R2 permissions only
+      when a binding actually appears.
+
+      **Ignore the dashboard's permissions warning if it names email_routing.** This Worker
+      declares no email bindings. The warning compares the token against what a Worker
+      could need, not against what yours declares, and granting email permissions to a
+      static-site build token is access for no reason.
 - [ ] Create the Cloudflare Access application covering `/admin` on the production
       hostname, then add `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` to `wrangler.jsonc`. The
       Zero Trust team domain already in use is `shy-truth-7b36`.
