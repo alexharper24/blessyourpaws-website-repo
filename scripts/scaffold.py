@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 85
+V = 87
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -38,9 +38,19 @@ EMAIL = "info@blessyourpawspuppies.com"
 FORM_INQUIRY  = "https://formspree.io/f/mnpaegkw"
 FORM_WAITLIST = "https://formspree.io/f/xbgrnzvq"
 FORM_APPLY    = "https://formspree.io/f/xppavger"
-# Card fee, stated as the rate rather than a total, because the total moves with the price
-# and a wrong number on a price is worse than no number. 2.9% of 2000 is $58.
-CARD_FEE_PCT  = "2.9%"
+# Dual pricing (Alex, 2026-08-26). The LIST price is the card price and paying by check or
+# cash earns a discount. The two numbers are the same either way; the framing is not.
+#
+# A cash DISCOUNT is permitted in every state, has no rate cap, needs no notice to the card
+# networks, and draws no distinction between debit and credit. A card SURCHARGE brings all
+# of that in, and the debit part is disqualifying on its own: surcharging a debit card is
+# not allowed, and a Stripe Payment Link cannot tell debit from credit before the payment
+# goes through. Same money, none of the regime. Do not invert this into "price plus a card
+# fee" without reading that again.
+#
+# Do NOT enable ACH or bank debit on the Stripe link that charges M_PRICE. The reasoning
+# above holds only while every payment through it is a card.
+M_PRICE_CASH  = 2000
 AREA = "northern Indiana"   # visible copy. Precise towns stay in areaServed schema.
 COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
@@ -88,7 +98,8 @@ def dob(html):
     """Emit this markup only while the Doberman line is on."""
     return html if SHOW_DOBERMANS else ""
 
-M_PRICE, D_PRICE, DEPOSIT = 2000, 2200, 500
+M_PRICE, D_PRICE, DEPOSIT = 2060, 2200, 500   # M_PRICE is the card/list price
+CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
 M_BORN, M_HOME = "July 22, 2026", "September 16, 2026"
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
@@ -1865,6 +1876,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Check or cash</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
@@ -2017,6 +2029,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Check or cash</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
@@ -2059,6 +2072,7 @@ def build_pages():
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${D_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Check or cash</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{D_BORN}</span></li>
         <li><span class="k">Status</span><span class="v">Ready now</span></li>
@@ -2480,8 +2494,9 @@ def build_pages():
   {img_tag('eden-03', cls='framed hic-photo', alt='A Munchkin Bernedoodle puppy')}
   <div class="hic-copy">
     <p><strong>How do payments work?</strong> The ${DEPOSIT} deposit reserves your puppy
-      online. The balance is due before or at pickup, and most families pay it by check
-      or bank transfer. {CHIP_DRAFT}</p>
+      online and comes off the balance. The balance is due before or at pickup. The price
+      is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} if you pay the balance by check
+      or cash, so paying that way saves you ${CASH_DISCOUNT}.</p>
     <p><strong>Can we visit first?</strong> Yes, and we encourage it. Video calls work
       well for families further away.</p>
     <p><strong>Will my puppy shed?</strong> It varies by puppy, even in one litter. We
@@ -2611,7 +2626,7 @@ def build_pages():
       change my mind about which puppy, it can be moved to another available puppy.</span></label>
     <label class="ack"><input type="checkbox" name="ack_price" value="yes" required>
       <span>I understand the price is ${M_PRICE:,}, that <strong>sales tax is added</strong>,
-      and that paying by card adds a {CARD_FEE_PCT} processing fee.</span></label>
+      and that paying by check or cash is ${M_PRICE_CASH:,}.</span></label>
     <label class="ack"><input type="checkbox" name="ack_home" value="yes" required>
       <span>I understand puppies go home at <strong>eight weeks or after</strong>, and that
       if a puppy is returned to us the purchase price is not refunded except where our
@@ -2774,9 +2789,10 @@ def build_pages():
   <p>This agreement is between Bless Your Paws Puppies and the buyer named at
     reservation, for the puppy identified by name and litter.</p>
   <ul>
-    <li><strong>Price and deposit.</strong> The purchase price is the listed price of
-      the puppy. A ${DEPOSIT} deposit reserves the puppy and is applied to the
-      balance. The balance is due before or at pickup.</li>
+    <li><strong>Price and deposit.</strong> The purchase price is ${M_PRICE:,}, or
+      ${M_PRICE_CASH:,} where the balance is paid by check or cash. Sales tax is added.
+      A ${DEPOSIT} deposit reserves the puppy and is applied to the balance. The balance
+      is due before or at pickup.</li>
     <li><strong>Deposit terms.</strong> The deposit is transferable to another
       available puppy if plans change. The deposit is non-refundable.</li>
     <li><strong>Go-home.</strong> Puppies go home no earlier than 8 weeks of age,
@@ -2854,7 +2870,7 @@ def build_pages():
             reserve_block = f'''<div class="reserve">
         <h3>Reserve {name}</h3>
         <p class="terms">A ${DEPOSIT} deposit holds {him}. ${M_PRICE:,} plus sales tax,
-          and {CARD_FEE_PCT} if you pay by card.</p>
+          or ${M_PRICE_CASH:,} by check or cash.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
