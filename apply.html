@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="robots" content="noindex, nofollow">
+<title>Puppy Application | Bless Your Paws</title>
+<meta name="description" content="A short application comes before a deposit. Tell us about your home and acknowledge the terms, and we will be in touch.">
+<link rel="canonical" href="https://alexharper24.github.io/blessyourpaws-website-repo/apply">
+<meta property="og:title" content="Puppy Application | Bless Your Paws">
+<meta property="og:description" content="A short application comes before a deposit. Tell us about your home and acknowledge the terms, and we will be in touch.">
+<meta property="og:image" content="https://alexharper24.github.io/blessyourpaws-website-repo/img/og-card.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.ico?v=72" sizes="any">
+<link rel="icon" href="img/favicon.png?v=72" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=72">
+<link rel="preload" href="fonts/lora-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/mulish-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=72">
+</head>
+<body>
+<header class="site-head"><div class="wrap head-row">
+  <a class="brand" href="/" aria-label="Bless Your Paws Puppies, home">
+    <img src="img/brand/logo-primary.png?v=72"
+      srcset="img/brand/logo-primary-60.png?v=274a03d4 202w, img/brand/logo-primary-84.png?v=dfbdf136 283w, img/brand/logo-primary-120.png?v=d8d036f9 404w, img/brand/logo-primary-168.png?v=725a5c20 566w"
+      sizes="(max-width:900px) 145px, 190px"
+      alt="Bless Your Paws Puppies" width="1596" height="474" decoding="async">
+  </a>
+  <button class="nav-toggle" aria-expanded="false" aria-label="Open menu">Menu</button>
+  <nav class="nav" aria-label="Main">
+  <a href="puppies">Puppies</a>
+  <a href="what-is-a-munchkin-bernedoodle">Breed Guide</a>
+
+  <a href="parents">Parents</a>
+  <a href="gallery">Gallery</a>
+  <a href="about">About</a>
+  <a href="process">How It Works</a>
+  <a href="contact">Contact</a>
+  <a class="nav-cta" href="waitlist">Join the Waitlist</a>
+</nav>
+</div></header>
+<main>
+<section><div class="wrap prose">
+  <p class="eyebrow">Before a deposit</p>
+  <h1>Puppy application</h1>
+  <p class="lede">This comes before a deposit, and it is short on purpose. It tells us
+    who a puppy would be going home to, and it puts the terms in front of you so nothing
+    about them is a surprise later.</p>
+
+  <form data-guard data-applied action="https://formspree.io/f/xppavger" method="POST">
+  <input type="hidden" name="_subject" value="New puppy application from your website">
+  <div style="position:absolute;left:-9999px" aria-hidden="true">
+      <label for="a-hp">Leave this field empty</label>
+      <input id="a-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
+    
+  <div class="field"><label for="aname">Your name</label>
+    <input id="aname" name="name" required></div>
+  <div class="field"><label for="aemail">Email</label>
+    <input id="aemail" name="email" type="email" required></div>
+  <div class="field"><label for="aphone">Phone</label>
+    <input id="aphone" name="phone" required></div>
+  <div class="field"><label for="apup">Which puppy are you interested in?</label>
+    <input id="apup" name="puppy" placeholder="A name, or tell us you are still deciding"></div>
+  <div class="field"><label for="awhen">This litter, or a future one?</label>
+    <select id="awhen" name="timing">
+      <option>This litter</option>
+      <option>A future litter</option>
+      <option>Either, whichever fits</option>
+    </select></div>
+  <div class="field"><label for="ahome">Who is at home?</label>
+    <input id="ahome" name="household"
+      placeholder="Adults, and the ages of any children"></div>
+  <div class="field"><label for="apets">Any other pets?</label>
+    <input id="apets" name="pets" placeholder="Dogs, cats, or none"></div>
+  <div class="field"><label for="aplace">Where will the puppy live?</label>
+    <select id="aplace" name="home_type">
+      <option>House with a yard</option>
+      <option>House without a yard</option>
+      <option>Apartment or condo</option>
+      <option>Farm or acreage</option>
+    </select></div>
+  <div class="field"><label for="aexp">Have you raised a puppy before?</label>
+    <select id="aexp" name="experience">
+      <option>Yes</option>
+      <option>No, this is our first</option>
+      <option>Not for a long time</option>
+    </select></div>
+  <div class="field"><label for="apurpose">Is this a family companion, or are you hoping to breed?</label>
+    <select id="apurpose" name="purpose">
+      <option>Family companion</option>
+      <option>Hoping to breed</option>
+      <option>Not sure yet</option>
+    </select></div>
+  <div class="field"><label for="apickup">Picking up in person?</label>
+    <select id="apickup" name="pickup">
+      <option>Yes, we will come to you</option>
+      <option>We would need help with travel</option>
+    </select></div>
+  <div class="field"><label for="anote">Anything you would like us to know?</label>
+    <textarea id="anote" name="message" rows="3"></textarea></div>
+
+  <fieldset class="acks">
+    <legend>Please read and check each one</legend>
+    <label class="ack"><input type="checkbox" name="ack_deposit" value="yes" required>
+      <span>I understand the $500 deposit is <strong>non-refundable</strong>. If I
+      change my mind about which puppy, it can be moved to another available puppy.</span></label>
+    <label class="ack"><input type="checkbox" name="ack_price" value="yes" required>
+      <span>I understand the price is $2,000, that <strong>sales tax is added</strong>,
+      and that paying by card adds a 2.9% processing fee.</span></label>
+    <label class="ack"><input type="checkbox" name="ack_home" value="yes" required>
+      <span>I understand puppies go home at <strong>eight weeks or after</strong>, and that
+      if a puppy is returned to us the purchase price is not refunded except where our
+      <a href="health-guarantee">written health guarantee</a> provides otherwise.</span></label>
+    <label class="ack"><input type="checkbox" name="ack_adult" value="yes" required>
+      <span>I am 18 or older, and the answers above are my own.</span></label>
+  </fieldset>
+
+  <button class="btn btn-primary" type="submit">Send application</button>
+  <p class="guard-msg">The form is almost ready. For now, call or text Hope at
+    <a href="tel:5743778023">(574) 377-8023</a> and we will get right back to you.</p>
+  </form>
+
+  <p class="fine">The <a href="purchase-agreement">purchase agreement</a> and the
+    <a href="health-guarantee">health guarantee</a> are the documents that govern a
+    sale. Read them before you send a deposit, and ask us about anything in them.</p>
+</div></section>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <div class="foot-top">
+    <div class="foot-brand">
+      <img src="img/brand/mark-paw-heart.png?v=c80aa989" alt="">
+      <span><span class="fb-name">Bless Your Paws</span>
+        <span class="fb-sub">Puppies</span></span>
+    </div>
+    <div class="foot-grid">
+      <div><h3>Our puppies</h3><ul>
+        <li><a href="puppies">All available puppies</a></li>
+        <li><a href="puppies">Munchkin Bernedoodles</a></li>
+
+        <li><a href="what-is-a-munchkin-bernedoodle">What is a Munchkin Bernedoodle?</a></li>
+        <li><a href="gallery">Photo gallery</a></li>
+        <li><a href="reviews">Reviews</a></li>
+      </ul></div>
+      <div><h3>Before you visit</h3><ul>
+        <li><a href="process">How it works</a></li>
+        <li><a href="parents">The parents and their health</a></li>
+        <li><a href="about">About Hope and Joy</a></li>
+        <li><a href="waitlist">Join the waitlist</a></li>
+        <li><a href="health-guarantee">Health guarantee</a></li>
+        <li><a href="purchase-agreement">Purchase agreement</a></li>
+      </ul></div>
+      <div><h3>Get in touch</h3><ul>
+        <li>Hope<br><a href="tel:5743778023">(574) 377-8023</a></li>
+
+        <li><a href="mailto:info@blessyourpawspuppies.com">info@blessyourpawspuppies.com</a></li>
+        <li>northern Indiana</li>
+        <li class="fine">Visits by appointment. Our location is shared once your
+          visit is scheduled.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="foot-legal">
+    <span>&copy; 2026 Bless Your Paws Puppies. Site by <a href="https://harperstudio.co/">Harper Studio</a>.</span>
+    <span><a href="privacy-policy">Privacy</a></span>
+  </div>
+</div></footer>
+<script src="main.js?v=72" defer></script>
+</body>
+</html>

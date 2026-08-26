@@ -482,6 +482,15 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    the error state keeps forest type and only changes the ground, because white on either
    pink is under 2:1 and is forbidden in this palette. */
 .guard-msg.is-error{background:var(--rose)}
+/* Acknowledgements. Each one is a real sentence a person can read, not a wall with one
+   checkbox at the bottom, because the whole point is that they saw the terms. */
+.acks{border:1.5px solid var(--forest);border-radius:4px;padding:1.1rem 1.2rem;
+  margin:1.5rem 0 1.25rem;background:var(--paper-raise)}
+.acks legend{font-weight:700;padding:0 .45rem}
+.ack{display:flex;gap:.7rem;align-items:flex-start;padding:.5rem 0;font-size:.95rem}
+.ack + .ack{border-top:1px solid var(--rule)}
+.ack input{margin-top:.28rem;width:1.15rem;height:1.15rem;flex:none}
+.apply-gate{margin:.35rem 0 .25rem}
 
 /* ---------- share row ---------- */
 .share-row{display:flex;gap:.8rem;margin-top:1.75rem;align-items:center;flex-wrap:wrap}

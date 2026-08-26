@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 69
+V = 72
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -32,6 +32,10 @@ EMAIL = "info@blessyourpawspuppies.com"
 # putting real ids here is what takes the forms live. Put REPLACE back to disable them.
 FORM_INQUIRY  = "https://formspree.io/f/mnpaegkw"
 FORM_WAITLIST = "https://formspree.io/f/xbgrnzvq"
+FORM_APPLY    = "https://formspree.io/f/xppavger"
+# Card fee, stated as the rate rather than a total, because the total moves with the price
+# and a wrong number on a price is worse than no number. 2.9% of 2000 is $58.
+CARD_FEE_PCT  = "2.9%"
 AREA = "northern Indiana"   # visible copy. Precise towns stay in areaServed schema.
 COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
@@ -582,6 +586,15 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    the error state keeps forest type and only changes the ground, because white on either
    pink is under 2:1 and is forbidden in this palette. */
 .guard-msg.is-error{background:var(--rose)}
+/* Acknowledgements. Each one is a real sentence a person can read, not a wall with one
+   checkbox at the bottom, because the whole point is that they saw the terms. */
+.acks{border:1.5px solid var(--forest);border-radius:4px;padding:1.1rem 1.2rem;
+  margin:1.5rem 0 1.25rem;background:var(--paper-raise)}
+.acks legend{font-weight:700;padding:0 .45rem}
+.ack{display:flex;gap:.7rem;align-items:flex-start;padding:.5rem 0;font-size:.95rem}
+.ack + .ack{border-top:1px solid var(--rule)}
+.ack input{margin-top:.28rem;width:1.15rem;height:1.15rem;flex:none}
+.apply-gate{margin:.35rem 0 .25rem}
 
 /* ---------- share row ---------- */
 .share-row{display:flex;gap:.8rem;margin-top:1.75rem;align-items:center;flex-wrap:wrap}
@@ -1034,6 +1047,22 @@ JS = """// Bless Your Paws Puppies - v2
   });
 
   // ---- guard: payment links stay friendly until the real Stripe links exist
+  // ---- the application gate. Friction and a scam filter, NOT enforcement: the Stripe
+  // links are reachable directly and this flag is trivially set by anyone who cares. It
+  // exists so that a deposit is not the first thing a stranger does.
+  var APPLIED = 'byp-applied';
+  function applied(){
+    try { return sessionStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }
+  }
+  if (applied()){
+    document.querySelectorAll('.reserve .pay-row[hidden]').forEach(function(r){
+      r.removeAttribute('hidden');
+    });
+    document.querySelectorAll('.reserve .apply-gate').forEach(function(g){
+      g.setAttribute('hidden', '');
+    });
+  }
+
   document.querySelectorAll('a.pay-link').forEach(function(a){
     if (a.href.indexOf('REPLACE') !== -1){
       a.addEventListener('click', function(e){
@@ -1073,7 +1102,14 @@ JS = """// Bless Your Paws Puppies - v2
           msg.classList.add('show');
           msg.classList.toggle('is-error', !ok);
         }
-        if (ok){ f.reset(); if (btn) btn.remove(); }
+        if (ok){
+          f.reset();
+          if (btn) btn.remove();
+          // an application unlocks the deposit buttons for the rest of this session
+          if (f.hasAttribute('data-applied')){
+            try { sessionStorage.setItem(APPLIED, '1'); } catch (e) {}
+          }
+        }
         else if (btn){ btn.disabled = false; btn.textContent = said; }
       }
       fetch(f.action, {
@@ -2301,6 +2337,11 @@ def build_pages():
        "and meet us. Ten minutes is usually enough to know. We would rather talk you out "
        "of the wrong puppy than sell you one.",
        "Visits are by appointment. Our exact location is shared once your visit is booked."),
+      ("Apply", "eden-02",
+       "A short <a href=\"apply.html\">application</a> comes before a deposit. It tells us "
+       "who the puppy would be going home to, and it puts the terms in front of you so "
+       "none of them is a surprise later.",
+       "It takes a couple of minutes."),
       ("Reserve with a deposit", "caleb-01",
        f"A ${DEPOSIT} deposit holds your puppy while they finish growing up with us. It "
        "applies to your balance, and it is transferable to another available puppy if "
@@ -2332,7 +2373,7 @@ def build_pages():
       f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">How it works</p>
   <h1>From first hello to go-home day</h1>
-  <p class="lede" style="max-width:68ch">Five steps, no pressure, and a real
+  <p class="lede" style="max-width:68ch">Six steps, no pressure, and a real
     conversation somewhere in the middle. Here is exactly what happens, so nothing
     about buying a puppy from us is a surprise.</p>
 </div></section>
@@ -2424,6 +2465,91 @@ def build_pages():
 </div></section>
 
 """)
+
+    page("apply.html", f"Puppy Application | {BRAND}",
+      f"A short application comes before a deposit. Tell us about your home and "
+      f"acknowledge the terms, and we will be in touch.",
+      f"""<section><div class="wrap prose">
+  <p class="eyebrow">Before a deposit</p>
+  <h1>Puppy application</h1>
+  <p class="lede">This comes before a deposit, and it is short on purpose. It tells us
+    who a puppy would be going home to, and it puts the terms in front of you so nothing
+    about them is a surprise later.</p>
+
+  <form data-guard data-applied action="{FORM_APPLY}" method="POST">
+  <input type="hidden" name="_subject" value="New puppy application from your website">
+  {hp.format(i="a")}
+  <div class="field"><label for="aname">Your name</label>
+    <input id="aname" name="name" required></div>
+  <div class="field"><label for="aemail">Email</label>
+    <input id="aemail" name="email" type="email" required></div>
+  <div class="field"><label for="aphone">Phone</label>
+    <input id="aphone" name="phone" required></div>
+  <div class="field"><label for="apup">Which puppy are you interested in?</label>
+    <input id="apup" name="puppy" placeholder="A name, or tell us you are still deciding"></div>
+  <div class="field"><label for="awhen">This litter, or a future one?</label>
+    <select id="awhen" name="timing">
+      <option>This litter</option>
+      <option>A future litter</option>
+      <option>Either, whichever fits</option>
+    </select></div>
+  <div class="field"><label for="ahome">Who is at home?</label>
+    <input id="ahome" name="household"
+      placeholder="Adults, and the ages of any children"></div>
+  <div class="field"><label for="apets">Any other pets?</label>
+    <input id="apets" name="pets" placeholder="Dogs, cats, or none"></div>
+  <div class="field"><label for="aplace">Where will the puppy live?</label>
+    <select id="aplace" name="home_type">
+      <option>House with a yard</option>
+      <option>House without a yard</option>
+      <option>Apartment or condo</option>
+      <option>Farm or acreage</option>
+    </select></div>
+  <div class="field"><label for="aexp">Have you raised a puppy before?</label>
+    <select id="aexp" name="experience">
+      <option>Yes</option>
+      <option>No, this is our first</option>
+      <option>Not for a long time</option>
+    </select></div>
+  <div class="field"><label for="apurpose">Is this a family companion, or are you hoping to breed?</label>
+    <select id="apurpose" name="purpose">
+      <option>Family companion</option>
+      <option>Hoping to breed</option>
+      <option>Not sure yet</option>
+    </select></div>
+  <div class="field"><label for="apickup">Picking up in person?</label>
+    <select id="apickup" name="pickup">
+      <option>Yes, we will come to you</option>
+      <option>We would need help with travel</option>
+    </select></div>
+  <div class="field"><label for="anote">Anything you would like us to know?</label>
+    <textarea id="anote" name="message" rows="3"></textarea></div>
+
+  <fieldset class="acks">
+    <legend>Please read and check each one</legend>
+    <label class="ack"><input type="checkbox" name="ack_deposit" value="yes" required>
+      <span>I understand the ${DEPOSIT} deposit is <strong>non-refundable</strong>. If I
+      change my mind about which puppy, it can be moved to another available puppy.</span></label>
+    <label class="ack"><input type="checkbox" name="ack_price" value="yes" required>
+      <span>I understand the price is ${M_PRICE:,}, that <strong>sales tax is added</strong>,
+      and that paying by card adds a {CARD_FEE_PCT} processing fee.</span></label>
+    <label class="ack"><input type="checkbox" name="ack_home" value="yes" required>
+      <span>I understand puppies go home at <strong>eight weeks or after</strong>, and that
+      if a puppy is returned to us the purchase price is not refunded except where our
+      <a href="health-guarantee.html">written health guarantee</a> provides otherwise.</span></label>
+    <label class="ack"><input type="checkbox" name="ack_adult" value="yes" required>
+      <span>I am 18 or older, and the answers above are my own.</span></label>
+  </fieldset>
+
+  <button class="btn btn-primary" type="submit">Send application</button>
+  <p class="guard-msg">The form is almost ready. For now, call or text Hope at
+    <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.</p>
+  </form>
+
+  <p class="fine">The <a href="purchase-agreement.html">purchase agreement</a> and the
+    <a href="health-guarantee.html">health guarantee</a> are the documents that govern a
+    sale. Read them before you send a deposit, and ask us about anything in them.</p>
+</div></section>""")
 
     page("waitlist.html", "Join the Waitlist | Bless Your Paws Puppies",
       "Hear about new litters before they are listed. Waitlist families get first pick.",
@@ -2594,9 +2720,11 @@ def build_pages():
   <h1>Privacy policy</h1>
   <p>{CHIP_DRAFT}</p>
   <p>This is a small family website. We collect only what you send us: your name and
-    contact details when you use the inquiry or waitlist forms, or when you call or
-    text. We use that information to reply to you and to manage reservations, and we
-    do not sell it or share it with anyone for marketing.</p>
+    contact details when you use the inquiry, waitlist or application forms, or when you
+    call or text. The application also asks about your household, whether there are
+    children and their ages, any other pets, and whether you have raised a puppy before,
+    so that we can answer you properly. We use all of it to reply to you and to manage
+    reservations, and we do not sell it or share it with anyone for marketing.</p>
   <p>Forms are processed by our form provider, and card payments are processed by
     Stripe on Stripe's own secure pages; card details never touch this website. This
     site does not use advertising or analytics cookies.</p>
@@ -2643,9 +2771,13 @@ def build_pages():
         else:
             reserve_block = f'''<div class="reserve">
         <h3>Reserve {name}</h3>
-        <p class="fine">A ${DEPOSIT} deposit holds {him} until go-home day. Pay the
-          deposit now, or the full amount if you prefer.</p>
-        <div class="pay-row">
+        <p class="fine">A ${DEPOSIT} deposit holds {him} until go-home day, and a short
+          <a href="apply.html">application</a> comes first. Price ${M_PRICE:,}, plus sales
+          tax, plus a {CARD_FEE_PCT} fee if you pay by card.</p>
+        <div class="apply-gate">
+          <a class="btn btn-primary" href="apply.html">Apply to reserve {name}</a>
+        </div>
+        <div class="pay-row" hidden>
           <a class="btn btn-primary pay-link" href="https://buy.stripe.com/REPLACE_DEPOSIT">Deposit &middot; ${DEPOSIT}</a>
           <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_FULL">Full payment</a>
           <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Balance</a>

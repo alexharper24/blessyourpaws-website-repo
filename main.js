@@ -88,6 +88,22 @@
   });
 
   // ---- guard: payment links stay friendly until the real Stripe links exist
+  // ---- the application gate. Friction and a scam filter, NOT enforcement: the Stripe
+  // links are reachable directly and this flag is trivially set by anyone who cares. It
+  // exists so that a deposit is not the first thing a stranger does.
+  var APPLIED = 'byp-applied';
+  function applied(){
+    try { return sessionStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }
+  }
+  if (applied()){
+    document.querySelectorAll('.reserve .pay-row[hidden]').forEach(function(r){
+      r.removeAttribute('hidden');
+    });
+    document.querySelectorAll('.reserve .apply-gate').forEach(function(g){
+      g.setAttribute('hidden', '');
+    });
+  }
+
   document.querySelectorAll('a.pay-link').forEach(function(a){
     if (a.href.indexOf('REPLACE') !== -1){
       a.addEventListener('click', function(e){
@@ -127,7 +143,14 @@
           msg.classList.add('show');
           msg.classList.toggle('is-error', !ok);
         }
-        if (ok){ f.reset(); if (btn) btn.remove(); }
+        if (ok){
+          f.reset();
+          if (btn) btn.remove();
+          // an application unlocks the deposit buttons for the rest of this session
+          if (f.hasAttribute('data-applied')){
+            try { sessionStorage.setItem(APPLIED, '1'); } catch (e) {}
+          }
+        }
         else if (btn){ btn.disabled = false; btn.textContent = said; }
       }
       fetch(f.action, {
