@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 64
+V = 65
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -90,7 +90,7 @@ M_SIZE = "15 to 20 lbs"
 # The provenance changed with the figure: 15 to 20 is narrower than anything the parents'
 # weights alone imply, so the chip no longer claims to be derived from them. It still
 # flags the number for confirmation before launch.
-SIZE_DRAFT  = ('<span class="chip chip-draft">Expected size, confirm before launch</span>')
+SIZE_DRAFT  = ''   # 15 to 20 lbs confirmed by Hope on the 2026-08-26 call
 
 M_KIT = ["Vaccination and health record", "Examination by our vet",
          "Small bag of the food they know", "Collar and leash", "A toy"]
@@ -1811,7 +1811,7 @@ def build_pages():
         <p class="eyebrow">Family-raised in northern Indiana</p>
         <h1>{BREEDS_SHORT} puppies raised in the middle of real family life</h1>
         <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else '<a href="what-is-a-munchkin-bernedoodle.html">Munchkin Bernedoodles</a>'} underfoot in our homes, around our nieces and nephews, the vacuum, the doorbell,
-          and everything else a family sounds like. {CHIP_SAMPLE}</p>
+          and everything else a family sounds like.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="puppies.html">See available puppies</a>
           <a class="btn btn-ghost" href="waitlist.html">Join the waitlist</a>
@@ -1966,7 +1966,7 @@ def build_pages():
       ("How big does a Munchkin Bernedoodle get?",
        f"Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at {M_SIZE} full grown. Size varies puppy to puppy, so ask us about the one you love."),
       ("How does a Munchkin Bernedoodle end up so small?",
-       "By breeding down through generations and crossing in a naturally smaller parent breed. Ours come from a 22 lb Mini Multi Gen Bernedoodle mother and a 19 lb Cavalier father. " + CHIP_DRAFT),
+       "By breeding down through generations and crossing in a naturally smaller parent breed. Ours come from a 22 lb Mini Multi Gen Bernedoodle mother and a 19 lb Cavalier father."),
       ("How is this different from a Mini or Micro Bernedoodle?",
        "A Mini or Micro Bernedoodle usually gets small by crossing to a smaller Poodle. A Munchkin adds Cavalier King Charles Spaniel, which brings the size down and brings the Cavalier's calm, affectionate temperament with it."),
       ("Do they shed? Are they hypoallergenic?",
@@ -2031,9 +2031,10 @@ def build_pages():
         describes small overall size. A Munchkin Bernedoodle is a little dog that keeps
         the Bernedoodle look, usually somewhere between 10 and 25 lbs full grown, where
         a standard Bernedoodle can reach 70 lbs or more.</p>
-      <p>Ours come from a small mom at 22 lbs bred to a small dad at 19 lbs. We publish
-        each parent's testing on the <a href="our-dogs.html">our dogs</a> page so you can
-        read it for yourself rather than take our word for it. {CHIP_DRAFT}</p>
+      <p>Ours come from a small mom at 22 lbs bred to a small dad at 19 lbs. Troy's full
+        panel is on the <a href="our-dogs.html">our dogs</a> page so you can read it for
+        yourself rather than take our word for it, and Bip Finch's will go up the same way
+        once we have a legible copy of it. {CHIP_DRAFT}</p>
     </div>
   </div>
 </div></section>
@@ -2091,7 +2092,7 @@ def build_pages():
         "Troy is the mother of our <a href=\"what-is-a-munchkin-bernedoodle.html\">"
         "Munchkin Bernedoodle</a> litter. At 22 lbs she is a "
         "small, easygoing girl with a blue merle parti coat, and she passes on both the "
-        "size and the temperament we breed for. " + CHIP_SAMPLE,
+        "size and the temperament we breed for.",
         [("Weight:", "22 lbs, blue merle parti, born January 21, 2024."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
@@ -2107,7 +2108,7 @@ def build_pages():
         None,
         "Bip Finch is an outside stud rather than one of our own dogs. We chose him "
         "carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, "
-        "and the Cavalier side is where the lap-dog nature comes from. " + CHIP_SAMPLE,
+        "and the Cavalier side is where the lap-dog nature comes from.",
         [("Registration:", "AKC registered."),
          ("Weight:", "19 lbs, ruby, born December 24, 2024."),
          ("Genetic testing:", "we are gathering his panel and will link it here in full, "
@@ -2197,11 +2198,11 @@ def build_pages():
     <div class="hic-copy">
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
         northern Indiana homes. {'Hope raises the Munchkin Bernedoodles and Joy raises the Doberman Pinschers, and every litter' if SHOW_DOBERMANS else 'Every litter'} is raised the same way: in the house,
-        around our nieces and nephews, in the middle of everything. {CHIP_SAMPLE}</p>
-      <p>We grew up in a big family where there was always something cooking and
-        someone at the door, and our puppies grow up the same way. By the time a puppy
-        leaves us it has heard the vacuum, the doorbell, and a houseful of children,
-        and it has been held every single day.</p>
+        around our nieces and nephews, in the middle of everything.</p>
+      <p>We grew up in a big family with dogs always underfoot, and that is where the
+        love for them started. Our puppies grow up the same way. By the time a puppy
+        leaves us it has heard the vacuum, the doorbell, and a houseful of nieces,
+        nephews and cousins, and it has been held every single day.</p>
       <p class="faith-note">We are Christians, and everything we do here we hope brings
         glory to God. If you have never heard the good news about Jesus, we would love
         for you to <a href="https://www.youtube.com/watch?v=mIeRU12STNw&amp;t=200s"
@@ -2219,8 +2220,13 @@ def build_pages():
   {img_tag('joshua-02', cls='framed hic-photo', alt='A Munchkin Bernedoodle puppy in the grass', sizes='(max-width:900px) 94vw, 56vw')}
   <div class="hic-copy">
     <p>A puppy's first eight weeks decide a lot about the dog they become. That is
-      why ours are never raised apart from the household. They meet children, other
-      dogs, the vacuum, and visitors before they ever meet you. {CHIP_SAMPLE}</p>
+      why ours are never raised apart from the household. The first weeks include early
+      neurological stimulation, and after that it is steady desensitising: new sounds,
+      new textures, new smells. The point is to build confidence, not to startle it out
+      of them.</p>
+    <p>They grow up in the room where we groom, so the blow dryer is an ordinary noise to
+      them. The vacuum runs. There is usually music on. They have hard floors under their
+      feet and time out on the deck, and grass comes a little later.</p>
     <p>We would love for you to meet the puppies, and <a href="our-dogs.html">the parents
       who live with us</a>, before you decide. Visits are by appointment, and video calls work well for families
       further away.</p>
@@ -2551,7 +2557,7 @@ def build_pages():
       the puppy. A ${DEPOSIT} deposit reserves the puppy and is applied to the
       balance. The balance is due before or at pickup.</li>
     <li><strong>Deposit terms.</strong> The deposit is transferable to another
-      available puppy if plans change. Refund terms to be confirmed. {CHIP_DRAFT}</li>
+      available puppy if plans change. The deposit is non-refundable.</li>
     <li><strong>Go-home.</strong> Puppies go home no earlier than 8 weeks of age,
       after a final veterinary check.</li>
     {dob_reg_clause}
@@ -2705,7 +2711,7 @@ def build_pages():
       </ul>
       {f'<p><strong>{note}</strong></p>' if note else ''}
       {reserve_block}
-      <h3>About {name} {CHIP_SAMPLE}</h3>
+      <h3>About {name}</h3>
       <p>{name} is a {colour.lower()} {sex.lower()} growing up in the house, handled
         every day, around kids and other dogs, with early neurological stimulation
         from the first weeks. Ask us anything about {him}; we are happy to send more
