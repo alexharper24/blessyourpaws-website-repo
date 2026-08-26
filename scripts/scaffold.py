@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 74
+V = 75
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -576,8 +576,13 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .filter-row button.cur{background:var(--forest);color:var(--paper)}
 
 /* ---------- reserve ---------- */
-.reserve{background:var(--paper-raise);border:1px dashed var(--sage);border-radius:4px;
-  padding:1.4rem;margin:1.5rem 0}
+/* Solid, not dashed. A dashed outline is the visual language of a placeholder, which is
+   the wrong signal on the one box that asks for $500. */
+.reserve{background:var(--paper-raise);border:1px solid var(--sage-light);
+  border-radius:6px;padding:1.5rem;margin:1.75rem 0}
+/* The block was a heading and then nothing but small grey text, so it had two extremes
+   and no middle. The terms line is the commercial fact and reads at body size. */
+.reserve .terms{font-size:1rem;color:var(--forest);margin:0 0 .2rem}
 .pay-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.85rem 0 .5rem}
 .guard-msg{display:none;background:var(--pink-pale);border-radius:3px;
   padding:.8rem 1rem;font-size:.92rem;margin-top:.6rem}
@@ -588,12 +593,22 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .guard-msg.is-error{background:var(--rose)}
 /* Acknowledgements. Each one is a real sentence a person can read, not a wall with one
    checkbox at the bottom, because the whole point is that they saw the terms. */
-.acks{border:1.5px solid var(--forest);border-radius:4px;padding:1.1rem 1.2rem;
-  margin:1.5rem 0 1.25rem;background:var(--paper-raise)}
-.acks legend{font-weight:700;padding:0 .45rem}
-.ack{display:flex;gap:.7rem;align-items:flex-start;padding:.5rem 0;font-size:.95rem}
-.ack + .ack{border-top:1px solid var(--rule)}
-.ack input{margin-top:.28rem;width:1.15rem;height:1.15rem;flex:none}
+/* Acknowledgements. The first version had three borders fighting in one small block: a
+   1.5px forest outline, a legend straddling it, and a hairline under every row, all on a
+   second background surface. One border style is enough. The box is gone, the legend is a
+   plain label above the list, and the hairlines alone separate the rows.
+   Grid rather than flex so the checkbox aligns to the first LINE of its sentence rather
+   than to the top of a three-line block. accent-color makes the tick forest instead of
+   the browser's blue, which was the only non-palette colour on the page. */
+.acks{border:0;padding:0;margin:1.9rem 0 1.6rem}
+.acks legend{float:left;width:100%;padding:0;margin-bottom:.5rem;
+  font-size:.74rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
+  color:var(--sage-deep)}
+.ack{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start;
+  padding:.8rem 0;font-size:.95rem;line-height:1.5;border-top:1px solid var(--rule)}
+.acks .ack:last-of-type{border-bottom:1px solid var(--rule)}
+.ack input{width:1.1rem;height:1.1rem;margin:.22rem 0 0;accent-color:var(--forest)}
+.ack:hover{color:var(--forest)}
 /* .35rem/.25rem left the button cramped between two paragraphs that both use a 1rem
    rhythm. Match the rhythm instead of inventing a tighter one. */
 .apply-gate{margin:1.1rem 0 1.15rem}
@@ -2807,9 +2822,10 @@ def build_pages():
         else:
             reserve_block = f'''<div class="reserve">
         <h3>Reserve {name}</h3>
-        <p class="fine">A ${DEPOSIT} deposit holds {him} until go-home day, and a short
-          <a href="apply.html">application</a> comes first. Price ${M_PRICE:,}, plus sales
-          tax, plus a {CARD_FEE_PCT} fee if you pay by card.</p>
+        <p class="terms">A ${DEPOSIT} deposit holds {him} until go-home day, and a
+          short <a href="apply.html">application</a> comes first.</p>
+        <p class="fine">${M_PRICE:,} plus sales tax. Paying by card adds
+          {CARD_FEE_PCT}.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
