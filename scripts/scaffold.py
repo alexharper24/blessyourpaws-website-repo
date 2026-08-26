@@ -14,8 +14,13 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 80
-BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
+V = 81
+# The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
+# which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
+# link showed no card at all and the messaging app scraped a transparent logo instead.
+# Points at the Worker until the domain is attached, then it becomes
+# https://blessyourpawspuppies.com. Whatever it says, it has to be somewhere that answers.
+BASE = "https://blessyourpaws.alexharper.workers.dev"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
