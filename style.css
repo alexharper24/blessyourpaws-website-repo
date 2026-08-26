@@ -153,6 +153,10 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
 /* section imagery: give photos real presence, they are the product */
 .grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
+/* A photo whose subject runs the full width of the frame cannot be cropped to 3/2. This
+   keeps the litter photo's own 2.16:1 so no puppy is cropped out of the litter. Declared
+   after the .grid-2 rule above because both are (0,2,0) and the later one wins. */
+.grid-2 .framed.keep-wide{aspect-ratio:1024/474}
 /* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
    3:2 cuts off either their heads or their torsos. */
 /* a 16:9 original keeps a 16:9 frame, so none of the subject is cropped away */

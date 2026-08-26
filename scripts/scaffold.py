@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 66
+V = 68
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -93,7 +93,7 @@ M_SIZE = "15 to 20 lbs"
 SIZE_DRAFT  = ''   # 15 to 20 lbs confirmed by Hope on the 2026-08-26 call
 
 M_KIT = ["Vaccination and health record", "Examination by our vet",
-         "Small bag of the food they know", "Collar and leash", "A toy"]
+         "Small bag of the food they know", "Collar and leash", "A blanket", "Toys"]
 D_KIT = ["AKC registration", "One year genetic health guarantee",
          "Vaccination and health record", "Vet exam and report", "Microchipped",
          "Tail docked", "Dew claws removed", "Small bag of food", "A toy", "A blanket"]
@@ -253,6 +253,10 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
 /* section imagery: give photos real presence, they are the product */
 .grid-2 .framed{aspect-ratio:3/2;object-fit:cover}
+/* A photo whose subject runs the full width of the frame cannot be cropped to 3/2. This
+   keeps the litter photo's own 2.16:1 so no puppy is cropped out of the litter. Declared
+   after the .grid-2 rule above because both are (0,2,0) and the later one wins. */
+.grid-2 .framed.keep-wide{aspect-ratio:1024/474}
 /* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
    3:2 cuts off either their heads or their torsos. */
 /* a 16:9 original keeps a 16:9 frame, so none of the subject is cropped away */
@@ -1535,7 +1539,12 @@ def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None,
         hcls = "health"
     else:
         qrfig, hcls = "", "health no-qr"
-    reg_html = '<p class="reg-name">%s</p>' % reg if reg else ""
+    # Reserve the registered-name line even when a dog has no registered name. Measured:
+    # Troy has one and Bip Finch does not, which put the two facts blocks 44px out of step
+    # in the side-by-side pair (28px line plus its 16px margin). Everything above it was
+    # already aligned to the pixel. The spacer is aria-hidden so it is not announced.
+    reg_html = ('<p class="reg-name">%s</p>' % reg if reg
+                else '<p class="reg-name" aria-hidden="true">&nbsp;</p>')
     return ('<article class="dogrow">'
       + img_tag(stem, folder="dogs", cls="dog-photo",
                 lazy=not first, priority=first,
@@ -1690,7 +1699,7 @@ def build_pages():
                    # "Clear" was retracted from his detail row and his FAQ answer for want
                    # of a document. It survived here, on ten pages, saying the opposite.
                    ("Genetic testing", "Clear, results being gathered")],
-                  "His registered name is being added. " + CHIP_DRAFT))
+                  "His registered name is being added."))
     D_PARENTS = (
       parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
                   [("Registered", "Kingdom's Miraculous Grace"),
@@ -1700,7 +1709,7 @@ def build_pages():
       parent_card("doberman-sire-01", "Our Doberman sire", "Dad", "Doberman Pinscher",
                   [("Weight", "100 lbs"), ("Color", "Red and rust"),
                    ("Genetic testing", "Clear")],
-                  "His registered name is being added. " + CHIP_DRAFT))
+                  "His registered name is being added."))
 
     # With two litters this page is an index across both. With one it IS the litter
     # page, so it absorbs what the retired breed page carried: the parent lede, the
@@ -1738,7 +1747,7 @@ def build_pages():
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else 'Available now'}</p>
       <h1>Munchkin Bernedoodle puppies</h1>
     </div>
-    {desktop_only_img('jericho-01', cls='framed hic-photo hide-mobile', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE)}
+    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt=f'The litter of {n_word(M_TOTAL).lower()} Munchkin Bernedoodle puppies together', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">{n_word(M_TOTAL)} puppies from <a href="our-dogs.html">Troy</a>, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
@@ -1990,7 +1999,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "<a href=\"our-dogs.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way. " + CHIP_DRAFT
+       "<a href=\"our-dogs.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
@@ -2034,7 +2043,7 @@ def build_pages():
       <p>Ours come from a small mom at 22 lbs bred to a small dad at 19 lbs. Troy's full
         panel is on the <a href="our-dogs.html">our dogs</a> page so you can read it for
         yourself rather than take our word for it, and Bip Finch's will go up the same way
-        once we have a legible copy of it. {CHIP_DRAFT}</p>
+        once we have a legible copy of it.</p>
     </div>
   </div>
 </div></section>
@@ -2116,8 +2125,8 @@ def build_pages():
          # CDDY is named because it is the one that matters here: Troy carries a copy and
          # it takes only one to pass on, so his status is the question a buyer should ask.
          ("Genetic testing:", "clear, including for chondrodystrophy (CDDY). We are "
-          "gathering his full results to publish here the same way we publish Troy&rsquo;s. "
-          + CHIP_DRAFT)],
+          "gathering his full results to publish here the same way we publish "
+          "Troy&rsquo;s.")],
         []))
     D_DOGS = (
       dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",
@@ -2307,7 +2316,7 @@ def build_pages():
        "leave with the "
        "health records, the paperwork, and a puppy who already knows what a family sounds "
        "like.",
-       f'Pickup is by appointment. Delivery options are being finalised. {CHIP_DRAFT}'),
+       'Pickup is by appointment.'),
     ]
     steps_html = "\n".join(
       f'''    <article class="step">
