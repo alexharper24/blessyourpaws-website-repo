@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 83
+V = 84
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2596,12 +2596,6 @@ def build_pages():
       <option>No, this is our first</option>
       <option>Not for a long time</option>
     </select></div>
-  <div class="field"><label for="apurpose">Is this a family companion, or are you hoping to breed?</label>
-    <select id="apurpose" name="purpose">
-      <option>Family companion</option>
-      <option>Hoping to breed</option>
-      <option>Not sure yet</option>
-    </select></div>
   <div class="field"><label for="apickup">Picking up in person?</label>
     <select id="apickup" name="pickup">
       <option>Yes, we will come to you</option>
@@ -2622,6 +2616,9 @@ def build_pages():
       <span>I understand puppies go home at <strong>eight weeks or after</strong>, and that
       if a puppy is returned to us the purchase price is not refunded except where our
       <a href="health-guarantee.html">written health guarantee</a> provides otherwise.</span></label>
+    <label class="ack"><input type="checkbox" name="ack_companion" value="yes" required>
+      <span>I understand this puppy is sold as a <strong>family companion</strong> and
+      will not be used for breeding.</span></label>
     <label class="ack"><input type="checkbox" name="ack_adult" value="yes" required>
       <span>I am 18 or older, and the answers above are my own.</span></label>
   </fieldset>
