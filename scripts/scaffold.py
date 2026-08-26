@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 57
+V = 60
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -262,14 +262,26 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
 /* 1.30fr rather than 1.22fr: the photographs sit in this column and were asked to be
    larger. Both variants move together so the About photo and the one below it stay the
    same size as each other. */
-.grid-2.narrow-left{grid-template-columns:.70fr 1.30fr}
+/* minmax, not a plain fraction, and not a second breakpoint either.
+   The .70fr was measured at 1440, where it gives the text 454px. It was never checked just
+   above the mobile breakpoint: at 901px it gave the text 282px, about 4.7 words a line,
+   while the photo took 524px. One pixel narrower the mobile rule hands that same text the
+   full 846px, so there was a 3x cliff across a 1px change of viewport.
+   Stepping the ratio at a new breakpoint only moves the cliff somewhere else. A floor on
+   the text column removes it: below roughly 1200px the floor wins and the photo yields,
+   above it the fraction wins and the 1440 design is untouched. Fluid, no step. */
+.grid-2.narrow-left{grid-template-columns:minmax(26rem,.70fr) 1.30fr}
 /* a softer lean than narrow-left/right, for a photo that should lead without dominating */
-.grid-2.lean-left{grid-template-columns:1.15fr .85fr}
-.grid-2.lean-right{grid-template-columns:.85fr 1.15fr}
+/* Same floor, same reason. `hic-flip` is what makes this bite: the modifier names the
+   PHOTO side, so lean-left + flip puts the body copy in the .85fr column, which was 342px
+   at 901px with the photo on 463px. Any modifier added later needs the floor on whichever
+   column can end up holding text, which with flip in play is both of them. */
+.grid-2.lean-left{grid-template-columns:1.15fr minmax(26rem,.85fr)}
+.grid-2.lean-right{grid-template-columns:minmax(26rem,.85fr) 1.15fr}
 /* narrow-RIGHT means the right column is the narrow one, so the photo-left rows
    get the wide half. It had been left identical to narrow-left, which is why the
    inverted rows put their photo in the small column. */
-.grid-2.narrow-right{grid-template-columns:1.30fr .70fr}
+.grid-2.narrow-right{grid-template-columns:1.30fr minmax(26rem,.70fr)}
 .btn{display:inline-flex;align-items:center;text-decoration:none;border-radius:3px;
   font-weight:700;padding:.75rem 1.35rem;border:1.5px solid var(--forest);
   font-size:1rem;min-height:48px}
@@ -287,6 +299,18 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
    beside the photo rather than stacked above the whole row */
 .col-title{margin-bottom:1.25rem}
 .col-title h1,.col-title h2{margin-bottom:.35rem}
+/* A heading inside a floored column must not be sized by the viewport.
+   The page-level h1 is clamp(2rem,3.6vw,3.1rem), which is right for a full-width hero and
+   wrong here: now that the text column has a 26rem floor, 3.6vw kept growing the type while
+   the column stayed 416px, so the same heading took 2 lines at 1120, 3 at 1280, 3 at 1440
+   and 2 again at 1600. Non-monotonic, which is the tell that type and container are keyed
+   to different things. A gentler curve keeps it to two lines across the whole band.
+   balance evens those two lines out rather than leaving one orphaned word. */
+.col-title h1{font-size:clamp(1.85rem,2.6vw,2.5rem)}
+.col-title h1,.col-title h2{text-wrap:balance}
+/* The label is 31 characters and will not fit one line in a 416px column at the base
+   button size. It was already nowrap on mobile; there is no reason that stops at 901px. */
+.breed-link{white-space:nowrap;font-size:.92rem;padding-left:1rem;padding-right:1rem}
 .col-title .eyebrow{margin-bottom:.4rem}
 
 /* heading on the left, action on the right, on one baseline. for sections where a

@@ -528,6 +528,35 @@ leads without dominating; `narrow-left` / `narrow-right` are .70fr / 1.30fr, a s
 asymmetry. At 1440 the wide column comes out about 648px, 745px and 843px respectively.
 Every one of them is named in the mobile collapse rule, and any new one must be too.
 
+**A fractional column ratio needs a floor, not a second breakpoint.** The `.70fr` on
+`narrow-left` was measured at 1440, where it gives the text 454px. Nobody checked it just
+above the mobile breakpoint. At 901px it gave the text **282px, about 4.7 words a line**,
+with the photo on 524px, and one pixel narrower the mobile rule handed that same text the
+full 846px. A **3x cliff across a 1px change of viewport**, on six pages.
+
+Stepping the ratio at a new breakpoint only moves the cliff. The fix is
+`minmax(26rem, .70fr)`: below roughly 1200px the floor wins and the photo yields, above it
+the fraction wins and the 1440 design is untouched. Fluid, no step. Applied to both narrow
+and both lean ratios; the narrowest text column on the site is now 403px, verified across
+108 page-and-width combinations.
+
+**`hic-flip` is why the lean ratios needed it too.** The modifier names the PHOTO side, so
+`lean-left` + `hic-flip` puts the body copy in the `.85fr` column: 342px at 901px against a
+463px photo. **Any new modifier needs the floor on whichever column can hold text, which
+with flip in play is both of them.**
+
+**Do not size a heading by the viewport inside a floored column.** The page `h1` is
+`clamp(2rem,3.6vw,3.1rem)`, right for a full-width hero and wrong in a column that stops
+growing. With the floor in place the same heading took 2 lines at 1120, 3 at 1280, 3 at 1440
+and 2 again at 1600. **Non-monotonic line counts are the tell that type and container are
+keyed to different things.** `.col-title h1` is `clamp(1.85rem,2.6vw,2.5rem)` plus
+`text-wrap:balance`, which holds two lines from 901 to 1920.
+
+**Counting rendered lines by dividing height by line-height is wrong for a button.** `.btn`
+carries `min-height:48px`, so that arithmetic reported two lines for a one-line label and
+sent me looking for a wrap that was not there. Count `Range.getClientRects()` grouped by
+`top` instead.
+
 **A modifier class outranks the mobile override.** `.grid-2.narrow-left` is
 specificity (0,2,0); the `@media (max-width:900px)` rule that collapses `.grid-2` is
 (0,1,0) and loses. The variants held their desktop columns on a phone across eight
