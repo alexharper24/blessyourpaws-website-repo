@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 79
+V = 80
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -600,6 +600,8 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    the error state keeps forest type and only changes the ground, because white on either
    pink is under 2:1 and is forbidden in this palette. */
 .guard-msg.is-error{background:var(--rose)}
+/* the follow-on action after a successful application */
+.guard-msg .btn{display:inline-flex;margin-top:.85rem}
 /* Acknowledgements. Each one is a real sentence a person can read, not a wall with one
    checkbox at the bottom, because the whole point is that they saw the terms. */
 /* Acknowledgements. Reverted 2026-08-26 to this, the version that worked.
@@ -1142,12 +1144,28 @@ JS = """// Bless Your Paws Puppies - v2
       e.preventDefault();
       var btn = f.querySelector('button[type=submit]');
       var said = btn ? btn.textContent : '';
+      // read the puppy now: done() runs after f.reset() has cleared the select
+      var chosenSel = f.querySelector('#apup');
+      var chosenOpt = chosenSel ? chosenSel.options[chosenSel.selectedIndex] : null;
+      var chosenSlug = chosenOpt ? chosenOpt.getAttribute('data-slug') : null;
+      var chosenName = chosenOpt ? chosenOpt.value : '';
       if (btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
       function done(text, ok){
         if (msg){
           msg.textContent = text;
           msg.classList.add('show');
           msg.classList.toggle('is-error', !ok);
+          // An application unlocks the deposit, so say so and give them the way there.
+          // Without this they are left on a finished form with nothing to do next.
+          if (ok && f.hasAttribute('data-applied')){
+            var go = document.createElement('a');
+            go.className = 'btn btn-primary';
+            go.href = chosenSlug || 'puppies';
+            go.textContent = chosenSlug
+              ? 'Reserve ' + chosenName + ' with a deposit'
+              : 'See the available puppies';
+            msg.appendChild(go);
+          }
         }
         if (ok){
           f.reset();
@@ -1164,7 +1182,9 @@ JS = """// Bless Your Paws Puppies - v2
         body: new FormData(f),
         headers: { Accept: 'application/json' }
       }).then(function(r){
-        if (r.ok) done('Thank you. That came through, and Hope will be in touch soon.', true);
+        if (r.ok) done(f.hasAttribute('data-applied')
+          ? 'Thank you. That came through, and Hope will be in touch soon. You can put a deposit down now if you are ready.'
+          : 'Thank you. That came through, and Hope will be in touch soon.', true);
         else done('That did not go through. Please call or text Hope at __PHONE__ and she will get right back to you.', false);
       }).catch(function(){
         done('That did not go through. Please call or text Hope at __PHONE__ and she will get right back to you.', false);
@@ -2518,7 +2538,8 @@ def build_pages():
     # Only available puppies. An adopted one is not on offer, so she is not selectable;
     # the colour is there because buyers remember "the blue merle girl" long before a name.
     APPLY_PUPPY_OPTIONS = "\n".join(
-        f'      <option value="{nm}">{nm} &middot; {sx.lower()}, {cl.lower()}</option>'
+        f'      <option value="{nm}" data-slug="puppy-{sl}">{nm} &middot; '
+        f'{sx.lower()}, {cl.lower()}</option>'
         for sl, nm, sx, cl, _ in list(MUNCHKINS) + D_LIST if sl not in ADOPTED)
 
     page("apply.html", f"Puppy Application | {BRAND}",

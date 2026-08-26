@@ -148,12 +148,28 @@
       e.preventDefault();
       var btn = f.querySelector('button[type=submit]');
       var said = btn ? btn.textContent : '';
+      // read the puppy now: done() runs after f.reset() has cleared the select
+      var chosenSel = f.querySelector('#apup');
+      var chosenOpt = chosenSel ? chosenSel.options[chosenSel.selectedIndex] : null;
+      var chosenSlug = chosenOpt ? chosenOpt.getAttribute('data-slug') : null;
+      var chosenName = chosenOpt ? chosenOpt.value : '';
       if (btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
       function done(text, ok){
         if (msg){
           msg.textContent = text;
           msg.classList.add('show');
           msg.classList.toggle('is-error', !ok);
+          // An application unlocks the deposit, so say so and give them the way there.
+          // Without this they are left on a finished form with nothing to do next.
+          if (ok && f.hasAttribute('data-applied')){
+            var go = document.createElement('a');
+            go.className = 'btn btn-primary';
+            go.href = chosenSlug || 'puppies';
+            go.textContent = chosenSlug
+              ? 'Reserve ' + chosenName + ' with a deposit'
+              : 'See the available puppies';
+            msg.appendChild(go);
+          }
         }
         if (ok){
           f.reset();
@@ -170,7 +186,9 @@
         body: new FormData(f),
         headers: { Accept: 'application/json' }
       }).then(function(r){
-        if (r.ok) done('Thank you. That came through, and Hope will be in touch soon.', true);
+        if (r.ok) done(f.hasAttribute('data-applied')
+          ? 'Thank you. That came through, and Hope will be in touch soon. You can put a deposit down now if you are ready.'
+          : 'Thank you. That came through, and Hope will be in touch soon.', true);
         else done('That did not go through. Please call or text Hope at (574) 377-8023 and she will get right back to you.', false);
       }).catch(function(){
         done('That did not go through. Please call or text Hope at (574) 377-8023 and she will get right back to you.', false);

@@ -496,6 +496,8 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    the error state keeps forest type and only changes the ground, because white on either
    pink is under 2:1 and is forbidden in this palette. */
 .guard-msg.is-error{background:var(--rose)}
+/* the follow-on action after a successful application */
+.guard-msg .btn{display:inline-flex;margin-top:.85rem}
 /* Acknowledgements. Each one is a real sentence a person can read, not a wall with one
    checkbox at the bottom, because the whole point is that they saw the terms. */
 /* Acknowledgements. Reverted 2026-08-26 to this, the version that worked.
