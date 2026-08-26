@@ -91,6 +91,18 @@
   // ---- the application gate. Friction and a scam filter, NOT enforcement: the Stripe
   // links are reachable directly and this flag is trivially set by anyone who cares. It
   // exists so that a deposit is not the first thing a stranger does.
+  // arriving from "Apply to reserve Joshua" should not make them find Joshua in a list
+  var applySel = document.getElementById('apup');
+  if (applySel){
+    var want = new URLSearchParams(location.search).get('puppy');
+    if (want){
+      var hit = Array.prototype.filter.call(applySel.options, function(o){
+        return o.value === want;
+      })[0];
+      if (hit) applySel.value = hit.value;
+    }
+  }
+
   var APPLIED = 'byp-applied';
   function applied(){
     try { return sessionStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }

@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 73
+V = 74
 BASE = "https://alexharper24.github.io/blessyourpaws-website-repo"
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
@@ -1062,6 +1062,18 @@ JS = """// Bless Your Paws Puppies - v2
   // ---- the application gate. Friction and a scam filter, NOT enforcement: the Stripe
   // links are reachable directly and this flag is trivially set by anyone who cares. It
   // exists so that a deposit is not the first thing a stranger does.
+  // arriving from "Apply to reserve Joshua" should not make them find Joshua in a list
+  var applySel = document.getElementById('apup');
+  if (applySel){
+    var want = new URLSearchParams(location.search).get('puppy');
+    if (want){
+      var hit = Array.prototype.filter.call(applySel.options, function(o){
+        return o.value === want;
+      })[0];
+      if (hit) applySel.value = hit.value;
+    }
+  }
+
   var APPLIED = 'byp-applied';
   function applied(){
     try { return sessionStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }
@@ -1412,7 +1424,9 @@ def prettify_links(text):
     absolute URL are untouched: the pattern allows no slash and no dot inside the name.
     """
     text = text.replace('href="index.html"', 'href="/"')
-    return re.sub(r'href="([a-z0-9-]+)\.html"', r'href="\1"', text)
+    # the optional group carries a query string through: apply.html?puppy=x -> apply?puppy=x
+    return re.sub(r'href="([a-z0-9-]+)\.html(\?[^"]*)?"',
+                  lambda m: 'href="%s%s"' % (m.group(1), m.group(2) or ""), text)
 
 def page(path, title, desc, body, extra_head=""):
     # a JSON island rather than inline script, so there is nothing to escape and no
@@ -2478,6 +2492,12 @@ def build_pages():
 
 """)
 
+    # Only available puppies. An adopted one is not on offer, so she is not selectable;
+    # the colour is there because buyers remember "the blue merle girl" long before a name.
+    APPLY_PUPPY_OPTIONS = "\n".join(
+        f'      <option value="{nm}">{nm} &middot; {sx.lower()}, {cl.lower()}</option>'
+        for sl, nm, sx, cl, _ in list(MUNCHKINS) + D_LIST if sl not in ADOPTED)
+
     page("apply.html", f"Puppy Application | {BRAND}",
       f"A short application comes before a deposit. Tell us about your home and "
       f"acknowledge the terms, and we will be in touch.",
@@ -2498,7 +2518,11 @@ def build_pages():
   <div class="field"><label for="aphone">Phone</label>
     <input id="aphone" name="phone" required></div>
   <div class="field"><label for="apup">Which puppy are you interested in?</label>
-    <input id="apup" name="puppy" placeholder="A name, or tell us you are still deciding"></div>
+    <select id="apup" name="puppy">
+      <option value="">Still deciding</option>
+{APPLY_PUPPY_OPTIONS}
+      <option>A future litter</option>
+    </select></div>
   <div class="field"><label for="awhen">This litter, or a future one?</label>
     <select id="awhen" name="timing">
       <option>This litter</option>
@@ -2787,7 +2811,7 @@ def build_pages():
           <a href="apply.html">application</a> comes first. Price ${M_PRICE:,}, plus sales
           tax, plus a {CARD_FEE_PCT} fee if you pay by card.</p>
         <div class="apply-gate">
-          <a class="btn btn-primary" href="apply.html">Apply to reserve {name}</a>
+          <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
         <div class="pay-row" hidden>
           <a class="btn btn-primary pay-link" href="https://buy.stripe.com/REPLACE_DEPOSIT">Deposit &middot; ${DEPOSIT}</a>
