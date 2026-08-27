@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 109
+V = 110
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -815,11 +815,13 @@ textarea{min-height:8rem}
 @media (min-width:901px){
   .closing .inner{display:grid;grid-template-columns:minmax(26rem,1fr) minmax(0,1.25fr);
     gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:none;text-align:left}
+  .closing-copy{max-width:34rem}
   .closing-photo{margin:0}
 }
 .closing h2{margin:0 0 .55rem}
-.closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0;
-  max-width:44ch}
+/* no 44ch cap: the copy box is capped instead, so the lede fills the same width as the
+   tiles and buttons below it rather than stopping 245px short of them. */
+.closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0}
 /* A wrapping centred row, not a grid. It held two tiles when it was written and now
    holds three, and `repeat(2,auto)` stranded the third on its own row against the left
    edge of an otherwise centred block. Flex-wrap centres whatever ends up on each line,
@@ -856,8 +858,12 @@ textarea{min-height:8rem}
    rather than auto: with auto, the email tile's longer text would take more room than the
    phone tile and the two rows would stop lining up. */
 @media (min-width:901px){
-  .closing .contact-pair,.closing .btn-row{justify-content:flex-start}
-  .closing .contact-pair>.contact-tile,.closing .btn-row>.btn{flex:1 1 0;min-width:0}
+  /* One column, which is what mobile already does. The tiles and the buttons share the
+     copy box's width, so every item in the column has the same left edge and the same
+     right edge. */
+  .closing .contact-pair,.closing .btn-row{flex-direction:column;align-items:stretch;
+    justify-content:flex-start}
+  .closing .contact-pair>.contact-tile,.closing .btn-row>.btn{flex:0 0 auto;min-width:0}
   .closing .btn-row>.btn{justify-content:center}
 }
 /* Below the two-column breakpoint the equal-split rule does not apply, which left the two
