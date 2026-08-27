@@ -16,19 +16,50 @@ is irreversible in practice, because Google caches what it finds.
 
 ## Before you flip anything: these must be TRUE
 
-- [ ] **The fabricated review is gone from `reviews.html`.** It is an invented testimonial
-      attributed to "A waitlist family", and it is linked from the nav and footer on every
-      page. Hope has a real review from this litter to replace it and needs no permission
-      to use it. **This is the single most important item on this list** and the easiest to
-      forget, because by then everything looks finished.
-- [ ] No `Draft, confirm before launch` or `Sample copy` chips remain that you have not
-      consciously decided to ship. `grep -c 'class="chip' *.html`
-- [ ] The Purchase Agreement and Health Guarantee pages are real, not the DRAFT
-      placeholders, and someone qualified has read them.
+- [x] **DONE 2026-08-26: the fabricated review is gone**, replaced by Brenda's real
+      review, quoted word for word.
+- [x] **DONE 2026-08-27: no chips remain anywhere.** `grep -c 'class="chip' *.html`
+      returns nothing on any page. If you add one, add it back to this list too.
+- [x] **DONE 2026-08-27: the Health Guarantee page is Hope's real guarantee**, and the
+      Privacy Policy is written from what the site actually does.
+- [ ] **One draft banner is left, on `purchase-agreement.html`, and it is correct.** The
+      eight terms were written to match the site; Hope and Joy have not approved them yet.
+      Remove the banner when they do, and not before. See the purchase agreement section
+      lower down for the specific gaps worth asking them about.
+- [ ] Someone qualified reads the Purchase Agreement, the Health Guarantee and the Privacy
+      Policy. The guarantee is Hope's own wording; the terms and the privacy policy are
+      not, and both describe real obligations.
 - [ ] Both forms tested end to end, with the notification actually landing in Hope's inbox.
 - [ ] `info@blessyourpawspuppies.com` forwards to the RIGHT Gmail. Hope said "HPW 21" on
       the call; the routing rule points at `hpwtwin1@gmail.com`. Confirm they are the same
       account before anyone relies on it.
+
+## 0. Launching without Stripe — already works, nothing to build
+
+Confirmed 2026-08-27. **The site is safe to launch before Stripe exists.** All 21 pay
+links across the seven puppy pages still point at `buy.stripe.com/REPLACE_DEPOSIT`,
+`REPLACE_BALANCE` and `REPLACE_FULL`, and `main.js` keys its guard on the literal string
+`REPLACE`: any such link has its click cancelled and reveals the message beside it instead.
+A visitor clicking Deposit on Caleb's page sees
+
+> Online payments are almost ready. To reserve Caleb today, call or text Hope at
+> (574) 377-8023.
+
+So the buttons cannot take money, cannot 404, and cannot land anyone on a broken Stripe
+page. Nothing needs disabling before launch.
+
+**When the real links exist**, paste them over the three `REPLACE_*` placeholders in
+`scripts/scaffold.py`, bump `V`, regenerate. The guard disarms itself, because the string
+`REPLACE` is gone. No code change.
+
+- [ ] **Do NOT enable ACH or bank debit on the link charging $2,060.** The dual pricing
+      holds only while every payment at the card price is a card payment.
+- [ ] Worth a look before launch, and a judgement call, not a defect: once someone submits
+      an application, the gate unlocks **three** pay buttons on each puppy page, and all
+      three currently show the same phone message. Three dead buttons in a row reads worse
+      than one clear instruction. If Stripe is still days away at launch, consider hiding
+      the pay row until the links are live and letting the "call or text Hope" line carry
+      it alone. It is a few lines in the scaffold and reversible either way.
 
 ## 1. Domain
 
@@ -315,6 +346,13 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       can open an account with an SSN. Whether she *should* form one is a liability
       and tax question for an attorney or CPA, not for this project.
 - [ ] Branded email — Cloudflare Email Routing forwarding is free.
+- [x] **Privacy policy written 2026-08-27**, from an audit of what the site actually does
+      rather than a template: no analytics, no advertising, no tracking pixels, and no
+      cookies set by the site. The only client-side storage is the `sessionStorage` flag
+      behind the application gate, and no third party is contacted until a visitor submits
+      a form or clicks an outbound link. **If that ever stops being true — analytics, a
+      Meta pixel, an embedded YouTube player rather than a link — the page has to change
+      in the same commit.** It commits to updating before anything is turned on.
 - [ ] Domain (~$12–20/yr, theirs). Set the custom domain in Pages settings *before*
       moving DNS; enable Enforce HTTPS after the cert issues.
 - [ ] Publish in **draft mode** (noindex on every page + closed robots.txt) so it is
@@ -442,15 +480,19 @@ get `immutable` for a year and HTML still revalidates.
 - [ ] `preview_urls` is off deliberately: a preview hostname is not covered by an Access
       application scoped to the production hostname.
 
-## Purchase agreement: two conflicts to settle with Hope
+## Purchase agreement: Hope's document and the site, now aligned
 
 Her document (`source-files/BYPP Purchase Agreement.docx`, gitignored) is a **fill-in bill
 of sale**: buyer name/address/phone/email, the puppy's sex, colour, DOB, microchip number
 and parents' names, the fee with 7% Indiana sales tax, the $500 deposit and balance with
 dates, and both signatures. **It contains no terms at all** — no deposit clause, no health
 guarantee, no return policy, no companion-only restriction. So it did not replace the terms
-on `purchase-agreement.html`; it supplied the half that page was missing. The page now
-carries both, with the terms still marked draft because her document does not state any.
+on `purchase-agreement.html`; it supplied the half that page was missing. The page carries
+both, and **as of 2026-08-27 her .docx carries both too**. The terms stay marked draft on
+the site until Hope and Joy approve them.
+
+**If either one changes, change both.** The eight terms are duplicated between
+`scripts/scaffold.py` and the .docx by hand; there is no generator linking them.
 
 - [x] **RESOLVED 2026-08-26 (Alex): dual pricing, not a surcharge.** Her document says
       there is a 2.9% card charge for paying online. The site does not, and will not. That is surcharge language, and the site deliberately uses dual pricing
@@ -463,10 +505,36 @@ carries both, with the terms still marked draft because her document does not st
 - [x] **RESOLVED 2026-08-26 (Alex): the puppies are microchipped.** Her agreement records
       a microchip number, which is what surfaced the gap: `M_KIT` had no microchip while the
       Doberman list did. It is on the go-home list now.
-- [ ] **Hope's own document still needs updating to match.** The website is aligned; the
-      signed document is not. It still carries the 2.9% card-charge line and still states no
-      terms. Someone has to fold the dual pricing and the terms into her .docx, and that
-      document is what actually governs a sale.
+- [x] **DONE 2026-08-27: Hope's document updated to match.**
+      `source-files/BYPP Purchase Agreement.docx` now carries the dual pricing and the
+      eight terms, and a rendered `BYPP Purchase Agreement (preview).pdf` sits beside it
+      for reading without Word. Her original is kept at
+      `source-files/archive/BYPP Purchase Agreement (original from Hope).docx`. What
+      changed:
+      - The `2.9% card charge` line is gone, replaced by "The purchase price is $2,060,
+        plus 7% Indiana sales tax. Pay the balance in cash and the price is $2,000, a $60
+        cash discount." **List price first, discount second.** That ordering is the whole
+        legal point and must not be flipped to "$2,000 plus a card fee".
+      - A `Payment method (circle one): Card $2,060 / Cash $2,000` line, so the chosen
+        price is recorded on the signed document.
+      - Page 2 is new: the eight terms, an acknowledgement that the buyer has read the
+        agreement and the health guarantee and received a copy of both, then the
+        signatures. **Signatures moved to after the terms**; on her original they sat on
+        page 1 above terms that did not exist.
+      - Four repairs to the form itself: the email hyperlink pointed at an empty relationship
+        target and was a dead link, so it now points at the real mailto; "Puppies new family
+        information" reads "Puppy's new family information"; a **puppy name** field was
+        added (the form recorded sex, colour, DOB, microchip and both parents but never the
+        puppy's own name); and the balance line gained an **amount** blank, having had only
+        a date.
+      - Verified: opens in Word, renders as 2 pages, passes OOXML schema validation
+        against the original.
+- [ ] **Hope and Joy still have to approve the terms.** The eight terms were written to
+      match the site, not dictated by them, so `purchase-agreement.html` keeps its draft
+      banner until they say yes. Nothing was invented beyond what the site already said:
+      no rehoming fee, no spay/neuter deadline, no arbitration or venue clause, no
+      late-pickup or abandonment terms. **Those gaps are deliberate** and are the things
+      worth asking them about.
 
 ## Deployment runbook — Cloudflare Pages, email send and forward
 

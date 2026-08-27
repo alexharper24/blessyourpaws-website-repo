@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 104
+V = 106
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2879,15 +2879,16 @@ def build_pages():
     <li><strong>Price and deposit.</strong> The purchase price is ${M_PRICE:,}, or
       ${M_PRICE_CASH:,} where the balance is paid in cash. Sales tax is added.
       A ${DEPOSIT} deposit reserves the puppy and is applied to the balance. The balance
-      is due before or at pickup.</li>
+      is due before or at pickup. We accept card or cash, not checks.</li>
     <li><strong>Deposit terms.</strong> The deposit is transferable to another
       available puppy if plans change. The deposit is non-refundable.</li>
     <li><strong>Go-home.</strong> Puppies go home at eight weeks of age or after, once
       they have had their vet check.</li>
     {dob_reg_clause}
-    <li><strong>Health.</strong> The puppy is sold with the
+    <li><strong>Health.</strong> The puppy is sold with our
       <a href="health-guarantee.html">written health guarantee</a>, which is part of
-      this agreement.</li>
+      this agreement. Please note that the guarantee requires your puppy to be examined
+      by a veterinarian within 72 hours of going home in order to be valid.</li>
     <li><strong>Care.</strong> The buyer agrees to provide routine veterinary care and
       a safe home.</li>
     <li><strong>Family companion.</strong> The puppy is sold as a family companion and is
@@ -2895,6 +2896,8 @@ def build_pages():
     <li><strong>Return first.</strong> If at any point the buyer can no longer keep
       the dog, we are contacted first and given the option to take the dog back before
       it is rehomed or surrendered.</li>
+    <li><strong>Returns.</strong> If a puppy is returned, the purchase price is not
+      refunded except where the written health guarantee provides otherwise.</li>
   </ul>
   <p class="fine">A signed copy goes home in the go-home folder with the health
     records.</p>
@@ -2905,18 +2908,72 @@ def build_pages():
       f"""<section><div class="wrap prose">
   <p class="eyebrow">Privacy</p>
   <h1>Privacy policy</h1>
-  <p>{CHIP_DRAFT}</p>
-  <p>This is a small family website. We collect only what you send us: your name and
-    contact details when you use the inquiry, waitlist or application forms, or when you
-    call or text. The application also asks about your household, whether there are
-    children and their ages, any other pets, and whether you have raised a puppy before,
-    so that we can answer you properly. We use all of it to reply to you and to manage
-    reservations, and we do not sell it or share it with anyone for marketing.</p>
-  <p>Forms are processed by our form provider, and card payments are processed by
-    Stripe on Stripe's own secure pages; card details never touch this website. This
-    site does not use advertising or analytics cookies.</p>
-  <p>To have your information removed, call or text {PHONE_DISPLAY} or email
-    <a href="mailto:{EMAIL}">{EMAIL}</a> and we will delete it.</p>
+  <p class="lede">We are Hope and Joy, and we raise puppies at home in northern Indiana.
+    This is a small family website. We collect only what you send us, we use it only to
+    talk to you about a puppy, and we do not sell it to anyone.</p>
+
+  <h3>What we collect</h3>
+  <p>Only what you type into a form, or tell us when you call, text or email.</p>
+  <ul>
+    <li><strong>Inquiry form:</strong> your name, email, phone number and your message.</li>
+    <li><strong>Waitlist form:</strong> your name, email, phone number, which puppies you
+      are hoping for, and roughly when.</li>
+    <li><strong>Application:</strong> the above, plus which puppy you are interested in,
+      who is at home including whether there are children and their ages, any other pets,
+      the kind of home the puppy would live in, whether you have raised a puppy before,
+      and whether you can collect in person.</li>
+  </ul>
+  <p>The application asks more than the other two because it comes before a deposit and we
+    want to answer you properly. None of it is required to talk to us: if you would rather
+    not put any of it in a form, call or text {PHONE_DISPLAY} instead.</p>
+
+  <h3>What we do not do</h3>
+  <ul>
+    <li>No advertising and no analytics. This site has no tracking pixels and no
+      advertising or analytics cookies.</li>
+    <li>We do not sell, rent or trade your information, and we do not send marketing you
+      did not ask for.</li>
+    <li>We do not run credit or background checks on you.</li>
+  </ul>
+
+  <h3>One thing your browser stores</h3>
+  <p>When you send an application, your browser remembers it for the rest of that visit so
+    the deposit buttons appear without you filling the form in again. It is not a cookie,
+    it holds nothing about you, and it disappears when you close the tab.</p>
+
+  <h3>Who else handles it</h3>
+  <ul>
+    <li><strong>Our form provider</strong> receives each submission and keeps a copy, which
+      is how a message reaches us even if an email goes astray.</li>
+    <li><strong>Our website host</strong> serves the pages and, like any web host, records
+      technical details such as IP addresses in its own logs.</li>
+    <li><strong>Email:</strong> messages to {EMAIL} are forwarded to a personal inbox that
+      only we read.</li>
+    <li><strong>Payments:</strong> when online deposits go live, card details are handled
+      by Stripe on Stripe&rsquo;s own pages. Card numbers never touch this website and we
+      never see them.</li>
+  </ul>
+
+  <h3>Children</h3>
+  <p>This site is meant for adults buying a puppy, and the application asks you to confirm
+    you are 18 or older. We ask whether there are children in your home, and their ages,
+    because it tells us which puppy suits you. That is information a parent gives us about
+    their own family. We do not knowingly collect anything directly from children.</p>
+
+  <h3>How long we keep it</h3>
+  <p>Inquiries and waitlist entries we keep while they are useful, and we clear them out
+    once a litter is placed and you have told us you are no longer looking. If you buy a
+    puppy, we keep the paperwork for that sale, including the signed agreement and health
+    guarantee, because it is a record of a real transaction and we may need it years later.</p>
+
+  <h3>Your choices</h3>
+  <p>Ask us what we hold about you, ask us to correct it, or ask us to delete it. Call or
+    text {PHONE_DISPLAY}, or email <a href="mailto:{EMAIL}">{EMAIL}</a>, and we will do it.
+    We will keep only what a completed sale requires us to keep.</p>
+
+  <p class="fine">If we ever add anything that changes this, such as analytics or online
+    payments, we will update this page and the date below before we turn it on.</p>
+  <p class="fine">Last updated August 2026.</p>
 </div></section>""")
 
     page("404.html", "Page Not Found | Bless Your Paws Puppies",
