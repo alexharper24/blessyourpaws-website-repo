@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 90
+V = 91
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2733,7 +2733,7 @@ def build_pages():
       <h1>From our families</h1>
       <p class="fine" style="margin:0">One review so far, and it is a real one.</p>
     </div>
-    {img_tag('havilah-02', cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True)}
+    {img_tag(lead('tirzah'), cls='framed hic-photo', alt='Tirzah, a black phantom Munchkin Bernedoodle puppy', lazy=False, priority=True)}
     <div class="hic-copy">
       <blockquote class="lede" style="border-left:3px solid var(--sage);padding-left:1.25rem;margin:0 0 1.5rem">
         <strong style="display:block;margin-bottom:.35rem">So happy!</strong>
