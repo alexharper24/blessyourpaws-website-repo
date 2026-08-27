@@ -400,6 +400,10 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    reference data rather than tap targets. 6px a side instead of 9.6 gives 39px rows and
    returns 50px to the column. */
 .hic-copy .facts li{padding:.375rem 0}
+/* A lone button in a .hic copy column spans it, so it lines up with the facts list and
+   the lede above rather than floating at its label width. .btn sets no justify-content,
+   so the label needs centring once the box is wider than the text. */
+.hic-copy .btn-row>.btn{width:100%;justify-content:center}
 .checklist{list-style:none;margin:0;padding:0}
 .checklist li{padding:.4rem 0 .4rem 1.7rem;position:relative;font-size:.97rem}
 .checklist li::before{content:"";position:absolute;left:0;top:.8em;width:11px;

@@ -14,7 +14,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 117
+V = 119
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -525,6 +525,10 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    reference data rather than tap targets. 6px a side instead of 9.6 gives 39px rows and
    returns 50px to the column. */
 .hic-copy .facts li{padding:.375rem 0}
+/* A lone button in a .hic copy column spans it, so it lines up with the facts list and
+   the lede above rather than floating at its label width. .btn sets no justify-content,
+   so the label needs centring once the box is wider than the text. */
+.hic-copy .btn-row>.btn{width:100%;justify-content:center}
 .checklist{list-style:none;margin:0;padding:0}
 .checklist li{padding:.4rem 0 .4rem 1.7rem;position:relative;font-size:.97rem}
 .checklist li::before{content:"";position:absolute;left:0;top:.8em;width:11px;
@@ -2470,9 +2474,9 @@ def build_pages():
     <p>They grow up in the room where we groom, so the blow dryer is an ordinary noise to
       them. The vacuum runs. There is usually music on. They have hard floors under their
       feet and time out on the deck, and grass comes a little later.</p>
-    <p>We would love for you to meet the puppies, and <a href="parents.html">the parents
-      who live with us</a>, before you decide. Visits are by appointment, and video calls work well for families
-      further away.</p>
+    <p>We would love for you to meet the puppies, and <a href="parents.html">Troy, their
+      mom, who lives with us</a>, before you decide. Visits are by appointment, and video
+      calls work well for families further away.</p>
   </div>
 </div></section>
 
@@ -2530,7 +2534,8 @@ def build_pages():
        'Most families text a photo of the puppy they like. '
        '<a href="puppies.html">See who is available</a>.'),
       ("Meet the puppy", "malcolm-02" if SHOW_DOBERMANS else "jordan-02",
-       "We set up a visit or a video call so you can meet the puppy, meet the parents, "
+       "We set up a visit or a video call so you can meet the puppy, meet Troy, their "
+       "mom, "
        "and meet us. Ten minutes is usually enough to know. We would rather talk you out "
        "of the wrong puppy than sell you one.",
        "Visits are by appointment. Our exact location is shared once your visit is booked."),
