@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 110
+V = 111
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -822,6 +822,13 @@ textarea{min-height:8rem}
 /* no 44ch cap: the copy box is capped instead, so the lede fills the same width as the
    tiles and buttons below it rather than stopping 245px short of them. */
 .closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0}
+/* label and value centred inside each tile. .ct-label already carries a -.14em right
+   margin to cancel the trailing letter-spacing gap, which is what keeps the centring
+   optically true rather than a fraction of an em left of centre. */
+.closing .contact-tile{text-align:center;align-items:center}
+/* Not `anywhere` in here: the address's min-content width has to stay the whole address
+   so the flex row refuses to squeeze a tile below it. Global rule is unchanged. */
+.closing .ct-value{overflow-wrap:normal}
 /* A wrapping centred row, not a grid. It held two tiles when it was written and now
    holds three, and `repeat(2,auto)` stranded the third on its own row against the left
    edge of an otherwise centred block. Flex-wrap centres whatever ends up on each line,
@@ -858,13 +865,16 @@ textarea{min-height:8rem}
    rather than auto: with auto, the email tile's longer text would take more room than the
    phone tile and the two rows would stop lining up. */
 @media (min-width:901px){
-  /* One column, which is what mobile already does. The tiles and the buttons share the
-     copy box's width, so every item in the column has the same left edge and the same
-     right edge. */
-  .closing .contact-pair,.closing .btn-row{flex-direction:column;align-items:stretch;
-    justify-content:flex-start}
-  .closing .contact-pair>.contact-tile,.closing .btn-row>.btn{flex:0 0 auto;min-width:0}
-  .closing .btn-row>.btn{justify-content:center}
+  /* The two buttons stay stacked, one per row, filling the copy box. */
+  .closing .btn-row{flex-direction:column;align-items:stretch;justify-content:flex-start}
+  .closing .btn-row>.btn{flex:0 0 auto;min-width:0;justify-content:center}
+  /* The two info tiles share one line and grow to fill the copy box between them.
+     min-width:auto overrides the base rule's min-width:0, which together with the
+     ct-value rule below means a tile can never be squeezed narrower than the address it
+     contains: the pair wraps to two rows rather than breaking a word. */
+  .closing .contact-pair{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;
+    align-items:stretch}
+  .closing .contact-pair>.contact-tile{flex:1 1 auto;min-width:auto}
 }
 /* Below the two-column breakpoint the equal-split rule does not apply, which left the two
    buttons at 243px and 197px side by side: the row was the right width and the buttons
