@@ -14,7 +14,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 119
+V = 120
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2474,9 +2474,9 @@ def build_pages():
     <p>They grow up in the room where we groom, so the blow dryer is an ordinary noise to
       them. The vacuum runs. There is usually music on. They have hard floors under their
       feet and time out on the deck, and grass comes a little later.</p>
-    <p>We would love for you to meet the puppies, and <a href="parents.html">Troy, their
-      mom, who lives with us</a>, before you decide. Visits are by appointment, and video
-      calls work well for families further away.</p>
+    <p>Before you decide, we would love for you to meet the puppies and their mom,
+      <a href="parents.html">Troy</a>, who lives here with us. Visits are by appointment,
+      and video calls work well for families further away.</p>
   </div>
 </div></section>
 
@@ -2534,8 +2534,8 @@ def build_pages():
        'Most families text a photo of the puppy they like. '
        '<a href="puppies.html">See who is available</a>.'),
       ("Meet the puppy", "malcolm-02" if SHOW_DOBERMANS else "jordan-02",
-       "We set up a visit or a video call so you can meet the puppy, meet Troy, their "
-       "mom, "
+       "We set up a visit or a video call so you can meet the puppy, their mom Troy, "
+       "and us. "
        "and meet us. Ten minutes is usually enough to know. We would rather talk you out "
        "of the wrong puppy than sell you one.",
        "Visits are by appointment. Our exact location is shared once your visit is booked."),
