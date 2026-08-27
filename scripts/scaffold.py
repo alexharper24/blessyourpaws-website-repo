@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 108
+V = 109
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -802,7 +802,9 @@ textarea{min-height:8rem}
 /* ---------- closing call to action ---------- */
 .closing{background:var(--paper-raise);border-top:1px solid var(--rule);
   border-bottom:1px solid var(--rule)}
-.closing-photo{aspect-ratio:4/3;object-fit:cover}
+/* the file is 1731x1154, a native 3:2. 4/3 here cropped 11% off the sides while
+   the mobile rule below already used 3/2. */
+.closing-photo{aspect-ratio:3/2;object-fit:cover}
 @media (max-width:900px){.closing-photo{aspect-ratio:3/2;margin-top:1.5rem}}
 .closing .inner{max-width:44rem;margin:0 auto;text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:.85rem}
@@ -811,11 +813,11 @@ textarea{min-height:8rem}
    The copy column has a floor for the same reason narrow-left does: below it the photo
    yields rather than the text being squeezed. */
 @media (min-width:901px){
-  .closing .inner{display:grid;grid-template-columns:minmax(26rem,1fr) minmax(0,1.4fr);
-    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:70rem;text-align:left}
+  .closing .inner{display:grid;grid-template-columns:minmax(26rem,1fr) minmax(0,1.25fr);
+    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:none;text-align:left}
   .closing-photo{margin:0}
 }
-.closing h2{margin:0}
+.closing h2{margin:0 0 .55rem}
 .closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0;
   max-width:44ch}
 /* A wrapping centred row, not a grid. It held two tiles when it was written and now
@@ -2041,7 +2043,7 @@ def build_pages():
     <p class="eyebrow">How they are raised</p>
     <h2>Socialized before they ever leave our arms</h2>
   </div>
-  {img_tag('caleb-02', cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
+  {img_tag('caleb-02', cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 50vw')}
   <div class="hic-copy">
     <p>Every puppy is raised in the home, not a kennel. They grow up with children,
       other dogs, and the everyday noise of family life: the doorbell, the TV, pots
