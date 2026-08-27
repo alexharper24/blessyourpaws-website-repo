@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 102
+V = 104
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -114,7 +114,8 @@ M_SIZE = "15 to 20 lbs"
 SIZE_DRAFT  = ''   # 15 to 20 lbs confirmed by Hope on the 2026-08-26 call
 
 M_KIT = ["Vaccination and health record", "Examination by our vet", "Microchipped",
-         "Small bag of the food they know", "Collar and leash", "A blanket", "Toys"]
+         "Signed health guarantee", "Small bag of the food they know", "Collar and leash",
+         "A blanket", "Toys"]
 D_KIT = ["AKC registration", "One year genetic health guarantee",
          "Vaccination and health record", "Vet exam and report", "Microchipped",
          "Tail docked", "Dew claws removed", "Small bag of food", "A toy", "A blanket"]
@@ -2792,33 +2793,59 @@ def build_pages():
     page("health-guarantee.html", "Health Guarantee | Bless Your Paws Puppies",
       "Our written health guarantee for every puppy.",
       f"""<section><div class="wrap prose">
-  <div class="draft-banner">DRAFT. This guarantee is a working draft prepared for
-    Hope and Joy to review, reword, and approve. It is not in effect as written.</div>
   <p class="eyebrow">Health guarantee</p>
   <h1>Our health guarantee</h1>
-  <h3>What we promise</h3>
+  <p>Every puppy goes home with this guarantee in writing, signed by both of us. What
+    follows is the whole of it in plain order. The signed copy is the guarantee; this page
+    is a summary of it.</p>
+  <p>We raise every puppy on a strict vaccination and deworming schedule, in a clean home,
+    and we hand over a confident, well socialised puppy who has been loved since the day
+    they were born.</p>
+
+  <h3>What is covered</h3>
   <ul>
-    <li>Your puppy goes home current on age-appropriate vaccinations and deworming,
-      with the records to show it.</li>
-    <li>Your puppy is examined by a licensed veterinarian before go-home.</li>
-    <li>For one year from birth, we guarantee your puppy against life-threatening
-      congenital or hereditary conditions diagnosed by a licensed veterinarian.</li>
+    <li><strong>Viral disease, seven days.</strong> Your puppy is guaranteed against viral
+      disease for seven days after going home.</li>
+    <li><strong>Major genetic defects, one year.</strong> For one year from the purchase
+      date, your puppy is guaranteed against major genetic defects affecting the heart,
+      lungs, liver, kidneys and the like.</li>
   </ul>
-  <h3>What we ask of you</h3>
+
+  <h3>What you need to do</h3>
   <ul>
-    <li>Have your own veterinarian examine the puppy within 72 hours of go-home. If a
-      significant pre-existing condition is found, contact us immediately.</li>
-    <li>Keep up routine veterinary care, vaccinations, and a safe environment.</li>
-    <li>Send us the diagnosis in writing from your veterinarian before any claim.</li>
+    <li><strong>A vet exam within 72 hours. This one is a condition.</strong> Your puppy
+      must be examined by a veterinarian within 72 hours of going home or the guarantee is
+      not valid. If the vet finds something abnormal, and it is not something we told you
+      about before the sale, contact us straight away and send us copies of the vet&rsquo;s
+      report.</li>
+    <li><strong>Documentation before a claim.</strong> If a vet concludes your puppy has a
+      serious genetic illness, tell us and send the paperwork from the vet. We review it
+      and then talk to you about the outcome.</li>
+    <li><strong>In the event of death within seven days</strong>, a necropsy is required,
+      arranged and paid for by the owner, and the findings sent to us before any exchange
+      or reimbursement.</li>
   </ul>
-  <h3>The remedy</h3>
-  <p>If a covered condition is confirmed, we will offer a replacement puppy from an
-    upcoming litter or a refund of the purchase price, at our option. This guarantee
-    does not cover veterinary bills, and it does not cover conditions caused by
-    injury, neglect, or parasites after go-home. Adult size, coat, and color are not
-    guaranteed.</p>
-  <p class="fine">Questions about the guarantee? Ask before you reserve; we would
-    rather explain it twice than surprise anyone once.</p>
+
+  <h3>How a claim is settled</h3>
+  <p>Once we have the veterinarian&rsquo;s documentation and have reviewed it, you can
+    bring the puppy back in exchange for another puppy of equal or lesser value, or we
+    reimburse you in part or in whole at our discretion. <strong>Credit never exceeds the
+    purchase price of your puppy.</strong></p>
+
+  <h3>What is not covered</h3>
+  <ul>
+    <li>Hypoglycemia, coccidia, giardia, colds and upper respiratory infections, and other
+      minor illness.</li>
+    <li><strong>Veterinary bills are yours.</strong> We care about these puppies long after
+      they leave, but we cannot take on medical expenses, death, allergies, training
+      difficulties or behaviour problems once a puppy is in your home.</li>
+  </ul>
+  <p>Anything we already know about, including cosmetic issues or any surgery before
+    go-home, is written on your copy and told to you before you commit. You sign to say you
+    were made aware of it.</p>
+
+  <p class="fine">Ask us anything about this before you reserve. We would rather explain it
+    twice than surprise anyone once.</p>
 </div></section>""")
 
     page("purchase-agreement.html", "Purchase Agreement | Bless Your Paws Puppies",
