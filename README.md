@@ -22,10 +22,10 @@ is irreversible in practice, because Google caches what it finds.
       returns nothing on any page. If you add one, add it back to this list too.
 - [x] **DONE 2026-08-27: the Health Guarantee page is Hope's real guarantee**, and the
       Privacy Policy is written from what the site actually does.
-- [ ] **One draft banner is left, on `purchase-agreement.html`, and it is correct.** The
-      eight terms were written to match the site; Hope and Joy have not approved them yet.
-      Remove the banner when they do, and not before. See the purchase agreement section
-      lower down for the specific gaps worth asking them about.
+- [x] **DONE 2026-08-27: Hope has signed off on the terms** (Alex), so the last draft
+      banner is off `purchase-agreement.html`. **No draft banners or chips remain on any
+      page.** The `.draft-banner` CSS is deliberately kept: it is the only user of
+      `--draft`/`--draft-bg` and the mechanism for flagging unapproved copy next time.
 - [ ] Someone qualified reads the Purchase Agreement, the Health Guarantee and the Privacy
       Policy. The guarantee is Hope's own wording; the terms and the privacy policy are
       not, and both describe real obligations.
@@ -198,8 +198,11 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [x] **RESOLVED: the Bernedoodle dam is TROY** (female, Mini Multi Gen Bernedoodle).
       The "Mura/Mira" transcription was the Doberman, Mira, all along. The earlier
       note calling Troy the Cavalier sire was wrong.
-- [ ] **The Cavalier sire's NAME is now the unknown.** AKC, 19 lbs, ruby, born
-      24 Dec 2024. Ask Hope.
+- [x] **RESOLVED 2026-08-25: the Cavalier sire is BIP FINCH.** AKC TS65827904, 19 lbs,
+      ruby, born 24 Dec 2024. Published on the parents page, every puppy page and the
+      breed guide. **He is an outside stud, not one of their own dogs.** This item sat open
+      in the README for two days after the fact and was repeated back as still-unknown on
+      2026-08-27; if a name gets published, close the item in the same commit.
 - [ ] PARKED with the Doberman line (off since 2026-08-23): Doberman sire name, registration and health testing.
 - [x] Parent facts on file: dam Troy (Mini Multi Gen Bernedoodle, 21 lbs) and the
       AKC Cavalier sire (19 lbs, ruby).
@@ -214,9 +217,19 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       framing of the whole pairing depends on his status, and many Cavalier panels do not
       test FGF4 at all. Until his report exists, the site says only that we are gathering
       it and deliberately does not characterise his results.
-- [ ] **The claim "our Cavalier sire is genetically tested clear" has been RETRACTED**
-      from the FAQ and from his row, because no document backs it. Do not reinstate it
-      without the panel.
+- [x] **SUPERSEDED 2026-08-25 (commit 7680122): the claim was deliberately reinstated on
+      Hope's own word.** His row now reads "Genetic testing: clear, including for
+      chondrodystrophy (CDDY). We are gathering his full results to publish here the same
+      way we publish Troy's." There is still **no document**, because his breeder can only
+      fax. This is a recorded decision, not an oversight, and the retraction note above it
+      was the stale thing.
+- [ ] **Residual risk, worth one decision: the site states it as fact, the commit records
+      it as Hope's position.** Those are not the same claim. Troy carries one copy of CDDY
+      and one copy is enough to pass on, so his status is the single most consequential
+      health sentence on the site. Attributing it ("Hope's breeder reports him clear,
+      including for CDDY; we are gathering the written panel") costs nothing and is
+      accurate to what is actually known. **Ask Alex before rewording** — he chose the
+      current phrasing knowingly.
 - [ ] **Will the puppies themselves be tested for CDDY?** It is a cheap, definitive test
       for a dominant variant, and it would let Hope tell each buyer exactly where their
       puppy stands. No competitor offers that. Hope's decision.
@@ -533,9 +546,8 @@ the site until Hope and Joy approve them.
         a date.
       - Verified: opens in Word, renders as 2 pages, passes OOXML schema validation
         against the original.
-- [ ] **Hope and Joy still have to approve the terms.** The eight terms were written to
-      match the site, not dictated by them, so `purchase-agreement.html` keeps its draft
-      banner until they say yes. Nothing was invented beyond what the site already said:
+- [x] **APPROVED 2026-08-27: Hope has signed off on the eight terms** (Alex), and the
+      draft banner is off the page. Nothing was invented beyond what the site already said:
       no rehoming fee, no spay/neuter deadline, no arbitration or venue clause, no
       late-pickup or abandonment terms. **Those gaps are deliberate** and are the things
       worth asking them about.

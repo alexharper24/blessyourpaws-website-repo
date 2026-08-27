@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 106
+V = 107
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2851,8 +2851,6 @@ def build_pages():
     page("purchase-agreement.html", "Purchase Agreement | Bless Your Paws Puppies",
       "The purchase agreement every family signs at reservation.",
       f"""<section><div class="wrap prose">
-  <div class="draft-banner">The terms below are a working draft for Hope and Joy to
-    approve. The signed agreement itself is Hope&rsquo;s document, summarised here.</div>
   <p class="eyebrow">Purchase agreement</p>
   <h1>Purchase agreement</h1>
   <p>Every puppy is sold with a written agreement, signed by both the buyer and the
