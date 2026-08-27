@@ -14,7 +14,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 116
+V = 117
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1013,7 +1013,11 @@ textarea{min-height:8rem}
   .nav a{font-size:1.25rem;padding:.7rem 1.2rem}
   .nav a.nav-cta{margin-left:0}
   .nav-close{position:absolute;top:1rem;right:1.25rem}
-  .section-head{flex-direction:column;align-items:flex-start;gap:1rem}
+  /* stretch, not flex-start: a lone .btn child here is a flex item, and flex-start
+     sizes it to its label. It was the one container on the site not following the
+     full-width-on-mobile CTA rule. */
+  .section-head{flex-direction:column;align-items:stretch;gap:1rem}
+  .section-head .btn{justify-content:center}
   .cthumbs button{width:64px;height:64px}
   .facts li{min-height:44px}
 
@@ -1026,6 +1030,11 @@ textarea{min-height:8rem}
   /* a photo that earns its place beside a fact list on desktop, but which the grid
      directly below repeats once everything is stacked */
   .hide-mobile{display:none}
+  /* .grid-2.hic sets row-gap:0 to keep a heading next to its own paragraph on desktop.
+     On mobile the photo is a row between the heading and the copy, so that same rule
+     left the copy flush against the bottom of the picture. Margins here rather than a
+     row-gap, which would re-open the desktop gap. */
+  .hic-photo{margin:.375rem 0 1.25rem}
   .parent-grid.row-4{grid-template-columns:1fr}
 
   /* ---- call to action rows. flex-grow on a wrapping row does both halves of the
@@ -1667,7 +1676,7 @@ def img_tag(stem, folder="puppies", cls="", alt="", lazy=True, hidden=False,
     return " ".join(parts) + ">"
 
 def desktop_only_img(stem, folder="puppies", cls="", alt="",
-                     sizes="(max-width:900px) 94vw, 58vw"):
+                     sizes="(max-width:900px) 94vw, 58vw", priority=True):
     """A photo that CSS hides below 901px, emitted so a phone never downloads it.
 
     `display:none` does NOT prevent a fetch. The browser runs image selection whatever
@@ -1700,8 +1709,12 @@ def desktop_only_img(stem, folder="puppies", cls="", alt="",
         out.append(f'<source media={q}{mq}{q} srcset={q}{ss}{q} '
                    f'sizes={q}{sizes}{q} type={q}image/webp{q}>')
     out.append(f'<source media={q}{mq}{q} srcset={q}{jpg}{q}>')
+    # priority=False for a photo below the fold. The helper's first caller was a page's
+    # LCP hero, so high was right there and wrong for anything further down.
     out.append(f'<img alt={q}{alt}{q} '
-               f'fetchpriority={q}high{q} decoding={q}sync{q}>')
+               + (f'fetchpriority={q}high{q} decoding={q}sync{q}'
+                  if priority else f'loading={q}lazy{q} decoding={q}async{q}')
+               + '>')
     out.append("</picture>")
     return "".join(out)
 
@@ -2485,7 +2498,7 @@ def build_pages():
       <a class="btn btn-ghost" href="contact.html">Send an inquiry</a>
     </div>
    </div>
-   {img_tag('shiloh-04', cls='framed closing-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
+   {desktop_only_img('shiloh-04', cls='framed closing-photo hide-mobile', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes='50vw', priority=False)}
   </div>
 </div></section>""")
 
