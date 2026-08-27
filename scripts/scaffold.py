@@ -14,7 +14,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 120
+V = 121
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2535,8 +2535,7 @@ def build_pages():
        '<a href="puppies.html">See who is available</a>.'),
       ("Meet the puppy", "malcolm-02" if SHOW_DOBERMANS else "jordan-02",
        "We set up a visit or a video call so you can meet the puppy, their mom Troy, "
-       "and us. "
-       "and meet us. Ten minutes is usually enough to know. We would rather talk you out "
+       "and us. Ten minutes is usually enough to know. We would rather talk you out "
        "of the wrong puppy than sell you one.",
        "Visits are by appointment. Our exact location is shared once your visit is booked."),
       ("Apply", "eden-02",
