@@ -7,6 +7,9 @@
 # .git first: without it wrangler reads the whole repo history as site assets and
 # fails on the pack file, which is larger than the 25 MiB per-asset limit.
 .git/
+# wrangler's local cache. wrangler-account.json carries the account id, and none of it
+# belongs on a public site.
+.wrangler/
 .github/
 .claude/
 scripts/
