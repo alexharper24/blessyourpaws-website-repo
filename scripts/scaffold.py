@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 94
+V = 96
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -51,6 +51,7 @@ FORM_APPLY    = "https://formspree.io/f/xppavger"
 # Do NOT enable ACH or bank debit on the Stripe link that charges M_PRICE. The reasoning
 # above holds only while every payment through it is a card.
 M_PRICE_CASH  = 2000
+IN_TAX_PCT    = "7%"          # Indiana sales tax, as stated in Hope's own agreement
 AREA = "northern Indiana"   # visible copy. Precise towns stay in areaServed schema.
 COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
@@ -793,7 +794,7 @@ textarea{min-height:8rem}
 /* ---------- closing call to action ---------- */
 .closing{background:var(--paper-raise);border-top:1px solid var(--rule);
   border-bottom:1px solid var(--rule)}
-.closing-photo{aspect-ratio:4/5;object-fit:cover}
+.closing-photo{aspect-ratio:4/3;object-fit:cover}
 @media (max-width:900px){.closing-photo{aspect-ratio:3/2;margin-top:1.5rem}}
 .closing .inner{max-width:44rem;margin:0 auto;text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:.85rem}
@@ -802,8 +803,8 @@ textarea{min-height:8rem}
    The copy column has a floor for the same reason narrow-left does: below it the photo
    yields rather than the text being squeezed. */
 @media (min-width:901px){
-  .closing .inner{display:grid;grid-template-columns:minmax(27rem,1fr) minmax(0,.8fr);
-    gap:clamp(1.75rem,3vw,3rem);align-items:center;max-width:64rem;text-align:left}
+  .closing .inner{display:grid;grid-template-columns:minmax(27rem,1fr) minmax(0,.62fr);
+    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:60rem;text-align:left}
   .closing-photo{margin:0}
 }
 .closing h2{margin:0}
@@ -829,6 +830,9 @@ textarea{min-height:8rem}
 @media (max-width:620px){
   .contact-pair{flex-direction:column;align-items:stretch}
 }
+/* info@blessyourpawspuppies.com is 29 characters and was breaking after the dot in a
+   250px tile. A little smaller in this band only; the tiles still match the buttons. */
+.closing .ct-value{font-size:.92rem}
 .closing .btn-row{margin:.9rem 0 0;justify-content:center}
 /* Both rows fill the copy column and their children share it equally, which is what makes
    the two buttons the same width as the contact tiles directly above them. flex-basis 0
@@ -2814,12 +2818,29 @@ def build_pages():
     page("purchase-agreement.html", "Purchase Agreement | Bless Your Paws Puppies",
       "The purchase agreement every family signs at reservation.",
       f"""<section><div class="wrap prose">
-  <div class="draft-banner">DRAFT. This agreement is a working draft prepared for
-    Hope and Joy to review, reword, and approve. It is not in effect as written.</div>
+  <div class="draft-banner">The terms below are a working draft for Hope and Joy to
+    approve. The signed agreement itself is Hope&rsquo;s document, summarised here.</div>
   <p class="eyebrow">Purchase agreement</p>
   <h1>Purchase agreement</h1>
-  <p>This agreement is between Bless Your Paws Puppies and the buyer named at
-    reservation, for the puppy identified by name and litter.</p>
+  <p>Every puppy is sold with a written agreement, signed by both the buyer and the
+    breeder. This page is a summary so nothing in it is a surprise on the day. The signed
+    document is the agreement; this page is not.</p>
+
+  <h3>What the signed agreement records</h3>
+  <ul>
+    <li><strong>You.</strong> Your name, address, phone number and email.</li>
+    <li><strong>Your puppy.</strong> Name, sex, colour, date of birth, microchip number,
+      and both parents&rsquo; names.</li>
+    <li><strong>The money.</strong> The adoption fee, {IN_TAX_PCT} Indiana sales tax, and
+      the full amount. The ${DEPOSIT} deposit and the date it was paid, then the balance
+      and the date it was paid.</li>
+    <li><strong>Signatures.</strong> Yours and ours, each dated.</li>
+  </ul>
+  <p class="fine">Bring photo identification for the address, and please tell us in
+    advance if the puppy is going home to a different name or address than the one on the
+    application.</p>
+
+  <h3>Terms</h3>
   <ul>
     <li><strong>Price and deposit.</strong> The purchase price is ${M_PRICE:,}, or
       ${M_PRICE_CASH:,} where the balance is paid in cash. Sales tax is added.
@@ -2827,14 +2848,16 @@ def build_pages():
       is due before or at pickup.</li>
     <li><strong>Deposit terms.</strong> The deposit is transferable to another
       available puppy if plans change. The deposit is non-refundable.</li>
-    <li><strong>Go-home.</strong> Puppies go home no earlier than 8 weeks of age,
-      after a final veterinary check.</li>
+    <li><strong>Go-home.</strong> Puppies go home at eight weeks of age or after, once
+      they have had their vet check.</li>
     {dob_reg_clause}
     <li><strong>Health.</strong> The puppy is sold with the
       <a href="health-guarantee.html">written health guarantee</a>, which is part of
       this agreement.</li>
     <li><strong>Care.</strong> The buyer agrees to provide routine veterinary care and
       a safe home.</li>
+    <li><strong>Family companion.</strong> The puppy is sold as a family companion and is
+      not to be used for breeding.</li>
     <li><strong>Return first.</strong> If at any point the buyer can no longer keep
       the dog, we are contacted first and given the option to take the dog back before
       it is rehomed or surrendered.</li>

@@ -442,6 +442,29 @@ get `immutable` for a year and HTML still revalidates.
 - [ ] `preview_urls` is off deliberately: a preview hostname is not covered by an Access
       application scoped to the production hostname.
 
+## Purchase agreement: two conflicts to settle with Hope
+
+Her document (`source-files/BYPP Purchase Agreement.docx`, gitignored) is a **fill-in bill
+of sale**: buyer name/address/phone/email, the puppy's sex, colour, DOB, microchip number
+and parents' names, the fee with 7% Indiana sales tax, the $500 deposit and balance with
+dates, and both signatures. **It contains no terms at all** — no deposit clause, no health
+guarantee, no return policy, no companion-only restriction. So it did not replace the terms
+on `purchase-agreement.html`; it supplied the half that page was missing. The page now
+carries both, with the terms still marked draft because her document does not state any.
+
+- [ ] **Her document says there is a 2.9% card charge for paying online. The site does
+      not.** That is surcharge language, and the site deliberately uses dual pricing
+      instead: $2,060 list, $2,000 cash. The difference is not cosmetic. A cash discount is
+      permitted everywhere; a card surcharge cannot lawfully be applied to debit cards, and
+      a Stripe Payment Link cannot tell debit from credit before the payment goes through.
+      **The website copy does not carry her wording**, because publishing both framings
+      would be worse than publishing neither. Hope needs to pick one, and the agreement and
+      the site then have to match.
+- [ ] **Her document records a microchip number. The go-home list does not mention
+      microchipping.** `M_KIT` has no microchip and the Doberman list did. So either the
+      Munchkin puppies are microchipped and the go-home list is incomplete, or the field is
+      aspirational and the agreement records something that will be left blank. Ask.
+
 ## Deployment runbook — Cloudflare Pages, email send and forward
 
 Ordered, and split by what actually blocks what. **Email does not depend on moving the
