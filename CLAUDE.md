@@ -712,3 +712,41 @@ horizontal overflow, uncollapsed multi-column grids, and CTA lines that do not f
 their container, then re-checks 1280 and 1920 to confirm the desktop treatment and the
 asymmetric columns survived. `.parent-grid` is `auto-fit`, so 2 to 3 columns at 768px
 and above is correct, not a missed collapse.
+
+## A hardcoded aspect-ratio is a second copy of a file's dimensions (2026-08-27)
+
+`.grid-2 .framed.keep-wide` was `aspect-ratio:1024/474` — the pixel dimensions of whichever
+litter photo happened to be in the repo when the rule was written. Its entire purpose is
+keeping the litter photo's OWN ratio so no puppy is cropped out of the row. Replacing the
+photograph with a 1619x971 one left the CSS cropping 23% off its height, silently defeating
+the one thing the class exists for. Every geometry check passed, because the box was the
+size the CSS asked for.
+
+It is `img_ar("img/puppies/litter-01.jpg")` now, read from the file at build time, so the
+ratio cannot drift from the asset again. **`CSS` is a PLAIN string and is full of literal
+braces**, so it cannot become an f-string; the value goes in as a `__KEEP_WIDE_AR__` token
+substituted where `style.css` is written. Same class of trap as the `NAV` f-string note
+above, from the opposite direction.
+
+The general rule: **when a stylesheet states a fact about a specific file, derive it.**
+`asset_v` already does this for cache-busting. Anything of the form "this rule encodes the
+shape of that asset" is a duplicate waiting to go stale.
+
+## Scope a card override by specificity, not by position (2026-08-27)
+
+`.facts li{min-height:44px}` inside the mobile block is a touch tap-target rule, right for
+interactive lists and wrong for the reference rows under a parent photo, where it inflated
+every row to 44px and left the card looking half-empty. The override is
+`.packet.parent .facts li` at (0,3,1) against the media rule's (0,1,1), so **it wins on
+specificity and does not care where it sits in the file.** That is the way out of the
+media-query ordering trap this stylesheet has hit three times: raise specificity rather than
+chasing declaration order.
+
+## Alt text must not assert what only a photograph could tell you
+
+The litter photo's alt derived its count from `M_TOTAL` (`"The litter of eight ... puppies
+together"`). When Alex supplied a replacement photograph, deciding whether "eight" was still
+true would have meant counting puppies in a picture, which is the inference this project
+forbids. Alt text now describes the picture without claiming a number, so it stays true
+whatever the frame contains. **Applies to any alt, caption or count generated from data but
+describing an image.**
