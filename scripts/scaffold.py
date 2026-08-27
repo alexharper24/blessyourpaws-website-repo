@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 89
+V = 90
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2731,17 +2731,18 @@ def build_pages():
     <div class="col-title hic-head">
       <p class="eyebrow">Reviews</p>
       <h1>From our families</h1>
-      <p class="fine" style="margin:0">{CHIP_SAMPLE}</p>
+      <p class="fine" style="margin:0">One review so far, and it is a real one.</p>
     </div>
     {img_tag('havilah-02', cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True)}
     <div class="hic-copy">
       <blockquote class="lede" style="border-left:3px solid var(--sage);padding-left:1.25rem;margin:0 0 1.5rem">
-        "Our puppy came home confident, snuggly, and already used to kids. You can
-        tell she was raised in the middle of a family."
-        <span class="fine">A waitlist family</span></blockquote>
-      <p>We are collecting reviews from our puppy families now, with their permission,
-        and will post them here as they come in. If you have one of our puppies, we
-        would love to hear from you.</p>
+        <strong style="display:block;margin-bottom:.35rem">So happy!</strong>
+        &ldquo;I&rsquo;m tickled pink on my purchase of my new puppy! Everyone has been
+        so nice! Can&rsquo;t wait to get her!!!!&rdquo;
+        <span class="fine">Brenda, who is bringing Tirzah home in September</span></blockquote>
+      <p>We are collecting reviews from our puppy families as they come, and we post
+        them here word for word. If you have one of our puppies, we would love to hear
+        from you.</p>
       <div class="btn-row"><a class="btn btn-primary" href="contact.html">Share your story</a></div>
     </div>
   </div>
