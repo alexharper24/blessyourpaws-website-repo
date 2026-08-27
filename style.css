@@ -156,7 +156,7 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
 /* A photo whose subject runs the full width of the frame cannot be cropped to 3/2. This
    keeps the litter photo's own 2.16:1 so no puppy is cropped out of the litter. Declared
    after the .grid-2 rule above because both are (0,2,0) and the later one wins. */
-.grid-2 .framed.keep-wide{aspect-ratio:1619/971}
+.grid-2 .framed.keep-wide{aspect-ratio:1536/1024}
 /* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
    3:2 cuts off either their heads or their torsos. */
 /* a 16:9 original keeps a 16:9 frame, so none of the subject is cropped away */
@@ -396,6 +396,10 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .facts li{min-width:0}
 .facts .k{color:var(--sage-deep)}
 .facts .v{text-align:right;font-weight:700;min-width:0;overflow-wrap:anywhere}
+/* In a .hic the copy column is competing with a photo's height, and these rows are
+   reference data rather than tap targets. 6px a side instead of 9.6 gives 39px rows and
+   returns 50px to the column. */
+.hic-copy .facts li{padding:.375rem 0}
 .checklist{list-style:none;margin:0;padding:0}
 .checklist li{padding:.4rem 0 .4rem 1.7rem;position:relative;font-size:.97rem}
 .checklist li::before{content:"";position:absolute;left:0;top:.8em;width:11px;

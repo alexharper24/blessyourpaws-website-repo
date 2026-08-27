@@ -9,12 +9,12 @@ script rather than editing the HTML.
 
 Draft mode: noindex on every page, robots.txt closed, until launch.
 """
-import functools, hashlib, json, os, re
+import functools, glob, hashlib, json, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 112
+V = 116
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -82,6 +82,9 @@ def n_word(n):
 
 M_TOTAL     = len(MUNCHKINS)
 M_AVAILABLE = len([m for m in MUNCHKINS if m[0] not in ADOPTED])
+# "Available now" is the first thing read on three pages and the one label that would be
+# actively false the day the litter sells out. Conditional, so it cannot outlive the fact.
+AVAIL_EYEBROW = "Available now" if M_AVAILABLE else "This litter"
 DOBERMANS = [
     ("elowen",  "Elowen",  "Girl", "Black and rust", "Ready for any adventure, and working on crate and leash training."),
     ("malcolm", "Malcolm", "Boy",  "Black and rust", "Eager to please, and doing well learning to sit and stay."),
@@ -518,6 +521,10 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .facts li{min-width:0}
 .facts .k{color:var(--sage-deep)}
 .facts .v{text-align:right;font-weight:700;min-width:0;overflow-wrap:anywhere}
+/* In a .hic the copy column is competing with a photo's height, and these rows are
+   reference data rather than tap targets. 6px a side instead of 9.6 gives 39px rows and
+   returns 50px to the column. */
+.hic-copy .facts li{padding:.375rem 0}
 .checklist{list-style:none;margin:0;padding:0}
 .checklist li{padding:.4rem 0 .4rem 1.7rem;position:relative;font-size:.97rem}
 .checklist li::before{content:"";position:absolute;left:0;top:.8em;width:11px;
@@ -1632,8 +1639,9 @@ def srcset_for(stem):
     """
     # only reference widths that were actually generated: a narrow original has no
     # 1600px derivative, and a srcset entry pointing at a missing file is a 404.
-    have = [w for w in (320, 640, 1000, 1600)
-            if os.path.exists(f"img/r/{stem}-{w}.webp")]
+    have = sorted(int(m.group(1)) for m in
+                  (re.match(rf"{re.escape(stem)}-(\d+)\.webp$", os.path.basename(f))
+                   for f in glob.glob(f"img/r/{stem}-*.webp")) if m)
     return ", ".join(f"img/r/{stem}-{w}.webp{asset_v(f'img/r/{stem}-{w}.webp')} {w}w"
                      for w in have)
 
@@ -1924,7 +1932,7 @@ def build_pages():
         PUPPIES_TITLE = "Available Puppies | Bless Your Paws Puppies"
         PUPPIES_DESC  = (f"All available {BREEDS_PHRASE} puppies. A ${DEPOSIT} deposit "
                          f"reserves your puppy.")
-        PUPPIES_INTRO = f'''  <p class="eyebrow">Available now</p>
+        PUPPIES_INTRO = f'''  <p class="eyebrow">{AVAIL_EYEBROW}</p>
   <h1>Our puppies</h1>
   <p class="lede" style="max-width:70ch">{n_word(M_TOTAL + len(DOBERMANS))} puppies across two litters. Every price
     includes the vet exam, vaccinations, and the go-home kit. A ${DEPOSIT} deposit
@@ -1945,18 +1953,18 @@ def build_pages():
     else:
         PUPPIES_TITLE = f"Munchkin Bernedoodle Puppies for Sale | {BRAND}"
         PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle "
-                         f"dam and an AKC Cavalier sire. Born {M_BORN}, home in September. "
-                         f"${M_PRICE:,} with a ${DEPOSIT} deposit.")
+                         f"dam and an AKC Cavalier sire. Born {M_BORN}, going home from "
+                         f"{M_HOME}. ${M_PRICE:,} with a ${DEPOSIT} deposit.")
         PUPPIES_INTRO = f'''  <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
-      <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else 'Available now'}</p>
+      <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else AVAIL_EYEBROW}</p>
       <h1>Munchkin Bernedoodle puppies</h1>
     </div>
     {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">{n_word(M_TOTAL)} puppies from <a href="parents.html">Troy</a>, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
-        {M_BORN}, and they can go home as soon as {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
+        {M_BORN}. Each card below says whether that puppy is still available.</p>
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
@@ -2037,9 +2045,9 @@ def build_pages():
 </section>
 
 <section class="band-raise"><div class="wrap">
-  <p class="eyebrow">Available now</p>
+  <p class="eyebrow">{AVAIL_EYEBROW}</p>
   <h2>Puppies looking for their families</h2>
-  <p class="lede">{'Munchkin Bernedoodles going home in September, and Doberman Pinschers ready right now.' if SHOW_DOBERMANS else 'Munchkin Bernedoodles going home in September.'} A ${DEPOSIT} deposit holds your puppy.</p>
+  <p class="lede">{'Munchkin Bernedoodles and Doberman Pinschers, raised underfoot in our homes.' if SHOW_DOBERMANS else 'Munchkin Bernedoodles, raised underfoot in our home.'} A ${DEPOSIT} deposit holds your puppy.</p>
   <div class="pgrid" style="margin-top:2rem">
 {card(*MUNCHKINS[1][:4], M_PRICE, "Munchkin Bernedoodle")}
 {card(*MUNCHKINS[2][:4], M_PRICE, "Munchkin Bernedoodle")}
@@ -2099,7 +2107,7 @@ def build_pages():
 
     if SHOW_DOBERMANS:
       page("munchkin-bernedoodles.html", "Munchkin Bernedoodle Puppies for Sale | Bless Your Paws Puppies",
-      f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle dam and an AKC Cavalier sire. Born {M_BORN}, home in September. ${M_PRICE:,} with a ${DEPOSIT} deposit.",
+      f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle dam and an AKC Cavalier sire. Born {M_BORN}, going home from {M_HOME}. ${M_PRICE:,} with a ${DEPOSIT} deposit.",
       f"""<section><div class="wrap">
   <div class="grid-2 narrow-left">
     <div>
@@ -2109,7 +2117,7 @@ def build_pages():
       </div>
       <p class="lede">{n_word(M_TOTAL)} puppies from Troy, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
-        {M_BORN}, and they can go home as soon as {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
+        {M_BORN}. Each card below says whether that puppy is still available.</p>
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
@@ -2506,7 +2514,7 @@ def build_pages():
        "send the inquiry form. Tell us "
        "a little about your family and who caught your eye. There is no application fee "
        "and no pressure.",
-       'Most families text a photo of the puppy they like and go from there. '
+       'Most families text a photo of the puppy they like. '
        '<a href="puppies.html">See who is available</a>.'),
       ("Meet the puppy", "malcolm-02" if SHOW_DOBERMANS else "jordan-02",
        "We set up a visit or a video call so you can meet the puppy, meet the parents, "
@@ -2549,12 +2557,12 @@ def build_pages():
       f"""<section style="padding-bottom:0"><div class="wrap">
   <p class="eyebrow">How it works</p>
   <h1>From first hello to go-home day</h1>
-  <p class="lede" style="max-width:68ch">Six steps, no pressure, and a real
+  <p class="lede" style="max-width:68ch">{n_word(len(steps))} steps, no pressure, and a real
     conversation somewhere in the middle. Here is exactly what happens, so nothing
     about buying a puppy from us is a surprise.</p>
 </div></section>
 
-<section><div class="wrap">
+<section style="padding-top:.5rem"><div class="wrap">
   <div class="steps-row">
 {steps_html}
   </div>
@@ -2781,8 +2789,12 @@ def build_pages():
         for i in range(1, COUNTS[s] + 1):
             items.append((f"{s}-{i:02d}", n, "doberman", s))
     # tiles sit in their own grid, not the section column, so they need their own hint
-    GAL_SIZES = ("(max-width:460px) 46vw, (max-width:760px) 31vw, "
-                 "(max-width:1100px) 24vw, 22vw")
+    # breakpoints derived from the grid itself: 2 columns need 260*2+20 = 540px of wrap,
+    # so 574px of viewport; 3 need 820 -> 873; 4 need 1100 -> 1171; 5 need 1380 -> 1469.
+    # Above 1660 the wrap caps at 1560 and the tile is a fixed 296px.
+    GAL_SIZES = ("(max-width:573px) 94vw, (max-width:872px) 46vw, "
+                 "(max-width:1170px) 30vw, (max-width:1468px) 23vw, "
+                 "(max-width:1659px) 18vw, 296px")
     gal = "\n".join(f'<a data-line="{line}" data-pup="{slug}" href="puppy-{slug}.html">'
                     f'{img_tag(stem, alt=name, sizes=GAL_SIZES, lazy=(k>0), priority=(k==0))}</a>'
                     for k, (stem, name, line, slug) in enumerate(items))
@@ -2801,7 +2813,7 @@ def build_pages():
     photo to meet that puppy.</p>
   <div class="filter-row" style="margin-top:1.5rem">
     <button class="cur" data-line="all">All photos</button>
-    <button data-line="munchkin">Munchkin Bernedoodles</button>
+{dob('    <button data-line="munchkin">Munchkin Bernedoodles</button>')}
 {dob('    <button data-line="doberman">Dobermans</button>')}
     <label class="filter-select">
       <span class="visually-hidden">Filter by puppy</span>
@@ -2823,7 +2835,8 @@ def build_pages():
     <div class="col-title hic-head">
       <p class="eyebrow">Reviews</p>
       <h1>From our families</h1>
-      <p class="fine" style="margin:0">One review so far, and it is a real one.</p>
+      <p class="fine" style="margin:0">Every review here is from a real family, in their
+        own words.</p>
     </div>
     {img_tag(lead('tirzah'), cls='framed hic-photo', alt='Tirzah, a black phantom Munchkin Bernedoodle puppy', lazy=False, priority=True)}
     <div class="hic-copy">
@@ -2831,7 +2844,7 @@ def build_pages():
         <strong style="display:block;margin-bottom:.35rem">So happy!</strong>
         &ldquo;I&rsquo;m tickled pink on my purchase of my new puppy! Everyone has been
         so nice! Can&rsquo;t wait to get her!!!!&rdquo;
-        <span class="fine">Brenda, who is bringing Tirzah home in September</span></blockquote>
+        <span class="fine">Brenda, who reserved Tirzah from this litter</span></blockquote>
       <p>We are collecting reviews from our puppy families as they come, and we post
         them here word for word. If you have one of our puppies, we would love to hear
         from you.</p>
