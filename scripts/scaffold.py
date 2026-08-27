@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 91
+V = 94
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -793,8 +793,19 @@ textarea{min-height:8rem}
 /* ---------- closing call to action ---------- */
 .closing{background:var(--paper-raise);border-top:1px solid var(--rule);
   border-bottom:1px solid var(--rule)}
+.closing-photo{aspect-ratio:4/5;object-fit:cover}
+@media (max-width:900px){.closing-photo{aspect-ratio:3/2;margin-top:1.5rem}}
 .closing .inner{max-width:44rem;margin:0 auto;text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:.85rem}
+/* Two columns from 901px: the copy left, a puppy right. Left-aligned, because a centred
+   column with left-aligned rows of tiles under it reads as neither one thing nor the other.
+   The copy column has a floor for the same reason narrow-left does: below it the photo
+   yields rather than the text being squeezed. */
+@media (min-width:901px){
+  .closing .inner{display:grid;grid-template-columns:minmax(27rem,1fr) minmax(0,.8fr);
+    gap:clamp(1.75rem,3vw,3rem);align-items:center;max-width:64rem;text-align:left}
+  .closing-photo{margin:0}
+}
 .closing h2{margin:0}
 .closing .contact-line{font-size:1.02rem;color:var(--forest-soft);margin:0;
   max-width:44ch}
@@ -818,7 +829,24 @@ textarea{min-height:8rem}
 @media (max-width:620px){
   .contact-pair{flex-direction:column;align-items:stretch}
 }
-.closing .btn-row{margin:.35rem 0 0;justify-content:center}
+.closing .btn-row{margin:.9rem 0 0;justify-content:center}
+/* Both rows fill the copy column and their children share it equally, which is what makes
+   the two buttons the same width as the contact tiles directly above them. flex-basis 0
+   rather than auto: with auto, the email tile's longer text would take more room than the
+   phone tile and the two rows would stop lining up. */
+@media (min-width:901px){
+  .closing .contact-pair,.closing .btn-row{justify-content:flex-start}
+  .closing .contact-pair>.contact-tile,.closing .btn-row>.btn{flex:1 1 0;min-width:0}
+  .closing .btn-row>.btn{justify-content:center}
+}
+/* Below the two-column breakpoint the equal-split rule does not apply, which left the two
+   buttons at 243px and 197px side by side: the row was the right width and the buttons
+   were not. Stack them full width instead, which is this project's standing CTA rule and
+   is what happens at 390 already. */
+@media (max-width:900px){
+  .closing .btn-row{flex-direction:column;align-items:stretch}
+  .closing .btn-row>.btn{justify-content:center}
+}
 
 /* ---------- FAQ accordion ---------- */
 .faq{max-width:60rem;margin:0 auto;border-top:1px solid var(--rule)}
@@ -2372,6 +2400,7 @@ def build_pages():
 
 <section class="closing" style="margin-bottom:0"><div class="wrap">
   <div class="inner">
+   <div class="closing-copy">
     <h2>Come and meet them</h2>
     <p class="contact-line">Visits are by appointment, and video calls work well if
       you are further away.</p>
@@ -2390,6 +2419,8 @@ def build_pages():
       <a class="btn btn-primary" href="puppies.html">See available puppies</a>
       <a class="btn btn-ghost" href="contact.html">Send an inquiry</a>
     </div>
+   </div>
+   {img_tag('shiloh-04', cls='framed closing-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 34vw')}
   </div>
 </div></section>""")
 
