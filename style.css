@@ -156,7 +156,7 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
 /* A photo whose subject runs the full width of the frame cannot be cropped to 3/2. This
    keeps the litter photo's own 2.16:1 so no puppy is cropped out of the litter. Declared
    after the .grid-2 rule above because both are (0,2,0) and the later one wins. */
-.grid-2 .framed.keep-wide{aspect-ratio:1024/474}
+.grid-2 .framed.keep-wide{aspect-ratio:1619/971}
 /* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
    3:2 cuts off either their heads or their torsos. */
 /* a 16:9 original keeps a 16:9 frame, so none of the subject is cropped away */
@@ -325,6 +325,14 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 /* parent originals run from 0.75 to 1.42 aspect. a square frame crops both
    orientations gently, where a 4/5 frame gutted the landscape ones. */
 .packet.parent img{aspect-ratio:1/1;object-position:50% 30%}
+/* The facts block under a parent photo is reference, not a tap target: denser rows and
+   less padding, so the card is a summary rather than a half-empty panel. .facts li gets
+   min-height:44px under 900px for touch, which is right for the interactive lists and
+   wrong here, so it is released for these rows only. */
+.packet.parent .packet-body{padding:.85rem .8rem .8rem;gap:.1rem}
+.packet.parent .facts{margin-top:.5rem!important;border-top:1px solid var(--rule)}
+.packet.parent .facts li{padding:.34rem 0;min-height:0;font-size:.9rem}
+.packet.parent .facts li:last-child{border-bottom:0;padding-bottom:0}
 .parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
 .parent-grid.row-4{grid-template-columns:repeat(4,1fr)}
@@ -681,8 +689,8 @@ textarea{min-height:8rem}
    The copy column has a floor for the same reason narrow-left does: below it the photo
    yields rather than the text being squeezed. */
 @media (min-width:901px){
-  .closing .inner{display:grid;grid-template-columns:minmax(27rem,1fr) minmax(0,.85fr);
-    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:68rem;text-align:left}
+  .closing .inner{display:grid;grid-template-columns:minmax(26rem,1fr) minmax(0,1.4fr);
+    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:70rem;text-align:left}
   .closing-photo{margin:0}
 }
 .closing h2{margin:0}

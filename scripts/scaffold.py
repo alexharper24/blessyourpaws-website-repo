@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 107
+V = 108
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -278,7 +278,7 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
 /* A photo whose subject runs the full width of the frame cannot be cropped to 3/2. This
    keeps the litter photo's own 2.16:1 so no puppy is cropped out of the litter. Declared
    after the .grid-2 rule above because both are (0,2,0) and the later one wins. */
-.grid-2 .framed.keep-wide{aspect-ratio:1024/474}
+.grid-2 .framed.keep-wide{aspect-ratio:__KEEP_WIDE_AR__}
 /* a portrait original keeps a portrait frame. cropping a 3:4 photo of people to
    3:2 cuts off either their heads or their torsos. */
 /* a 16:9 original keeps a 16:9 frame, so none of the subject is cropped away */
@@ -447,6 +447,14 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 /* parent originals run from 0.75 to 1.42 aspect. a square frame crops both
    orientations gently, where a 4/5 frame gutted the landscape ones. */
 .packet.parent img{aspect-ratio:1/1;object-position:50% 30%}
+/* The facts block under a parent photo is reference, not a tap target: denser rows and
+   less padding, so the card is a summary rather than a half-empty panel. .facts li gets
+   min-height:44px under 900px for touch, which is right for the interactive lists and
+   wrong here, so it is released for these rows only. */
+.packet.parent .packet-body{padding:.85rem .8rem .8rem;gap:.1rem}
+.packet.parent .facts{margin-top:.5rem!important;border-top:1px solid var(--rule)}
+.packet.parent .facts li{padding:.34rem 0;min-height:0;font-size:.9rem}
+.packet.parent .facts li:last-child{border-bottom:0;padding-bottom:0}
 .parent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:clamp(1.25rem,2vw,2rem);align-items:stretch}
 .parent-grid.row-4{grid-template-columns:repeat(4,1fr)}
@@ -803,8 +811,8 @@ textarea{min-height:8rem}
    The copy column has a floor for the same reason narrow-left does: below it the photo
    yields rather than the text being squeezed. */
 @media (min-width:901px){
-  .closing .inner{display:grid;grid-template-columns:minmax(27rem,1fr) minmax(0,.85fr);
-    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:68rem;text-align:left}
+  .closing .inner{display:grid;grid-template-columns:minmax(26rem,1fr) minmax(0,1.4fr);
+    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:70rem;text-align:left}
   .closing-photo{margin:0}
 }
 .closing h2{margin:0}
@@ -1577,6 +1585,26 @@ def asset_v(path):
     except OSError:
         return ""
 
+def img_ar(path, fallback="1024/474"):
+    """`aspect-ratio` for one image, read from the image itself.
+
+    This was hardcoded as 1024/474, the pixel dimensions of whichever litter photo
+    happened to be in the repo when the rule was written. Swapping in a photograph of a
+    different shape left the CSS cropping 23% off the new one's height, which is exactly
+    what `.keep-wide` exists to prevent: its whole job is keeping the litter photo's own
+    ratio so no puppy is cropped out of the row. A ratio hardcoded from a file is a second
+    copy of that file's dimensions, and this repo's recurring bug is a fact fixed in one
+    place surviving in a quieter one. Read it from the file and it cannot drift again.
+    """
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            return "%d/%d" % im.size
+    except Exception:
+        return fallback
+
+KEEP_WIDE_AR = img_ar("img/puppies/litter-01.jpg")
+
 def srcset_for(stem):
     """The srcset string for one stem, or "" if it has no derivatives.
 
@@ -1852,14 +1880,13 @@ def build_pages():
     M_PARENTS = (
       parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
                   [("Weight", "22 lbs"), ("Color", "Blue merle parti"),
-                   ]) +
+                   ("Genetic testing", "Clear on 29, carries CDDY")]) +
       parent_card("cavalier-sire-01", "Bip Finch", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
                    # "Clear" was retracted from his detail row and his FAQ answer for want
                    # of a document. It survived here, on ten pages, saying the opposite.
-                   ("Genetic testing", "Clear, results being gathered")],
-                  "His registered name is being added."))
+                   ("Genetic testing", "Clear, results being gathered")]))
     D_PARENTS = (
       parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
                   [("Registered", "Kingdom's Miraculous Grace"),
@@ -1888,7 +1915,7 @@ def build_pages():
   <div class="section-head" style="margin-top:2.5rem">
     <div>
       <h2 style="margin:0">Munchkin Bernedoodles &middot; ${M_PRICE:,}</h2>
-      <p class="fine" style="margin:.35rem 0 0">Born {M_BORN}. Going home {M_HOME}.
+      <p class="fine" style="margin:.35rem 0 0">Born {M_BORN}. Can go home as soon as {M_HOME}.
         {SIZE_DRAFT}</p>
     </div>
     <a class="btn btn-pink breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
@@ -1907,18 +1934,18 @@ def build_pages():
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else 'Available now'}</p>
       <h1>Munchkin Bernedoodle puppies</h1>
     </div>
-    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt=f'The litter of {n_word(M_TOTAL).lower()} Munchkin Bernedoodle puppies together', sizes=PHOTO_WIDE)}
+    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">{n_word(M_TOTAL)} puppies from <a href="parents.html">Troy</a>, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
-        {M_BORN}, going home {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
+        {M_BORN}, and they can go home as soon as {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
         <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
-        <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
+        <li><span class="k">Can go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
       </ul>
       <p class="fine">{SIZE_DRAFT}</p>
@@ -2064,14 +2091,14 @@ def build_pages():
       </div>
       <p class="lede">{n_word(M_TOTAL)} puppies from Troy, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
-        {M_BORN}, going home {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
+        {M_BORN}, and they can go home as soon as {M_HOME}.{f' {n_word(M_AVAILABLE)} are still looking for their families.' if M_AVAILABLE != M_TOTAL else ''}</p>
       <ul class="facts">
         <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
         <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
         <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
-        <li><span class="k">Go home</span><span class="v">{M_HOME}</span></li>
+        <li><span class="k">Can go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
       </ul>
       <p class="fine">{SIZE_DRAFT}</p>
@@ -2280,7 +2307,8 @@ def build_pages():
         None,
         "Bip Finch is an outside stud rather than one of our own dogs. We chose him "
         "carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, "
-        "and the Cavalier side is where the lap-dog nature comes from.",
+        "and the Cavalier side is where the lap-dog nature comes from. His registered "
+        "name is being added.",
         [("Registration:", "AKC registered, TS65827904."),
          ("Weight:", "19 lbs, ruby."),
          # Hope's own statement, given 2026-08-26. She has seen his results; what she does
@@ -2431,7 +2459,7 @@ def build_pages():
       <a class="btn btn-ghost" href="contact.html">Send an inquiry</a>
     </div>
    </div>
-   {img_tag('shiloh-04', cls='framed closing-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 34vw')}
+   {img_tag('shiloh-04', cls='framed closing-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes='(max-width:900px) 94vw, 44vw')}
   </div>
 </div></section>""")
 
@@ -3066,7 +3094,7 @@ def build_pages():
           # is the line search engines and link previews show, so it is the one place a
           # sold puppy most easily looks available
           (f"{name} is a {colour.lower()} {breed} puppy from our litter, already adopted "
-           f"and going home {home}."
+           f"and can go home from {home}."
            if slug in ADOPTED else
            f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${DEPOSIT} deposit to reserve."),
           f"""<section><div class="wrap">
@@ -3092,7 +3120,7 @@ def build_pages():
         <li><span class="k">Sex</span><span class="v">{sex}</span></li>
         <li><span class="k">Color</span><span class="v">{colour}</span></li>
         <li><span class="k">Born</span><span class="v">{born}</span></li>
-        <li><span class="k">Go home</span><span class="v">{home}</span></li>
+        <li><span class="k">Can go home</span><span class="v">{home}</span></li>
 {extra_facts}
       </ul>
       {f'<p><strong>{note}</strong></p>' if note else ''}
@@ -3109,9 +3137,11 @@ def build_pages():
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <h2>{name}'s parents</h2>
-  <div class="parent-grid" style="margin-top:1.5rem">{parents_html}</div>
-  <div class="btn-row"><a class="btn btn-ghost" href="parents.html">Full health details</a></div>
+  <div class="section-head">
+    <div><h2 style="margin:0">{name}'s parents</h2></div>
+    <a class="btn btn-ghost" href="parents.html">Full health details</a>
+  </div>
+  <div class="parent-grid">{parents_html}</div>
 </div></section>
 
 <section><div class="wrap">
@@ -3141,7 +3171,8 @@ def build_pages():
                    D_KIT, D_PARENTS, d_facts)
 
 def build_assets():
-    open("style.css", "w", encoding="utf-8").write(CSS)
+    open("style.css", "w", encoding="utf-8").write(
+        CSS.replace("__KEEP_WIDE_AR__", KEEP_WIDE_AR))
     open("main.js", "w", encoding="utf-8").write(prettify_links(JS))
     os.makedirs("img/placeholder", exist_ok=True)
 
