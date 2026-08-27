@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 111
+V = 112
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2789,8 +2789,11 @@ def build_pages():
     pup_opts = "\n".join(f'        <option value="{sl}">{nm}</option>'
                          for sl, nm, *_ in list(MUNCHKINS) + D_LIST)
     page("gallery.html", "Photo Gallery | Bless Your Paws Puppies",
-      "Every photo of our Munchkin Bernedoodle puppies." if not SHOW_DOBERMANS
-      else "Every photo of our Munchkin Bernedoodle and Doberman Pinscher puppies.",
+      ("Photos of every Munchkin Bernedoodle puppy with us right now. Click any photo "
+       "to go straight to that puppy and see what is still available."
+       if not SHOW_DOBERMANS else
+       "Photos of every Munchkin Bernedoodle and Doberman Pinscher puppy with us right "
+       "now. Click any photo to go straight to that puppy."),
       f"""<section><div class="wrap">
   <p class="eyebrow">Gallery</p>
   <h1>The photo album</h1>
@@ -2813,7 +2816,8 @@ def build_pages():
 </div></section>""")
 
     page("reviews.html", "Reviews | Bless Your Paws Puppies",
-      "What families say about their Bless Your Paws puppies.",
+      "What our puppy families say about Hope and Joy, posted word for word as they send "
+      "them in. If you have one of our puppies, we would love to hear from you.",
       f"""<section><div class="wrap">
   <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
@@ -2837,7 +2841,8 @@ def build_pages():
 </div></section>""")
 
     page("health-guarantee.html", "Health Guarantee | Bless Your Paws Puppies",
-      "Our written health guarantee for every puppy.",
+      "Our written health guarantee: seven days on viral disease, one year on major "
+      "genetic defects, and the 72-hour vet exam that keeps it valid.",
       f"""<section><div class="wrap prose">
   <p class="eyebrow">Health guarantee</p>
   <h1>Our health guarantee</h1>
@@ -2895,7 +2900,8 @@ def build_pages():
 </div></section>""")
 
     page("purchase-agreement.html", "Purchase Agreement | Bless Your Paws Puppies",
-      "The purchase agreement every family signs at reservation.",
+      f"A plain summary of the agreement every family signs: the price, the ${DEPOSIT} "
+      f"deposit, when puppies go home, our written health guarantee, and the return terms.",
       f"""<section><div class="wrap prose">
   <p class="eyebrow">Purchase agreement</p>
   <h1>Purchase agreement</h1>
@@ -2948,7 +2954,8 @@ def build_pages():
 </div></section>""")
 
     page("privacy-policy.html", "Privacy Policy | Bless Your Paws Puppies",
-      "How this website handles your information.",
+      "What we collect when you use our forms, who else handles it, and how to have it "
+      "removed. No analytics, no advertising, and no tracking cookies on this site.",
       f"""<section><div class="wrap prose">
   <p class="eyebrow">Privacy</p>
   <h1>Privacy policy</h1>
@@ -3099,6 +3106,22 @@ def build_pages():
         # the visible page stopped. Google reads this for rich results, so it is the one
         # that would have kept offering her for sale in search.
         adopted = slug in ADOPTED
+        # One source of truth for the crumb: the visible trail and the BreadcrumbList are
+        # both built from this. While the breed page and the puppies page are the same URL
+        # there is only one crumb, because two links to one destination is not a level.
+        crumbs = [("Available puppies", "puppies.html")]
+        if breed_page != "puppies":
+            crumbs.append((f"{breed}s", f"{breed_page}.html"))
+        crumb_html = " /\n    ".join(f'<a href="{href}">{label}</a>'
+                                     for label, href in crumbs)
+        # Home is included though it is not in the visible trail, which is both standard
+        # and what makes the list a complete path from the site root.
+        crumb_items = [("Bless Your Paws Puppies", "")] + crumbs + [(name, f"puppy-{slug}.html")]
+        crumb_ld = json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "name": label,
+                 "item": f"{BASE}/" + (href[:-5] if href.endswith(".html") else href)}
+                for i, (label, href) in enumerate(crumb_items)]})
         ld = json.dumps({"@context": "https://schema.org", "@type": "Product",
             "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{lead(slug)}.jpg",
             "description": (f"{name} is a {colour.lower()} {breed} puppy from our litter, "
@@ -3116,8 +3139,7 @@ def build_pages():
            if slug in ADOPTED else
            f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${DEPOSIT} deposit to reserve."),
           f"""<section><div class="wrap">
-  <p class="eyebrow"><a href="puppies.html">Available puppies</a> /
-    <a href="{breed_page}.html">{breed}s</a></p>
+  <p class="eyebrow">{crumb_html}</p>
   <div class="puppy-top">
     <div class="carousel" tabindex="0">
       <div class="frame">
@@ -3175,7 +3197,8 @@ def build_pages():
     </div>
   </div>
 </div></section>""",
-          extra_head=f'<script type="application/ld+json">{ld}</script>\n')
+          extra_head=(f'<script type="application/ld+json">{ld}</script>\n'
+                      f'<script type="application/ld+json">{crumb_ld}</script>\n'))
 
     m_facts = ('        <li><span class="k">Expected adult size</span>'
                f'<span class="v">{M_SIZE} (draft)</span></li>')
