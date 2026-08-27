@@ -14,7 +14,7 @@ import functools, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 96
+V = 102
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -113,7 +113,7 @@ M_SIZE = "15 to 20 lbs"
 # flags the number for confirmation before launch.
 SIZE_DRAFT  = ''   # 15 to 20 lbs confirmed by Hope on the 2026-08-26 call
 
-M_KIT = ["Vaccination and health record", "Examination by our vet",
+M_KIT = ["Vaccination and health record", "Examination by our vet", "Microchipped",
          "Small bag of the food they know", "Collar and leash", "A blanket", "Toys"]
 D_KIT = ["AKC registration", "One year genetic health guarantee",
          "Vaccination and health record", "Vet exam and report", "Microchipped",
@@ -715,10 +715,10 @@ input,select,textarea{font:inherit;padding:.7rem .8rem;
 textarea{min-height:8rem}
 
 /* ---------- process steps: five across, photo over caption ---------- */
-.steps-row{display:grid;grid-template-columns:repeat(5,1fr);
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);
   gap:clamp(1rem,1.6vw,1.75rem);align-items:start}
 .step{display:flex;flex-direction:column;gap:.75rem}
-.step-media img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px;
+.step-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;
   border:1.5px solid var(--forest);box-shadow:0 2px 0 var(--sage-light)}
 .step-num{display:inline-flex;align-items:center;justify-content:center;
   width:2.1rem;height:2.1rem;border-radius:50%;background:var(--forest);
@@ -728,7 +728,6 @@ textarea{min-height:8rem}
 .step h3{font-size:1.02rem;margin:0;line-height:1.25}
 .step p{margin:0 0 .45rem;font-size:.9rem}
 .step .fine{font-size:.82rem}
-@media (max-width:1100px){.steps-row{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:760px){.steps-row{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:460px){.steps-row{grid-template-columns:1fr}}
 
@@ -803,8 +802,8 @@ textarea{min-height:8rem}
    The copy column has a floor for the same reason narrow-left does: below it the photo
    yields rather than the text being squeezed. */
 @media (min-width:901px){
-  .closing .inner{display:grid;grid-template-columns:minmax(27rem,1fr) minmax(0,.62fr);
-    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:60rem;text-align:left}
+  .closing .inner{display:grid;grid-template-columns:minmax(27rem,1fr) minmax(0,.85fr);
+    gap:clamp(1.75rem,3vw,2.5rem);align-items:center;max-width:68rem;text-align:left}
   .closing-photo{margin:0}
 }
 .closing h2{margin:0}
@@ -832,7 +831,14 @@ textarea{min-height:8rem}
 }
 /* info@blessyourpawspuppies.com is 29 characters and was breaking after the dot in a
    250px tile. A little smaller in this band only; the tiles still match the buttons. */
-.closing .ct-value{font-size:.92rem}
+.closing .ct-value{font-size:.88rem}
+/* Between 901 and 1100 the copy column is 443-541px, so two side-by-side tiles leave the
+   email about 215px and it breaks after the dot. Shrinking the type further would make it
+   unreadable, so the tiles stack in that band and each gets the full column width. Both
+   rows still fill the column, so they still line up with the buttons. */
+@media (min-width:901px) and (max-width:1100px){
+  .closing .contact-pair{flex-direction:column;align-items:stretch}
+}
 .closing .btn-row{margin:.9rem 0 0;justify-content:center}
 /* Both rows fill the copy column and their children share it equally, which is what makes
    the two buttons the same width as the contact tiles directly above them. flex-basis 0
@@ -2014,7 +2020,7 @@ def build_pages():
       and pans, the vacuum. Early neurological stimulation starts in the first weeks,
       and grass potty training starts before go-home.</p>
     <p>Each puppy leaves with a vet exam, current vaccinations, a health record, a bag
-      of the food they know, a blanket, and toys that smell like home.
+      of the food they know, a microchip, a blanket, and toys that smell like home.
       <a href="process.html">See how reserving works</a>.</p>
   </div>
 </div></section>
@@ -2158,7 +2164,7 @@ def build_pages():
        "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
-       "A vaccination and health record, our vet's exam, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
+       "A vaccination and health record, our vet's exam, a microchip, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
        + (" Doberman puppies also come with AKC registration, a one year genetic health guarantee, microchipping, tail docked and dew claws removed." if SHOW_DOBERMANS else "")),
       ("How do I reserve one, and is the deposit refundable?",
        "A $500 deposit reserves your puppy and applies to your balance. The deposit is non-refundable. If you change your mind about which puppy, you can move it to another available puppy."),
@@ -2832,8 +2838,9 @@ def build_pages():
     <li><strong>Your puppy.</strong> Name, sex, colour, date of birth, microchip number,
       and both parents&rsquo; names.</li>
     <li><strong>The money.</strong> The adoption fee, {IN_TAX_PCT} Indiana sales tax, and
-      the full amount. The ${DEPOSIT} deposit and the date it was paid, then the balance
-      and the date it was paid.</li>
+      the full amount. The fee is ${M_PRICE:,}, or ${M_PRICE_CASH:,} where the balance is
+      paid in cash. The ${DEPOSIT} deposit and the date it was paid, then the balance and
+      the date it was paid.</li>
     <li><strong>Signatures.</strong> Yours and ours, each dated.</li>
   </ul>
   <p class="fine">Bring photo identification for the address, and please tell us in

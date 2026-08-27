@@ -452,18 +452,21 @@ guarantee, no return policy, no companion-only restriction. So it did not replac
 on `purchase-agreement.html`; it supplied the half that page was missing. The page now
 carries both, with the terms still marked draft because her document does not state any.
 
-- [ ] **Her document says there is a 2.9% card charge for paying online. The site does
-      not.** That is surcharge language, and the site deliberately uses dual pricing
+- [x] **RESOLVED 2026-08-26 (Alex): dual pricing, not a surcharge.** Her document says
+      there is a 2.9% card charge for paying online. The site does not, and will not. That is surcharge language, and the site deliberately uses dual pricing
       instead: $2,060 list, $2,000 cash. The difference is not cosmetic. A cash discount is
       permitted everywhere; a card surcharge cannot lawfully be applied to debit cards, and
       a Stripe Payment Link cannot tell debit from credit before the payment goes through.
       **The website copy does not carry her wording**, because publishing both framings
       would be worse than publishing neither. Hope needs to pick one, and the agreement and
       the site then have to match.
-- [ ] **Her document records a microchip number. The go-home list does not mention
-      microchipping.** `M_KIT` has no microchip and the Doberman list did. So either the
-      Munchkin puppies are microchipped and the go-home list is incomplete, or the field is
-      aspirational and the agreement records something that will be left blank. Ask.
+- [x] **RESOLVED 2026-08-26 (Alex): the puppies are microchipped.** Her agreement records
+      a microchip number, which is what surfaced the gap: `M_KIT` had no microchip while the
+      Doberman list did. It is on the go-home list now.
+- [ ] **Hope's own document still needs updating to match.** The website is aligned; the
+      signed document is not. It still carries the 2.9% card-charge line and still states no
+      terms. Someone has to fold the dual pricing and the terms into her .docx, and that
+      document is what actually governs a sale.
 
 ## Deployment runbook — Cloudflare Pages, email send and forward
 
