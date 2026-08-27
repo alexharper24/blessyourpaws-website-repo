@@ -30,9 +30,13 @@ is irreversible in practice, because Google caches what it finds.
       Policy. The guarantee is Hope's own wording; the terms and the privacy policy are
       not, and both describe real obligations.
 - [ ] Both forms tested end to end, with the notification actually landing in Hope's inbox.
-- [ ] `info@blessyourpawspuppies.com` forwards to the RIGHT Gmail. Hope said "HPW 21" on
-      the call; the routing rule points at `hpwtwin1@gmail.com`. Confirm they are the same
-      account before anyone relies on it.
+- [x] **RESOLVED 2026-08-26: `info@` forwards to the right Gmail.** The open question was
+      whether "HPW 21", as Hope said it on the call, was the same account as
+      `hpwtwin1@gmail.com`. It is: Cloudflare Email Routing only enables a rule after the
+      destination address clicks its own verification link, and **Hope clicked it herself**
+      at 00:02 UTC. That is the confirmation, not a second thing to go and check.
+- [ ] Still worth doing: send a real test to `info@` and watch it land, so the first live
+      message is not the first test.
 
 ## 0. Launching without Stripe — already works, nothing to build
 
