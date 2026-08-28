@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 128
+V = 129
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -158,10 +158,13 @@ D_BORN, D_HOME = "April 14, 2026", "Ready now"
 CHIP_DRAFT  = '<span class="chip chip-draft">Draft, confirm before launch</span>'
 CHIP_SAMPLE = '<span class="chip chip-sample">Sample copy, waiting on their words</span>'
 CHIP_PHOTO  = '<span class="chip chip-draft">Photo coming</span>'
-M_SIZE = "15 to 20 lbs"
-# The provenance changed with the figure: 15 to 20 is narrower than anything the parents'
-# weights alone imply, so the chip no longer claims to be derived from them. It still
-# flags the number for confirmation before launch.
+# 15 to 24, not 15 to 20. There is NO prior-litter data (Alex, 2026-08-28), so this
+# is a projection from the parents: Troy 22 lbs, Bip Finch 19, parental mean ~20.5.
+# The old ceiling sat below the dam's own weight. Multi-gen crosses vary more, not
+# less. The ceiling is what carries the risk: a "munchkin" that matures at 24 lbs is
+# the complaint, never one that matures small. Revisit once a litter has actually
+# grown up, at which point observed weights beat this inference.
+M_SIZE = "15 to 24 lbs"
 FALLBACK_INQUIRY = _fallback(FORM_INQUIRY,
     "The form is almost ready. For now, call or text Hope at "
     f'<a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.')
@@ -171,7 +174,12 @@ FALLBACK_APPLY = _fallback(FORM_APPLY,
 FALLBACK_WAITLIST = _fallback(FORM_WAITLIST,
     "The form is almost ready. For now, text Hope at "
     f'<a href="{SMS_HREF}">{PHONE_DISPLAY}</a> with the word WAITLIST and your name.')
-SIZE_DRAFT  = ''   # 15 to 20 lbs confirmed by Hope on the 2026-08-26 call
+# The basis for the estimate, shown beside it. Parent weights are the most reliable
+# predictor there is, so this is more use to a buyer than the range on its own, and
+# it stops the range reading as a specification.
+SIZE_NOTE = ("Expected adult size is our best estimate from the parents, Troy at "
+             "22 lbs and Bip Finch at 19 lbs. It is not a promise about an "
+             "individual puppy.")
 
 M_KIT = ["Vaccination and health record", "Examination by our vet", "Microchipped",
          "Signed health guarantee", "Small bag of the food they know", "Collar and leash",
@@ -2026,7 +2034,7 @@ def build_pages():
     <div>
       <h2 style="margin:0">Munchkin Bernedoodles &middot; ${M_PRICE:,}</h2>
       <p class="fine" style="margin:.35rem 0 0">Born {M_BORN}. Can go home as soon as {M_HOME}.
-        {SIZE_DRAFT}</p>
+        {SIZE_NOTE}</p>
     </div>
     <a class="btn btn-pink breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
   </div>
@@ -2058,7 +2066,7 @@ def build_pages():
         <li><span class="k">Can go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
       </ul>
-      <p class="fine">{SIZE_DRAFT}</p>
+      <p class="fine">{SIZE_NOTE}</p>
       <div class="btn-row" style="margin-top:1rem">
         <a class="btn btn-pink breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
       </div>
@@ -2211,7 +2219,7 @@ def build_pages():
         <li><span class="k">Can go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
       </ul>
-      <p class="fine">{SIZE_DRAFT}</p>
+      <p class="fine">{SIZE_NOTE}</p>
       <p>New to the cross? <a href="what-is-a-munchkin-bernedoodle.html">Read our
         plain-language guide</a> to what a Munchkin Bernedoodle is and what to expect.</p>
     </div>
@@ -3270,6 +3278,7 @@ def build_pages():
         <li><span class="k">Can go home</span><span class="v">{home}</span></li>
 {extra_facts}
       </ul>
+      {f'<p class="fine">{SIZE_NOTE}</p>' if breed.startswith("Munchkin") else ''}
       {f'<p><strong>{note}</strong></p>' if note else ''}
       {reserve_block}
       <h3>About {name}</h3>
@@ -3307,7 +3316,7 @@ def build_pages():
           extra_head=(f'<script type="application/ld+json">{ld}</script>\n'
                       f'<script type="application/ld+json">{crumb_ld}</script>\n'))
 
-    # No "(draft)": Hope confirmed 15 to 20 lbs on the 2026-08-26 call. SIZE_DRAFT was
+    # No "(draft)": the figure is confirmed copy, not a placeholder. SIZE_DRAFT was
     # emptied then and this second copy was missed, which is why it was still live.
     # "Expected adult size" already tells the reader it is a projection.
     m_facts = ('        <li><span class="k">Expected adult size</span>'
