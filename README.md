@@ -11,6 +11,25 @@ copy** (Alex, 2026-08-26).
 
 # GO-LIVE CHECKLIST
 
+> **LIVE since 2026-08-27** at https://blessyourpawspuppies.com (v=123). Steps 1 to 3 are
+> done and verified. What is left is off-site: the two redirect rules, Search Console, and
+> the Google Business Profile. See "Still to do after launch" directly below.
+
+## Still to do after launch
+
+- [ ] **`www` -> apex redirect rule** on the zone. www is currently a custom domain
+      serving the same site, which was deliberate (a visitor typing www getting an error
+      is worse than two hostnames), but canonicals are carrying the duplication alone
+      until the rule exists.
+- [ ] **301 `blessyourpaws.com` -> `blessyourpawspuppies.com`.** That zone has no web
+      records at all right now, so the domain simply does not resolve.
+- [ ] **Search Console:** add the property, submit `sitemap.xml`, request indexing on the
+      home page.
+- [ ] **Google Business Profile.** Highest-leverage item left, and the slowest: expect
+      video verification. Full setup sheet lower down, including the address decision.
+- [ ] Bing Places and Apple Business Connect, same address rule.
+
+
 **Nothing here is optional and the order matters.** Steps 1 to 3 are the switch; step 3
 is irreversible in practice, because Google caches what it finds.
 
@@ -67,25 +86,36 @@ page. Nothing needs disabling before launch.
 
 ## 1. Domain
 
-- [ ] Add `blessyourpawspuppies.com` and `www` as custom domains **on the Worker**, before
-      touching DNS.
-- [ ] Let the certificate issue, then enable Enforce HTTPS.
+- [x] **DONE 2026-08-27.** Both declared in `wrangler.jsonc` as `custom_domain: true`
+      routes rather than clicked in, so the intent lives in the repo. Pre-flight found
+      both zones on Cloudflare nameservers, Email Routing MX live on the apex, and **no A
+      or AAAA record on any hostname**, so nothing was serving and there was no live site
+      to break.
+- [x] **DONE.** Apex answered 200 over HTTPS immediately; www finished issuing a
+      few minutes later and also returns 200.
 - [ ] 301 `blessyourpaws.com` to `blessyourpawspuppies.com` (a redirect rule on that zone).
 
 ## 2. `BASE`
 
-- [ ] One line in `scripts/scaffold.py`: `BASE` becomes
-      `https://blessyourpawspuppies.com`. Every canonical, the sitemap and every OG tag
-      derive from it. Bump `V`, regenerate, commit.
-- [ ] Do NOT do this before the domain resolves, or the canonicals point at nothing.
+- [x] **DONE 2026-08-27.** Note the deploy that created the custom domains also
+      **disabled workers.dev**, warning it does that by default when `workers_dev` is
+      absent, so BASE had to move in the same push or all 23 pages would have pointed at
+      a host that now 404s. `workers_dev` is pinned `false` explicitly so one hostname
+      serves the site and a later deploy cannot quietly restore a second.
+- [x] Order held: BASE moved only after the apex resolved, and indexing opened only
+      after every canonical was confirmed returning 200 on the real domain.
 - [ ] The URL shape is already correct and needs no work: links, canonicals and the
       sitemap are extensionless, which is what the Worker serves.
 
 ## 3. The switch
 
-- [ ] Remove the `noindex` meta from every page.
-- [ ] Open `robots.txt` (`Allow: /`, drop the `Disallow`).
-- [ ] Regenerate and confirm on the live domain that no page carries `noindex`.
+- [x] **DONE 2026-08-27 via `DRAFT_MODE = False`**, not by deleting the line. One
+      boolean drives the noindex meta and robots.txt together, so the site can be
+      closed again by flipping it back.
+- [x] **DONE.** Also now carries `Sitemap: https://blessyourpawspuppies.com/sitemap.xml`.
+- [x] **CONFIRMED on the live domain:** 0 noindex tags across 8 sampled pages, all
+      22 sitemap URLs 200, /robots.txt and /sitemap.xml 200, an unknown path 404s
+      to the real 404 page.
 
 ## 4. Get found for the brand name
 
