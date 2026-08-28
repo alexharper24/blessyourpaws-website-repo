@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 125
+V = 126
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1870,8 +1870,11 @@ def warm_for(path):
     if path == "index.html":
         cards = [[srcset_for(lead(sl)), CARD_SIZES] for sl, *_ in list(MUNCHKINS) + D_LIST]
         return {"doc": [pretty_path("puppies.html") or "/"],
-                # the puppies page's largest-contentful element, desktop only
-                "img": [[srcset_for("jericho-01"), PHOTO_WIDE, "(min-width:901px)"]]
+                # The puppies page's largest-contentful element, desktop only. Keep
+                # this stem in step with the hero in PUPPIES_INTRO: it was jericho-01
+                # until the litter photo took that slot, and warming the stale stem cost
+                # 52KB on every home-page visit while never warming the real hero.
+                "img": [[srcset_for("litter-01"), PHOTO_WIDE, "(min-width:901px)"]]
                        + [c for c in cards if c[0]]}
     if path == "puppies.html":
         return {"doc": ["what-is-a-munchkin-bernedoodle", "contact"]}
