@@ -17,16 +17,37 @@ copy** (Alex, 2026-08-26).
 
 ## Still to do after launch
 
-- [ ] **`www` -> apex redirect rule** on the zone. www is currently a custom domain
-      serving the same site, which was deliberate (a visitor typing www getting an error
-      is worse than two hostnames), but canonicals are carrying the duplication alone
-      until the rule exists.
-- [ ] **301 `blessyourpaws.com` -> `blessyourpawspuppies.com`.** That zone has no web
-      records at all right now, so the domain simply does not resolve.
-- [ ] **Search Console:** add the property, submit `sitemap.xml`, request indexing on the
-      home page.
-- [ ] **Google Business Profile.** Highest-leverage item left, and the slowest: expect
-      video verification. Full setup sheet lower down, including the address decision.
+- [ ] **`www` -> apex redirect rule** on the zone. Low urgency, not zero: www serves the
+      same site as a custom domain and every page it serves carries a canonical pointing
+      at the apex, so Google will consolidate them on its own. The rule makes it explicit.
+      A Cloudflare **Redirect Rule** (Rules -> Redirect Rules) is the mechanism, matching
+      `Hostname equals www.blessyourpawspuppies.com` and dynamically redirecting to
+      `concat("https://blessyourpawspuppies.com", http.request.uri.path)` at 301 with
+      preserve-query-string on. Keep www as a Worker custom domain either way, so the
+      hostname still resolves.
+- [x] **workers.dev is already off.** Disabled by the deploy that added the custom domains
+      and pinned `"workers_dev": false` in `wrangler.jsonc`. Verified returning 404. There
+      is nothing left to turn off.
+- [x] **DROPPED 2026-08-27 (Alex): `blessyourpaws.com` is not a domain they are
+      tracking.** Earlier notes said it was owned and should 301 to the canonical; it is
+      not in scope. Ignore any other mention of it in this file.
+- [x] **DONE 2026-08-27 (Alex): property added, `sitemap.xml` submitted, home page
+      indexed.** Nothing further to do by hand. Do NOT request indexing page by page; the
+      sitemap covers all 22. Worth checking that the property covers BOTH apex and www (a
+      Domain property does, a URL-prefix property for the apex alone does not), and
+      glancing at the Pages report in a few days for anything unexpectedly excluded.
+- [x] **SET UP 2026-08-27 (Alex), with the real domain as the website.** Service area is
+      20 entries, which is Google's cap. Note ~10 of them (Warsaw, Winona Lake, Mentone,
+      Milford, Claypool, Leesburg, Pierceton, Silver Lake, North Webster, Syracuse) sit
+      inside Kosciusko County, which is also listed, so those slots are redundant. Not
+      worth rushing to change: **service areas are informational and do not widen the
+      ranking radius** for a service-area business, which is still driven by the verified
+      address. If the list is ever edited, spend the freed slots on larger nearby draws
+      such as Elkhart, Mishawaka or Huntington.
+- [ ] Still to confirm on the profile: name is exactly `Bless Your Paws Puppies` with
+      nothing appended, the address is entered but NOT displayed (customers served outside
+      the business location), phone reads `(574) 377-8023`, and no photo shows the house,
+      the street or carries geotags.
 - [ ] Bing Places and Apple Business Connect, same address rule.
 
 
