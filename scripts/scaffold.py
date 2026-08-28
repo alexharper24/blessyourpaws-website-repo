@@ -7,20 +7,28 @@ galleries and writes img/photo-counts.json), then run this.
 Re-running OVERWRITES every generated page, so fold hand edits back into this
 script rather than editing the HTML.
 
-Draft mode: noindex on every page, robots.txt closed, until launch.
+DRAFT_MODE controls indexing: noindex on every page plus a closed robots.txt
+when True. Live since 2026-08-27.
 """
 import functools, glob, hashlib, json, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 122
+V = 123
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
 # Points at the Worker until the domain is attached, then it becomes
 # https://blessyourpawspuppies.com. Whatever it says, it has to be somewhere that answers.
 BASE = "https://blessyourpawspuppies.com"
+
+# Draft mode. True keeps the site shareable but unindexable: noindex on every page and a
+# closed robots.txt. Flipped False at go-live on 2026-08-27, AFTER the custom domain
+# resolved and all 22 sitemap URLs plus every canonical were confirmed returning 200 on
+# it. Flip back to True and re-run to close the site again.
+DRAFT_MODE = False
+ROBOTS_META = '<meta name="robots" content="noindex, nofollow">\n' if DRAFT_MODE else ""
 BRAND = "Bless Your Paws"        # title-tag suffix; the full name is "Bless Your Paws Puppies"
 PHONE_DISPLAY = "(574) 377-8023"          # Hope, Munchkin Bernedoodles
 PHONE_HREF = "tel:5743778023"
@@ -1585,8 +1593,7 @@ def page(path, title, desc, body, extra_head=""):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <meta name="supported-color-schemes" content="light">
-<meta name="robots" content="noindex, nofollow">
-<title>{title}</title>
+{ROBOTS_META}<title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{BASE}/{pretty_path(path)}">
 <meta property="og:title" content="{title}">
@@ -3287,9 +3294,10 @@ def build_assets():
 
 def build_meta():
     open("robots.txt", "w", encoding="utf-8").write(
-        "# Draft mode: closed until launch. At launch switch to Allow: / and\n"
-        "# remove the noindex meta from every page.\n"
-        "User-agent: *\nDisallow: /\n")
+        ("# Draft mode: closed until launch. Flip DRAFT_MODE in this script; it\n"
+         "# also controls the noindex meta on every page.\n"
+         "User-agent: *\nDisallow: /\n") if DRAFT_MODE else
+        ("User-agent: *\nAllow: /\n\nSitemap: " + BASE + "/sitemap.xml\n"))
     # Built from what page() actually generated, NOT from a directory glob. A glob picks
     # up every hand-written file in the root too, and this project creates throwaway
     # comparison pages by convention (hero-options.html, floral-preview.html,
