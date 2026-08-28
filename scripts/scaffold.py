@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 123
+V = 124
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1577,8 +1577,13 @@ def prettify_links(text):
     """
     text = text.replace('href="index.html"', 'href="/"')
     # the optional group carries a query string through: apply.html?puppy=x -> apply?puppy=x
-    return re.sub(r'href="([a-z0-9-]+)\.html(\?[^"]*)?"',
+    text = re.sub(r'href="([a-z0-9-]+)\.html(\?[^"]*)?"',
                   lambda m: 'href="%s%s"' % (m.group(1), m.group(2) or ""), text)
+    # And the same links with ESCAPED quotes, which is how they appear inside JSON-LD
+    # strings. The FAQPage answers carry markup, so href=\"parents.html\" never matched
+    # the pattern above and shipped a .html link inside structured data.
+    return re.sub(r'href=\\"([a-z0-9-]+)\.html(\?[^"\\]*)?\\"',
+                  lambda m: 'href=\\"%s%s\\"' % (m.group(1), m.group(2) or ""), text)
 
 def page(path, title, desc, body, extra_head=""):
     # a JSON island rather than inline script, so there is nothing to escape and no
@@ -1877,7 +1882,10 @@ def card(slug, name, sex, colour, price, breed, first=False):
 </article></a>"""
 
 def share_row(name, path, img):
-    u = f"{BASE}/{path}"
+    # pretty_path first: these URLs land inside query strings (?u=..., ?text=...), where
+    # prettify_links has no href= to match, so they would keep the .html the rest of the
+    # site dropped. A shared link then 307s and disagrees with the target's own canonical.
+    u = f"{BASE}/{pretty_path(path)}"
     t = f"{name}%20at%20Bless%20Your%20Paws%20Puppies"
     ic = lambda d: (f'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" '
                     f'stroke="currentColor" stroke-width="2" stroke-linecap="round" '
