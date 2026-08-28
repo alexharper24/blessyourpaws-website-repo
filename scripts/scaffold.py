@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 126
+V = 127
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2086,7 +2086,7 @@ def build_pages():
       <div class="hero-copy">
         <p class="eyebrow">Family-raised in northern Indiana</p>
         <h1>{BREEDS_SHORT} puppies raised in the middle of real family life</h1>
-        <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else '<a href="what-is-a-munchkin-bernedoodle.html">Munchkin Bernedoodles</a>'} underfoot in our homes, around our nieces and nephews, the vacuum, the doorbell,
+        <p class="lede">We are two sisters raising {'Munchkin Bernedoodles and Doberman Pinschers' if SHOW_DOBERMANS else '<a href="what-is-a-munchkin-bernedoodle.html">Munchkin Bernedoodles</a>'} underfoot in our home, around our nieces and nephews, the doorbell,
           and everything else a family sounds like.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="puppies.html">See available puppies</a>
@@ -2100,7 +2100,7 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <p class="eyebrow">{AVAIL_EYEBROW}</p>
   <h2>Puppies looking for their families</h2>
-  <p class="lede">{'Munchkin Bernedoodles and Doberman Pinschers, raised underfoot in our homes.' if SHOW_DOBERMANS else 'Munchkin Bernedoodles, raised underfoot in our home.'} A ${DEPOSIT} deposit holds your puppy.</p>
+  <p class="lede">{'Munchkin Bernedoodles and Doberman Pinschers, raised underfoot in our home.' if SHOW_DOBERMANS else 'Munchkin Bernedoodles, raised underfoot in our home.'} A ${DEPOSIT} deposit holds your puppy.</p>
   <div class="pgrid" style="margin-top:2rem">
 {card(*MUNCHKINS[1][:4], M_PRICE, "Munchkin Bernedoodle")}
 {card(*MUNCHKINS[2][:4], M_PRICE, "Munchkin Bernedoodle")}
@@ -2462,7 +2462,7 @@ def build_pages():
 </div></section>""")
 
     page("about.html", "About Hope and Joy | Bless Your Paws Puppies",
-      f"Two sisters raising {BREEDS_PHRASE}s in their northern Indiana homes.",
+      f"Two sisters raising {BREEDS_PHRASE}s in their northern Indiana home.",
       f"""<section><div class="wrap">
   <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
@@ -2479,12 +2479,12 @@ def build_pages():
     </div>
     <div class="hic-copy">
       <p class="lede">We are Hope and Joy, twin sisters raising puppies in our
-        northern Indiana homes. {'Hope raises the Munchkin Bernedoodles and Joy raises the Doberman Pinschers, and every litter' if SHOW_DOBERMANS else 'Every litter'} is raised the same way: in the house,
+        northern Indiana home. {'Hope raises the Munchkin Bernedoodles and Joy raises the Doberman Pinschers, and every litter' if SHOW_DOBERMANS else 'Every litter'} is raised the same way: in the house,
         around our nieces and nephews, in the middle of everything.</p>
       <p>We grew up in a big family with dogs always underfoot, and that is where the
         love for them started. Our puppies grow up the same way. By the time a puppy
-        leaves us it has heard the vacuum, the doorbell, and a houseful of nieces,
-        nephews and cousins, and it has been held every single day.</p>
+        leaves us it has heard the doorbell and a houseful of nieces, nephews and
+        cousins, and it has been held every single day.</p>
       <p class="faith-note">We are Christians, and everything we do here we hope brings
         glory to God. If you have never heard the good news about Jesus, we would love
         for you to <a href="https://www.youtube.com/watch?v=mIeRU12STNw&amp;t=200s"
