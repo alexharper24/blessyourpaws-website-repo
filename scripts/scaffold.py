@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 124
+V = 125
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -46,6 +46,15 @@ EMAIL = "info@blessyourpawspuppies.com"
 FORM_INQUIRY  = "https://formspree.io/f/mnpaegkw"
 FORM_WAITLIST = "https://formspree.io/f/xbgrnzvq"
 FORM_APPLY    = "https://formspree.io/f/xppavger"
+
+# The .guard-msg paragraph is also what main.js writes the success and error message into
+# after a submit, so it always ships. What is conditional is its FALLBACK text: the "the
+# form is almost ready, call instead" copy is only true while an endpoint is still a
+# REPLACE placeholder, and all three are live. Shipping it on a working form put a false
+# statement in the page source, where it is invisible to a visitor and perfectly readable
+# to a crawler.
+def _fallback(endpoint, text):
+    return text if "REPLACE" in endpoint else ""
 # Dual pricing (Alex, 2026-08-26). The LIST price is the card price and paying cash earns
 # a discount. No checks: card or cash only (Alex, 2026-08-26). The two numbers are the same either way; the framing is not.
 #
@@ -122,6 +131,15 @@ M_SIZE = "15 to 20 lbs"
 # The provenance changed with the figure: 15 to 20 is narrower than anything the parents'
 # weights alone imply, so the chip no longer claims to be derived from them. It still
 # flags the number for confirmation before launch.
+FALLBACK_INQUIRY = _fallback(FORM_INQUIRY,
+    "The form is almost ready. For now, call or text Hope at "
+    f'<a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.')
+FALLBACK_APPLY = _fallback(FORM_APPLY,
+    "The form is almost ready. For now, call or text Hope at "
+    f'<a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.')
+FALLBACK_WAITLIST = _fallback(FORM_WAITLIST,
+    "The form is almost ready. For now, text Hope at "
+    f'<a href="{SMS_HREF}">{PHONE_DISPLAY}</a> with the word WAITLIST and your name.')
 SIZE_DRAFT  = ''   # 15 to 20 lbs confirmed by Hope on the 2026-08-26 call
 
 M_KIT = ["Vaccination and health record", "Examination by our vet", "Microchipped",
@@ -2365,8 +2383,7 @@ def build_pages():
         None,
         "Bip Finch is an outside stud rather than one of our own dogs. We chose him "
         "carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, "
-        "and the Cavalier side is where the lap-dog nature comes from. His registered "
-        "name is being added.",
+        "and the Cavalier side is where the lap-dog nature comes from.",
         [("Registration:", "AKC registered, TS65827904."),
          ("Weight:", "19 lbs, ruby."),
          # Hope's own statement, given 2026-08-26. She has seen his results; what she does
@@ -2656,8 +2673,7 @@ def build_pages():
         <div class="field"><label for="message">Which puppy caught your eye, and a little about your family</label>
           <textarea id="message" name="message" required></textarea></div>
         <button class="btn btn-primary" type="submit">Send inquiry</button>
-        <p class="guard-msg">The form is almost ready. For now, call or text Hope at
-          <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.</p>
+        <p class="guard-msg">{FALLBACK_INQUIRY}</p>
         </form>
       </div>
     </div>
@@ -2767,8 +2783,7 @@ def build_pages():
   </fieldset>
 
   <button class="btn btn-primary" type="submit">Send application</button>
-  <p class="guard-msg">The form is almost ready. For now, call or text Hope at
-    <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.</p>
+  <p class="guard-msg">{FALLBACK_APPLY}</p>
   </form>
 
   <p class="fine">The <a href="purchase-agreement.html">purchase agreement</a> and the
@@ -2806,8 +2821,7 @@ def build_pages():
     <div class="field"><label for="wwhen">When are you hoping to bring a puppy home?</label>
       <input id="wwhen" name="timing" placeholder="This year, next spring, whenever the right one comes"></div>
     <button class="btn btn-primary" type="submit">Join the waitlist</button>
-    <p class="guard-msg">The form is almost ready. For now, text Hope at
-      <a href="{SMS_HREF}">{PHONE_DISPLAY}</a> with the word WAITLIST and your name.</p>
+    <p class="guard-msg">{FALLBACK_WAITLIST}</p>
     </form>
   </div>
   </div>
@@ -3245,8 +3259,11 @@ def build_pages():
           extra_head=(f'<script type="application/ld+json">{ld}</script>\n'
                       f'<script type="application/ld+json">{crumb_ld}</script>\n'))
 
+    # No "(draft)": Hope confirmed 15 to 20 lbs on the 2026-08-26 call. SIZE_DRAFT was
+    # emptied then and this second copy was missed, which is why it was still live.
+    # "Expected adult size" already tells the reader it is a projection.
     m_facts = ('        <li><span class="k">Expected adult size</span>'
-               f'<span class="v">{M_SIZE} (draft)</span></li>')
+               f'<span class="v">{M_SIZE}</span></li>')
     d_facts = ('        <li><span class="k">Registration</span><span class="v">AKC</span></li>\n'
                '        <li><span class="k">Breeding rights</span><span class="v">$500 extra</span></li>')
     for s, n, x, c, note in MUNCHKINS:
