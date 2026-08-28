@@ -11,6 +11,19 @@
   // the second line of defence rather than the only one.
   "preview_urls": false,
 
+  // Canonical host is the apex; every canonical, OG tag and sitemap entry derives from
+  // BASE in scripts/scaffold.py and must agree with this. www serves the same Worker so
+  // that typing it does not error; the www -> apex redirect is a rule on the zone.
+  // Explicit, not incidental: the deploy that added the custom domains warned it was
+  // disabling workers.dev "by default" because this key was absent. The site should be
+  // reachable on ONE hostname, so this is written down rather than left to a default.
+  "workers_dev": false,
+
+  "routes": [
+    { "pattern": "blessyourpawspuppies.com", "custom_domain": true },
+    { "pattern": "www.blessyourpawspuppies.com", "custom_domain": true }
+  ],
+
   "assets": {
     // The static site is the repo root. .assetsignore keeps the generator, the internal
     // docs and the Worker source out of the uploaded set, which is stronger than the
