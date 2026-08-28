@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 127
+V = 128
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -46,6 +46,37 @@ EMAIL = "info@blessyourpawspuppies.com"
 FORM_INQUIRY  = "https://formspree.io/f/mnpaegkw"
 FORM_WAITLIST = "https://formspree.io/f/xbgrnzvq"
 FORM_APPLY    = "https://formspree.io/f/xppavger"
+
+# Google Analytics 4. Added 2026-08-28 at Alex's request.
+#
+# The privacy policy was updated in the SAME commit: it previously said the site had no
+# analytics and no cookies, and it promises to be updated before anything like this is
+# switched on. If this ID is ever removed, that page has to change back with it.
+GA_ID = "G-L2BK1N7Z9X"
+
+# A PLAIN string, deliberately: it is full of literal JS braces, and the head template is
+# an f-string, so writing this inline there would need every brace doubled. Same trap as
+# the CSS constant, which cannot be an f-string for the same reason.
+#
+# Hostname-guarded. Without it every local preview on localhost:8199 lands in their
+# reports as real traffic, and this project runs those constantly. Injected async so it
+# cannot hold up first render.
+GA_SNIPPET = """<script>
+(function(){
+  var h = location.hostname;
+  if (h !== 'blessyourpawspuppies.com' && h !== 'www.blessyourpawspuppies.com') return;
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ window.dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', '__GA_ID__');
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=__GA_ID__';
+  document.head.appendChild(s);
+})();
+</script>
+""".replace("__GA_ID__", GA_ID)
 
 # The .guard-msg paragraph is also what main.js writes the success and error message into
 # after a submit, so it always ships. What is conditional is its FALLBACK text: the "the
@@ -1629,7 +1660,7 @@ def page(path, title, desc, body, extra_head=""):
 <link rel="preload" href="fonts/lora-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/mulish-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v={V}">
-{extra_head}</head>
+{GA_SNIPPET}{extra_head}</head>
 <body>
 {header()}
 <main>
@@ -3017,7 +3048,7 @@ def build_pages():
 
     page("privacy-policy.html", "Privacy Policy | Bless Your Paws Puppies",
       "What we collect when you use our forms, who else handles it, and how to have it "
-      "removed. No analytics, no advertising, and no tracking cookies on this site.",
+      "removed. We use Google Analytics to count visits, and no advertising trackers.",
       f"""<section><div class="wrap prose">
   <p class="eyebrow">Privacy</p>
   <h1>Privacy policy</h1>
@@ -3042,14 +3073,25 @@ def build_pages():
 
   <h3>What we do not do</h3>
   <ul>
-    <li>No advertising and no analytics. This site has no tracking pixels and no
-      advertising or analytics cookies.</li>
+    <li>No advertising. This site carries no ad trackers and no advertising pixels,
+      and we do not run ads that follow you around the internet.</li>
     <li>We do not sell, rent or trade your information, and we do not send marketing you
       did not ask for.</li>
     <li>We do not run credit or background checks on you.</li>
   </ul>
 
-  <h3>One thing your browser stores</h3>
+  <h3>Counting visits</h3>
+  <p>We use Google Analytics to see how many people visit and which pages they read, so we
+    know whether the site is doing its job. It tells us things like which puppy pages are
+    most looked at, roughly what part of the country a visit came from, and whether someone
+    arrived from a search or a link. It does not tell us who you are, and we never try to
+    work that out.</p>
+  <p>Google Analytics sets its own cookies in your browser to recognise a repeat visit. If
+    you would rather not be counted, your browser&rsquo;s settings can block cookies for
+    this site, or Google publishes a browser add-on that turns Analytics off everywhere.
+    Nothing on this site stops working either way.</p>
+
+  <h3>One thing your browser stores by itself</h3>
   <p>When you send an application, your browser remembers it for the rest of that visit so
     the deposit buttons appear without you filling the form in again. It is not a cookie,
     it holds nothing about you, and it disappears when you close the tab.</p>
@@ -3060,6 +3102,8 @@ def build_pages():
       is how a message reaches us even if an email goes astray.</li>
     <li><strong>Our website host</strong> serves the pages and, like any web host, records
       technical details such as IP addresses in its own logs.</li>
+    <li><strong>Google</strong> receives the visit counts described above, through Google
+      Analytics. It is listed here too so this section is the whole list.</li>
     <li><strong>Email:</strong> messages to {EMAIL} are forwarded to a personal inbox that
       only we read.</li>
     <li><strong>Payments:</strong> when online deposits go live, card details are handled
@@ -3084,9 +3128,10 @@ def build_pages():
     text {PHONE_DISPLAY}, or email <a href="mailto:{EMAIL}">{EMAIL}</a>, and we will do it.
     We will keep only what a completed sale requires us to keep.</p>
 
-  <p class="fine">If we ever add anything that changes this, such as analytics or online
-    payments, we will update this page and the date below before we turn it on.</p>
-  <p class="fine">Last updated August 2026.</p>
+  <p class="fine">If we ever add anything that changes this, such as online payments or
+    advertising, we will update this page and the date below before we turn it on. That is
+    how the paragraph about counting visits got here.</p>
+  <p class="fine">Last updated 28 August 2026.</p>
 </div></section>""")
 
     page("404.html", "Page Not Found | Bless Your Paws Puppies",
