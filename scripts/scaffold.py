@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 130
+V = 131
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1998,7 +1998,7 @@ def build_pages():
     M_PARENTS = (
       parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
                   [("Weight", "22 lbs"), ("Color", "Blue merle parti"),
-                   ("Genetic testing", "Clear on 29, carries CDDY")]) +
+                   ("Genetic testing", "Clear on 29, at risk CDDY/IVDD")]) +
       parent_card("cavalier-sire-01", "Bip Finch", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
@@ -2307,7 +2307,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she carries. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
+       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she is at risk for. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a microchip, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
@@ -2412,8 +2412,10 @@ def build_pages():
         "size and the temperament we breed for.",
         [("Weight:", "22 lbs, blue merle parti."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
-          "<strong>Clear on 29 conditions.</strong> Carries one copy of the "
-          "chondrodystrophy variant, CDDY."),
+          "<strong>Clear on 29 conditions.</strong> One copy of the "
+          "Chondrodystrophy (CDDY) and Intervertebral Disc Disease (IVDD) Risk "
+          "variant. Her report lists this as At Risk rather than carrier: the variant is "
+          "dominant, so one copy is enough to put her at elevated risk herself."),
          ("Eyes:", "OFA eye examination, August 14, 2026: <strong>normal</strong>, free "
           "of observable inherited eye disease."),
          ],
@@ -2432,7 +2434,7 @@ def build_pages():
          # not yet have is a legible copy to publish, because his breeder can only fax.
          # CDDY is named because it is the one that matters here: Troy carries a copy and
          # it takes only one to pass on, so his status is the question a buyer should ask.
-         ("Genetic testing:", "clear, including for chondrodystrophy (CDDY). We are "
+         ("Genetic testing:", "clear, including for CDDY/IVDD. We are "
           "gathering his full results to publish here the same way we publish "
           "Troy&rsquo;s.")],
         []))
