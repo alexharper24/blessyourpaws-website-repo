@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 135
+V = 139
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -401,6 +401,18 @@ picture>img{display:block;width:100%;height:100%;object-fit:cover}
    to different things. A gentler curve keeps it to two lines across the whole band.
    balance evens those two lines out rather than leaving one orphaned word. */
 .col-title h1{font-size:clamp(1.85rem,2.6vw,2.5rem)}
+/* A single word or two alone on the last line. `pretty` exists for exactly this: it
+   pulls the stub back by re-breaking the lines above it. `balance` evens out short
+   headings. Browsers without support ignore both and break as they do now.
+   Applies at EVERY width: this lived in the mobile block until 2026-08-28, so the desktop
+   layout, where columns are widest and a stub reads worst, never received it. */
+p,li,figcaption,blockquote,.v,.k{text-wrap:pretty}
+/* Short structured blocks, two to six lines, where `pretty` still leaves a three or four
+   word tail. `balance` evens the lines instead of filling the first and stranding the
+   rest. Not for long prose: browsers cap balance by line count and it is the wrong shape
+   for a full paragraph. */
+.fine,.terms,.lede,.contact-line,.ans p,.health-copy p,li{text-wrap:balance}
+h1,h2,h3,.eyebrow,.dog-kicker{text-wrap:balance}
 .col-title h1,.col-title h2{text-wrap:balance}
 /* The label is 31 characters and will not fit one line in a 416px column at the base
    button size. It was already nowrap on mobile; there is no reason that stops at 901px. */
@@ -1137,12 +1149,7 @@ textarea{min-height:8rem}
      a sentence, so on a phone it takes its own line */
   .own-line{display:block;margin-top:.3rem}
 
-  /* ---- a single word alone on the last line. Narrow columns produce these constantly,
-     and `pretty` exists for exactly this: it pulls a word back from the last line by
-     re-breaking the ones above it. `balance` evens out short headings. Browsers without
-     support simply ignore both and break as they do now. */
-  p,li,figcaption,blockquote,.v,.k{text-wrap:pretty}
-  h1,h2,h3,.eyebrow,.dog-kicker{text-wrap:balance}
+
 
   /* ---- these two labels are long enough to wrap to two lines in a ghost button,
      which looks broken next to a single-line heading */
@@ -2953,7 +2960,7 @@ def build_pages():
   <h1>Our health guarantee</h1>
   <p>Every puppy goes home with this guarantee in writing, signed by both of us. What
     follows is the whole of it in plain order. The signed copy is the guarantee; this page
-    is a summary of it.</p>
+    is a summary&nbsp;of&nbsp;it.</p>
   <p>We raise every puppy on a strict vaccination and deworming schedule, in a clean home,
     and we hand over a confident, well socialised puppy who has been loved since the day
     they were born.</p>
