@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 132
+V = 134
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -695,6 +695,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    and no middle. The terms line is the commercial fact and reads at body size. */
 .reserve .terms{font-size:1rem;color:var(--forest);margin:0 0 .2rem}
 .pay-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.85rem 0 .5rem}
+.balance-note{margin:.4rem 0 .2rem}
 .guard-msg{display:none;background:var(--pink-pale);border-radius:3px;
   padding:.8rem 1rem;font-size:.92rem;margin-top:.6rem}
 .guard-msg.show{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem}
@@ -1267,7 +1268,9 @@ JS = """// Bless Your Paws Puppies - v2
 
   var APPLIED = 'byp-applied';
   function applied(){
-    try { return sessionStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }
+    // localStorage, not session: a family who applies, pays a deposit and comes back
+    // weeks later must not be asked to apply again to pay their balance.
+    try { return localStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }
   }
   if (applied()){
     document.querySelectorAll('.reserve .pay-row[hidden]').forEach(function(r){
@@ -1338,7 +1341,7 @@ JS = """// Bless Your Paws Puppies - v2
           if (btn) btn.remove();
           // an application unlocks the deposit buttons for the rest of this session
           if (f.hasAttribute('data-applied')){
-            try { sessionStorage.setItem(APPLIED, '1'); } catch (e) {}
+            try { localStorage.setItem(APPLIED, '1'); } catch (e) {}
           }
         }
         else if (btn){ btn.disabled = false; btn.textContent = said; }
@@ -1998,7 +2001,7 @@ def build_pages():
     M_PARENTS = (
       parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
                   [("Weight", "22 lbs"), ("Color", "Blue merle parti"),
-                   ("Genetic testing", "Clear on 29, at risk CDDY/IVDD")]) +
+                   ("Genetic testing", "Clear on 29, one copy CDDY/IVDD")]) +
       parent_card("cavalier-sire-01", "Bip Finch", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
@@ -2307,7 +2310,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she is at risk for. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
+       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she has a copy of. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a microchip, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
@@ -2413,9 +2416,7 @@ def build_pages():
         [("Weight:", "22 lbs, blue merle parti."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
           "<strong>Clear on 29 conditions.</strong> One copy of the "
-          "Chondrodystrophy (CDDY) and Intervertebral Disc Disease (IVDD) Risk "
-          "variant. Her report lists this as At Risk rather than carrier: the variant is "
-          "dominant, so one copy is enough to put her at elevated risk herself."),
+          "Chondrodystrophy (CDDY) and Intervertebral Disc Disease (IVDD) variant."),
          ("Eyes:", "OFA eye examination, August 14, 2026: <strong>normal</strong>, free "
           "of observable inherited eye disease."),
          ],
@@ -3197,8 +3198,9 @@ def build_pages():
         <div class="pay-row" hidden>
           <a class="btn btn-primary pay-link" href="https://buy.stripe.com/REPLACE_DEPOSIT">Deposit &middot; ${DEPOSIT}</a>
           <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_FULL">Full payment</a>
-          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Balance</a>
         </div>
+        <p class="fine balance-note">Already reserved {name}?
+          <a class="pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Pay your balance</a>.</p>
         <p class="guard-msg">Online payments are almost ready. To reserve {name}
           today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
         <p class="fine talk-first">Prefer to talk first? <a href="contact.html">Start an

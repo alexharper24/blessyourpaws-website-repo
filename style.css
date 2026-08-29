@@ -505,6 +505,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    and no middle. The terms line is the commercial fact and reads at body size. */
 .reserve .terms{font-size:1rem;color:var(--forest);margin:0 0 .2rem}
 .pay-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.85rem 0 .5rem}
+.balance-note{margin:.4rem 0 .2rem}
 .guard-msg{display:none;background:var(--pink-pale);border-radius:3px;
   padding:.8rem 1rem;font-size:.92rem;margin-top:.6rem}
 .guard-msg.show{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem}

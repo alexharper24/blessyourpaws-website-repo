@@ -105,7 +105,9 @@
 
   var APPLIED = 'byp-applied';
   function applied(){
-    try { return sessionStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }
+    // localStorage, not session: a family who applies, pays a deposit and comes back
+    // weeks later must not be asked to apply again to pay their balance.
+    try { return localStorage.getItem(APPLIED) === '1'; } catch (e) { return false; }
   }
   if (applied()){
     document.querySelectorAll('.reserve .pay-row[hidden]').forEach(function(r){
@@ -176,7 +178,7 @@
           if (btn) btn.remove();
           // an application unlocks the deposit buttons for the rest of this session
           if (f.hasAttribute('data-applied')){
-            try { sessionStorage.setItem(APPLIED, '1'); } catch (e) {}
+            try { localStorage.setItem(APPLIED, '1'); } catch (e) {}
           }
         }
         else if (btn){ btn.disabled = false; btn.textContent = said; }

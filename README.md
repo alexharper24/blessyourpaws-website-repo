@@ -96,6 +96,13 @@ page. Nothing needs disabling before launch.
 `scripts/scaffold.py`, bump `V`, regenerate. The guard disarms itself, because the string
 `REPLACE` is gone. No code change.
 
+- [ ] **Send the balance link directly when a family reserves.** The site now shows a
+      "Pay your balance" line on every puppy page without requiring an application, and the
+      application is remembered in localStorage rather than for one browser session. But
+      both are still per-device: a family who applied on a phone and pays on a laptop is a
+      new visitor as far as the browser is concerned. The reliable handling is that Hope
+      texts or emails the balance link to the family she has already reserved for. The
+      website is discovery and the first step; it is not a customer portal.
 - [ ] **Do NOT enable ACH or bank debit on the link charging $2,060.** The dual pricing
       holds only while every payment at the card price is a card payment.
 - [ ] Worth a look before launch, and a judgement call, not a defect: once someone submits
