@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 134
+V = 135
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2415,9 +2415,9 @@ def build_pages():
         "size and the temperament we breed for.",
         [("Weight:", "22 lbs, blue merle parti."),
          ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
-          "<strong>Clear on 29 conditions.</strong> One copy of the "
+          "Clear on 29 conditions. One copy of the "
           "Chondrodystrophy (CDDY) and Intervertebral Disc Disease (IVDD) variant."),
-         ("Eyes:", "OFA eye examination, August 14, 2026: <strong>normal</strong>, free "
+         ("Eyes:", "OFA eye examination, August 14, 2026: normal, free "
           "of observable inherited eye disease."),
          ],
         [("Wisdom Panel report (PDF)",
