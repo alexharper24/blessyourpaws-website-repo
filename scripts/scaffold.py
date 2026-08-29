@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 129
+V = 130
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2058,10 +2058,10 @@ def build_pages():
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
         {M_BORN}. Each card below says whether that puppy is still available.</p>
       <ul class="facts">
-        <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
+        <li><span class="k">Adoption fee</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
-        <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
-        <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
+        <li><span class="k">Cash adoption fee</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Sales tax</span><span class="v">{IN_TAX_PCT}, added to the total</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Can go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
@@ -2211,10 +2211,10 @@ def build_pages():
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
         {M_BORN}. Each card below says whether that puppy is still available.</p>
       <ul class="facts">
-        <li><span class="k">Price</span><span class="v">${M_PRICE:,}</span></li>
+        <li><span class="k">Adoption fee</span><span class="v">${M_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
-        <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
-        <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
+        <li><span class="k">Cash adoption fee</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Sales tax</span><span class="v">{IN_TAX_PCT}, added to the total</span></li>
         <li><span class="k">Born</span><span class="v">{M_BORN}</span></li>
         <li><span class="k">Can go home</span><span class="v">{M_HOME}</span></li>
         <li><span class="k">Expected adult size</span><span class="v">{M_SIZE}</span></li>
@@ -2254,10 +2254,10 @@ def build_pages():
       <p class="lede">Three AKC-registered puppies from Mira, our health-tested
         Doberman dam. Born {D_BORN}, and <strong>ready to go home now</strong>.</p>
       <ul class="facts">
-        <li><span class="k">Price</span><span class="v">${D_PRICE:,}</span></li>
+        <li><span class="k">Adoption fee</span><span class="v">${D_PRICE:,}</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
-        <li><span class="k">Cash price</span><span class="v">${M_PRICE_CASH:,}</span></li>
-        <li><span class="k">Sales tax</span><span class="v">Added at checkout</span></li>
+        <li><span class="k">Cash adoption fee</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Sales tax</span><span class="v">{IN_TAX_PCT}, added to the total</span></li>
         <li><span class="k">Born</span><span class="v">{D_BORN}</span></li>
         <li><span class="k">Status</span><span class="v">Ready now</span></li>
         <li><span class="k">Registration</span><span class="v">AKC</span></li>
@@ -2811,8 +2811,9 @@ def build_pages():
       <span>I understand the ${DEPOSIT} deposit is <strong>non-refundable</strong>. If I
       change my mind about which puppy, it can be moved to another available puppy.</span></label>
     <label class="ack"><input type="checkbox" name="ack_price" value="yes" required>
-      <span>I understand the price is ${M_PRICE:,}, that <strong>sales tax is added</strong>,
-      and that the cash price is ${M_PRICE_CASH:,}.</span></label>
+      <span>I understand the adoption fee is ${M_PRICE:,}, that <strong>{IN_TAX_PCT} Indiana
+      sales tax is added</strong>, and that the cash adoption fee is
+      ${M_PRICE_CASH:,}.</span></label>
     <label class="ack"><input type="checkbox" name="ack_home" value="yes" required>
       <span>I understand puppies go home at <strong>eight weeks or after</strong>, and that
       if a puppy is returned to us the purchase price is not refunded except where our
