@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 131
+V = 132
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -3170,14 +3170,19 @@ def build_pages():
         # Spoken for, but still here: she goes home with her littermates. Nothing on the
         # page invites a deposit, and nothing claims she has already left.
         if slug in ADOPTED:
-            her = "her" if sex == "Girl" else "his"
+            # All three forms derived. The old block took only the possessive from sex
+            # and hardcoded the rest, so a boy read "He has found his family" and then
+            # "She is on the site" and "one like her" on his own page.
+            poss = "her" if sex == "Girl" else "his"
+            subj = "She" if sex == "Girl" else "He"
+            obj = "her" if sex == "Girl" else "him"
             reserve_block = (
               '<div class="reserve is-adopted">'
               f'<h3>{name} is adopted</h3>'
-              f'<p class="fine">{name} has found {her} family and goes home on {home}, '
-              'the same day as the rest of the litter. She is on the site so you can see '
-              'the whole litter, not because she is available.</p>'
-              '<p class="fine">Hoping for one like her? '
+              f'<p class="fine">{name} has found {poss} forever family. {subj} is on the '
+              'site so you can see the whole litter, not because '
+              f'{subj.lower()} is available.</p>'
+              f'<p class="fine">Hoping for one like {obj}? '
               '<a href="puppies.html">See who is available</a> or '
               '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
               '</div>')
@@ -3252,8 +3257,8 @@ def build_pages():
           # an adopted puppy's description must not advertise a price or a deposit: that
           # is the line search engines and link previews show, so it is the one place a
           # sold puppy most easily looks available
-          (f"{name} is a {colour.lower()} {breed} puppy from our litter, already adopted "
-           f"and can go home from {home}."
+          (f"{name} is a {colour.lower()} {breed} puppy from our litter, already adopted, "
+           f"and here so you can see the whole litter."
            if slug in ADOPTED else
            f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${DEPOSIT} deposit to reserve."),
           f"""<section><div class="wrap">
