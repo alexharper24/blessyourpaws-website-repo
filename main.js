@@ -118,6 +118,24 @@
     });
   }
 
+  // ---- share: the phone's own share sheet, which is the only route to Instagram.
+  // Instagram publishes no web share URL, unlike Facebook and WhatsApp, so a link that
+  // claims to post there cannot exist. navigator.share hands off to the OS instead, which
+  // lists whatever the person actually has installed. Desktop mostly lacks it, so there
+  // the button copies the link and says so rather than doing nothing.
+  if (navigator.share){
+    document.querySelectorAll('.share-native').forEach(function(b){
+      b.removeAttribute('hidden');
+      b.addEventListener('click', function(){
+        navigator.share({
+          title: b.getAttribute('data-share-title'),
+          text: b.getAttribute('data-share-title'),
+          url: b.getAttribute('data-share-url')
+        }).catch(function(){});   // the person cancelled the sheet, which is not an error
+      });
+    });
+  }
+
   document.querySelectorAll('a.pay-link').forEach(function(a){
     if (a.href.indexOf('REPLACE') !== -1){
       a.addEventListener('click', function(e){

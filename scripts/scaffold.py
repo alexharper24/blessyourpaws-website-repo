@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 139
+V = 143
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -739,10 +739,12 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .share-row{display:flex;gap:.8rem;margin-top:1.75rem;align-items:center;flex-wrap:wrap}
 .share-lbl{font-size:.76rem;font-weight:700;letter-spacing:.17em;
   text-transform:uppercase;color:var(--sage-deep)}
-.share-row a{color:var(--sage-deep);display:inline-flex;width:44px;height:44px;
-  align-items:center;justify-content:center;border:1.5px solid var(--rule);
-  border-radius:3px}
-.share-row a:hover{color:var(--paper);background:var(--forest);border-color:var(--forest)}
+.share-row a,.share-row button{color:var(--sage-deep);display:inline-flex;
+  width:44px;height:44px;align-items:center;justify-content:center;
+  border:1.5px solid var(--rule);border-radius:3px;background:none;
+  font:inherit;cursor:pointer;padding:0;position:relative}
+.share-row a:hover,.share-row button:hover{color:var(--paper);
+  background:var(--forest);border-color:var(--forest)}
 
 /* ---------- let's chat launcher ---------- */
 .chat-fab{position:fixed;right:18px;bottom:18px;z-index:60;display:inline-flex;
@@ -1129,10 +1131,9 @@ textarea{min-height:8rem}
 
   /* ---- share row: five icons plus a label wrapped to two lines and left the last
      icon orphaned. Label on its own row, icons in five equal columns, fits at 390. */
-  .share-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;
-    align-items:center}
-  .share-lbl{grid-column:1 / -1;margin-bottom:.1rem}
-  .share-row a{width:auto;min-width:0}
+  .share-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+  .share-lbl{flex:1 0 100%;margin-bottom:.1rem}
+  .share-row a,.share-row button{flex:1 1 0;width:auto;min-width:0}
 
   /* ---- the chat launcher measured 147px, 38% of the screen, and sat on top of
      real content including a form field on the waitlist page. Icon only here. */
@@ -1285,6 +1286,24 @@ JS = """// Bless Your Paws Puppies - v2
     });
     document.querySelectorAll('.reserve .apply-gate').forEach(function(g){
       g.setAttribute('hidden', '');
+    });
+  }
+
+  // ---- share: the phone's own share sheet, which is the only route to Instagram.
+  // Instagram publishes no web share URL, unlike Facebook and WhatsApp, so a link that
+  // claims to post there cannot exist. navigator.share hands off to the OS instead, which
+  // lists whatever the person actually has installed. Desktop mostly lacks it, so there
+  // the button copies the link and says so rather than doing nothing.
+  if (navigator.share){
+    document.querySelectorAll('.share-native').forEach(function(b){
+      b.removeAttribute('hidden');
+      b.addEventListener('click', function(){
+        navigator.share({
+          title: b.getAttribute('data-share-title'),
+          text: b.getAttribute('data-share-title'),
+          url: b.getAttribute('data-share-url')
+        }).catch(function(){});   // the person cancelled the sheet, which is not an error
+      });
     });
   }
 
@@ -1652,7 +1671,11 @@ def prettify_links(text):
     return re.sub(r'href=\\"([a-z0-9-]+)\.html(\?[^"\\]*)?\\"',
                   lambda m: 'href=\\"%s%s\\"' % (m.group(1), m.group(2) or ""), text)
 
-def page(path, title, desc, body, extra_head=""):
+def page(path, title, desc, body, extra_head="", og_image="img/og-card.png"):
+    # og_image defaults to the site card. A page with its own photograph should pass
+    # it: this was hardcoded to the card everywhere, so every shared puppy showed the
+    # same generic picture.
+    _ogw, _ogh = img_wh(og_image)
     # a JSON island rather than inline script, so there is nothing to escape and no
     # execution here at all: main.js reads it if it is present and does nothing if not
     warm = warm_for(path)
@@ -1670,8 +1693,14 @@ def page(path, title, desc, body, extra_head=""):
 <link rel="canonical" href="{BASE}/{pretty_path(path)}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta property="og:image" content="{BASE}/img/og-card.png">
+<meta property="og:image" content="{BASE}/{og_image}">
+<meta property="og:image:width" content="{_ogw}">
+<meta property="og:image:height" content="{_ogh}">
+<meta property="og:image:alt" content="{title}">
+<meta property="og:url" content="{BASE}/{pretty_path(path)}">
+<meta property="og:site_name" content="Bless Your Paws Puppies">
 <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.ico?v={V}" sizes="any">
 <link rel="icon" href="img/favicon.png?v={V}" type="image/png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v={V}">
@@ -1701,6 +1730,21 @@ def asset_v(path):
             return "?v=" + hashlib.md5(fh.read()).hexdigest()[:8]
     except OSError:
         return ""
+
+@functools.lru_cache(maxsize=None)
+def img_wh(path, fallback=(1200, 630)):
+    """(width, height) for one image, read from the file.
+
+    og:image:width and height must be TRUE or they are worse than absent: a scraper that
+    trusts wrong numbers lays the card out wrong. Reading them from the file means they
+    cannot drift when a photograph is replaced, the same reasoning as img_ar below.
+    """
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            return im.size
+    except Exception:
+        return fallback
 
 def img_ar(path, fallback="1024/474"):
     """`aspect-ratio` for one image, read from the image itself.
@@ -1962,7 +2006,7 @@ def share_row(name, path, img):
                     f'stroke-linejoin="round" aria-hidden="true">{d}</svg>')
     return f"""<div class="share-row"><span class="share-lbl">Share {name}</span>
   <a href="https://www.facebook.com/sharer/sharer.php?u={u}" target="_blank" rel="noopener" aria-label="Share {name} on Facebook">{ic('<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>')}</a>
-  <a href="https://pinterest.com/pin/create/button/?url={u}&amp;media={BASE}/{img}&amp;description={t}" target="_blank" rel="noopener" aria-label="Share {name} on Pinterest">{ic('<circle cx="12" cy="12" r="10"/><path d="M9 21c1-4 1.5-6 2-8.5"/><path d="M11.5 12.5a3.5 3.5 0 1 1 3 1.4c-1.2 0-2-.6-2.3-1.4"/>')}</a>
+  <button type="button" class="share-native" hidden data-share-url="{u}" data-share-title="{name} at Bless Your Paws Puppies" aria-label="Share {name}">{ic('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>')}</button>
   <a href="https://wa.me/?text={t}%20{u}" target="_blank" rel="noopener" aria-label="Share {name} on WhatsApp">{ic('<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M9 10a4 4 0 0 0 5 5"/>')}</a>
   <a href="sms:?&amp;body={t}%20{u}" aria-label="Share {name} by text">{ic('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')}</a>
   <a href="mailto:?subject={t}&amp;body={u}" aria-label="Share {name} by email">{ic('<path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/>')}</a>
@@ -3331,7 +3375,8 @@ def build_pages():
   </div>
 </div></section>""",
           extra_head=(f'<script type="application/ld+json">{ld}</script>\n'
-                      f'<script type="application/ld+json">{crumb_ld}</script>\n'))
+                      f'<script type="application/ld+json">{crumb_ld}</script>\n'),
+          og_image=f"img/puppies/{lead(slug)}.jpg")
 
     # No "(draft)": the figure is confirmed copy, not a placeholder. SIZE_DRAFT was
     # emptied then and this second copy was missed, which is why it was still live.

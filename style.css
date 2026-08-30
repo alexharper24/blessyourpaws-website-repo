@@ -549,10 +549,12 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .share-row{display:flex;gap:.8rem;margin-top:1.75rem;align-items:center;flex-wrap:wrap}
 .share-lbl{font-size:.76rem;font-weight:700;letter-spacing:.17em;
   text-transform:uppercase;color:var(--sage-deep)}
-.share-row a{color:var(--sage-deep);display:inline-flex;width:44px;height:44px;
-  align-items:center;justify-content:center;border:1.5px solid var(--rule);
-  border-radius:3px}
-.share-row a:hover{color:var(--paper);background:var(--forest);border-color:var(--forest)}
+.share-row a,.share-row button{color:var(--sage-deep);display:inline-flex;
+  width:44px;height:44px;align-items:center;justify-content:center;
+  border:1.5px solid var(--rule);border-radius:3px;background:none;
+  font:inherit;cursor:pointer;padding:0;position:relative}
+.share-row a:hover,.share-row button:hover{color:var(--paper);
+  background:var(--forest);border-color:var(--forest)}
 
 /* ---------- let's chat launcher ---------- */
 .chat-fab{position:fixed;right:18px;bottom:18px;z-index:60;display:inline-flex;
@@ -939,10 +941,9 @@ textarea{min-height:8rem}
 
   /* ---- share row: five icons plus a label wrapped to two lines and left the last
      icon orphaned. Label on its own row, icons in five equal columns, fits at 390. */
-  .share-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;
-    align-items:center}
-  .share-lbl{grid-column:1 / -1;margin-bottom:.1rem}
-  .share-row a{width:auto;min-width:0}
+  .share-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+  .share-lbl{flex:1 0 100%;margin-bottom:.1rem}
+  .share-row a,.share-row button{flex:1 1 0;width:auto;min-width:0}
 
   /* ---- the chat launcher measured 147px, 38% of the screen, and sat on top of
      real content including a form field on the waitlist page. Icon only here. */
