@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 143
+V = 144
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -624,6 +624,14 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .puppy-info .facts li{padding:.42rem 0;font-size:.94rem}
 .puppy-info .reserve{margin:1rem 0}
 .puppy-info .share-row{margin-top:auto;padding-top:1.25rem}
+/* Keyboard users otherwise tab the whole eight-link nav on every page before reaching
+   the content. Moves vertically rather than off-screen left, which cannot widen the
+   document at narrow widths. */
+.skip{position:absolute;top:-4rem;left:.75rem;z-index:100;background:var(--forest);
+  color:var(--paper);padding:.65rem 1rem;border-radius:0 0 4px 4px;font-weight:700;
+  text-decoration:none;transition:top .12s ease}
+.skip:focus{top:0}
+@media (prefers-reduced-motion:reduce){.skip{transition:none}}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
@@ -1709,8 +1717,9 @@ def page(path, title, desc, body, extra_head="", og_image="img/og-card.png"):
 <link rel="stylesheet" href="style.css?v={V}">
 {GA_SNIPPET}{extra_head}</head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 {header()}
-<main>
+<main id="main">
 {body}
 </main>
 {footer()}

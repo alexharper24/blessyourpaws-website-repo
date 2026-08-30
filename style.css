@@ -434,6 +434,14 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .puppy-info .facts li{padding:.42rem 0;font-size:.94rem}
 .puppy-info .reserve{margin:1rem 0}
 .puppy-info .share-row{margin-top:auto;padding-top:1.25rem}
+/* Keyboard users otherwise tab the whole eight-link nav on every page before reaching
+   the content. Moves vertically rather than off-screen left, which cannot widen the
+   document at narrow widths. */
+.skip{position:absolute;top:-4rem;left:.75rem;z-index:100;background:var(--forest);
+  color:var(--paper);padding:.65rem 1rem;border-radius:0 0 4px 4px;font-weight:700;
+  text-decoration:none;transition:top .12s ease}
+.skip:focus{top:0}
+@media (prefers-reduced-motion:reduce){.skip{transition:none}}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
