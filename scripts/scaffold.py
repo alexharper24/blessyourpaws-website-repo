@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 144
+V = 148
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -616,6 +616,25 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .puppy-top{display:grid;grid-template-columns:1.45fr 1fr;
   gap:clamp(1.5rem,3vw,3rem);align-items:stretch}
 .puppy-info{display:flex;flex-direction:column}
+/* A third child of the .puppy-top grid auto-places into row 2, column 1, which is under
+   the carousel. That is exactly the narrow-desktop layout wanted, so no placement rule is
+   needed for it. The measure is capped because the left column runs to ~750px on a wide
+   screen. */
+.puppy-about{max-width:62ch}
+@media (min-width:1200px){
+  /* Wide screens keep the original arrangement: About stacked under the buy panel in the
+     right-hand column. The left column at this width would give ~95 character lines. */
+  .puppy-about{grid-column:2;max-width:none}
+}
+/* One row, scrolling sideways, rather than wrapping to a second and third row. The active
+   thumb is scrolled into view by main.js whenever the photo changes, so prev/next drives
+   the strip. */
+.carousel .cthumbs{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
+  scrollbar-width:thin;padding-bottom:.3rem}
+.carousel .cthumbs>button{flex:0 0 auto}
+.carousel .cthumbs::-webkit-scrollbar{height:8px}
+.carousel .cthumbs::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
+.carousel .cthumbs::-webkit-scrollbar-thumb:hover{background:var(--sage-deep)}
 .name-row{display:flex;align-items:baseline;justify-content:space-between;
   gap:1rem;flex-wrap:wrap}
 .name-row h1{margin:0}
@@ -623,7 +642,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .puppy-info .facts{margin-bottom:1rem}
 .puppy-info .facts li{padding:.42rem 0;font-size:.94rem}
 .puppy-info .reserve{margin:1rem 0}
-.puppy-info .share-row{margin-top:auto;padding-top:1.25rem}
+.puppy-about .share-row{padding-top:1.25rem}
 /* Keyboard users otherwise tab the whole eight-link nav on every page before reaching
    the content. Moves vertically rather than off-screen left, which cannot widen the
    document at narrow widths. */
@@ -1219,6 +1238,16 @@ JS = """// Bless Your Paws Puppies - v2
         s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
       });
       thumbs.forEach(function(t,k){ t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+      // The strip is one scrolling row now, so keep the active thumb visible. scrollLeft
+      // rather than scrollIntoView, which would also scroll the PAGE vertically.
+      var strip = car.querySelector('.cthumbs'), act = thumbs[i];
+      if (strip && act){
+        // Bounding rects, not offsetLeft: .carousel is position:relative, so offsetLeft
+        // is measured from the carousel rather than from the scrolling strip.
+        var ar = act.getBoundingClientRect(), sr = strip.getBoundingClientRect();
+        if (ar.left < sr.left) strip.scrollLeft -= (sr.left - ar.left) + 8;
+        else if (ar.right > sr.right) strip.scrollLeft += (ar.right - sr.right) + 8;
+      }
       if (counter) counter.textContent = (i+1) + ' / ' + slides.length;
     }
     // ---- autoplay with a crossfade, so a visitor sees the whole set without
@@ -3351,6 +3380,8 @@ def build_pages():
       {f'<p class="fine">{SIZE_NOTE}</p>' if breed.startswith("Munchkin") else ''}
       {f'<p><strong>{note}</strong></p>' if note else ''}
       {reserve_block}
+    </div>
+    <div class="puppy-about">
       <h3>About {name}</h3>
       <p>{name} is a {colour.lower()} {sex.lower()} growing up in the house, handled
         every day, around nieces and nephews and other dogs, with early neurological

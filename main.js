@@ -40,6 +40,16 @@
         s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
       });
       thumbs.forEach(function(t,k){ t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+      // The strip is one scrolling row now, so keep the active thumb visible. scrollLeft
+      // rather than scrollIntoView, which would also scroll the PAGE vertically.
+      var strip = car.querySelector('.cthumbs'), act = thumbs[i];
+      if (strip && act){
+        // Bounding rects, not offsetLeft: .carousel is position:relative, so offsetLeft
+        // is measured from the carousel rather than from the scrolling strip.
+        var ar = act.getBoundingClientRect(), sr = strip.getBoundingClientRect();
+        if (ar.left < sr.left) strip.scrollLeft -= (sr.left - ar.left) + 8;
+        else if (ar.right > sr.right) strip.scrollLeft += (ar.right - sr.right) + 8;
+      }
       if (counter) counter.textContent = (i+1) + ' / ' + slides.length;
     }
     // ---- autoplay with a crossfade, so a visitor sees the whole set without
