@@ -431,10 +431,22 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    needed for it. The measure is capped because the left column runs to ~750px on a wide
    screen. */
 .puppy-about{max-width:62ch}
+@media (min-width:901px){
+  /* `auto 1fr`, not `auto auto`: a row-spanning item spreads its extra height across the
+     auto rows it spans, which re-inflates row 1 and reopens the gap this is fixing. All
+     the slack goes to row 2 instead, so row 1 is exactly its own content's height. */
+  .puppy-top{grid-template-rows:auto 1fr;align-items:start}
+  .carousel{grid-column:1;grid-row:1}
+  .puppy-about{grid-column:1;grid-row:2}
+  .puppy-info{grid-column:2;grid-row:1 / span 2}
+}
 @media (min-width:1200px){
-  /* Wide screens keep the original arrangement: About stacked under the buy panel in the
-     right-hand column. The left column at this width would give ~95 character lines. */
-  .puppy-about{grid-column:2;max-width:none}
+  /* Wide: the original arrangement, About tucked under the buy panel on the right, with
+     the carousel spanning instead. The left column here is ~750px, which would give About
+     lines of roughly 95 characters. */
+  .carousel{grid-row:1 / span 2}
+  .puppy-info{grid-column:2;grid-row:1}
+  .puppy-about{grid-column:2;grid-row:2;max-width:none}
 }
 /* One row, scrolling sideways, rather than wrapping to a second and third row. The active
    thumb is scrolled into view by main.js whenever the photo changes, so prev/next drives
