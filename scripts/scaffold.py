@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 149
+V = 150
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -99,7 +99,8 @@ def _fallback(endpoint, text):
 # Do NOT enable ACH or bank debit on the Stripe link that charges M_PRICE. The reasoning
 # above holds only while every payment through it is a card.
 M_PRICE_CASH  = 2000
-IN_TAX_PCT    = "7%"          # Indiana sales tax, as stated in Hope's own agreement
+IN_TAX_RATE   = 0.07         # Indiana sales tax, as stated in Hope's own agreement
+IN_TAX_PCT    = f"{IN_TAX_RATE:.0%}"   # derived, so the rate is stated once
 AREA = "northern Indiana"   # visible copy. Precise towns stay in areaServed schema.
 COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
@@ -152,6 +153,9 @@ def dob(html):
 
 M_PRICE, D_PRICE, DEPOSIT = 2060, 2200, 500   # M_PRICE is the card/list price
 CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
+# What the Full payment link actually charges: the list price with tax inside it,
+# because a Stripe Payment Link cannot add a tax rate itself.
+M_PRICE_TAXED = round(M_PRICE * (1 + IN_TAX_RATE), 2)
 M_BORN, M_HOME = "July 22, 2026", "September 16, 2026"
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
@@ -2786,8 +2790,9 @@ def build_pages():
   <div class="hic-copy">
     <p><strong>How do payments work?</strong> The ${DEPOSIT} deposit reserves your puppy
       online and comes off the balance. The balance is due before or at pickup. The price
-      is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} if you pay the balance in cash,
-      which saves you ${CASH_DISCOUNT}. We take card or cash, not checks.</p>
+      is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} if you pay the whole amount in
+      cash, deposit included, which saves you ${CASH_DISCOUNT}. We take card or cash, not
+      checks.</p>
     <p><strong>Can we visit first?</strong> Yes, and we encourage it. Video calls work
       well for families further away.</p>
     <p><strong>Will my puppy shed?</strong> It varies by puppy, even in one litter. We
@@ -2916,8 +2921,8 @@ def build_pages():
       change my mind about which puppy, it can be moved to another available puppy.</span></label>
     <label class="ack"><input type="checkbox" name="ack_price" value="yes" required>
       <span>I understand the adoption fee is ${M_PRICE:,}, that <strong>{IN_TAX_PCT} Indiana
-      sales tax is added</strong>, and that the cash adoption fee is
-      ${M_PRICE_CASH:,}.</span></label>
+      sales tax is added</strong>, and that the ${M_PRICE_CASH:,} cash fee applies only when
+      the deposit and the balance are both paid in cash.</span></label>
     <label class="ack"><input type="checkbox" name="ack_home" value="yes" required>
       <span>I understand puppies go home at <strong>eight weeks or after</strong>, and that
       if a puppy is returned to us the purchase price is not refunded except where our
@@ -3133,7 +3138,9 @@ def build_pages():
   <h3>Terms</h3>
   <ul>
     <li><strong>Price and deposit.</strong> The purchase price is ${M_PRICE:,}, or
-      ${M_PRICE_CASH:,} where the balance is paid in cash. Sales tax is added.
+      ${M_PRICE_CASH:,} where the entire amount is paid in cash. The cash price needs both
+      the deposit and the balance in cash: if any part of it is paid by card, the price is
+      ${M_PRICE:,}. Sales tax is added.
       A ${DEPOSIT} deposit reserves the puppy and is applied to the balance. The balance
       is due before or at pickup. We accept card or cash, not checks.</li>
     <li><strong>Deposit terms.</strong> The deposit is transferable to another
@@ -3292,13 +3299,13 @@ def build_pages():
             reserve_block = f'''<div class="reserve">
         <h3>Reserve {name}</h3>
         <p class="terms">A ${DEPOSIT} deposit holds {him}. ${M_PRICE:,} plus sales tax,
-          or ${M_PRICE_CASH:,} in cash.</p>
+          or ${M_PRICE_CASH:,} paid entirely in cash.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
         <div class="pay-row" hidden>
           <a class="btn btn-primary pay-link" href="https://buy.stripe.com/REPLACE_DEPOSIT">Deposit &middot; ${DEPOSIT}</a>
-          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_FULL">Full payment</a>
+          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_FULL">Full payment &middot; ${M_PRICE_TAXED:,.2f}</a>
         </div>
         <p class="fine balance-note">Already reserved {name}?
           <a class="pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Pay your balance</a>.</p>

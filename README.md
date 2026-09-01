@@ -103,6 +103,33 @@ page. Nothing needs disabling before launch.
       new visitor as far as the browser is concerned. The reliable handling is that Hope
       texts or emails the balance link to the family she has already reserved for. The
       website is discovery and the first step; it is not a customer portal.
+- [ ] **The three LIVE payment links do not exist yet, and that is the only thing left.**
+      Stripe cleared its review on 1 Sep 2026 (account `acct_1U7mPsB2pxbGhCAi`, Cards
+      enabled, no active tasks), so the account is ready. Create three links in the live
+      dashboard: **deposit $500**, **paid in full $2,204.20** (tax inside the amount,
+      because a Payment Link cannot add a tax rate), **balance $1,560** (tax collected in
+      cash at pickup). Each needs a REQUIRED custom field `Which puppy?`, collect customer
+      name, adjustable quantity OFF. Then paste the three URLs over the placeholders in
+      `scripts/scaffold.py` and bump `V`. There is a ready-to-run patch script from the
+      1 Sep session if it is still around; if not, it is three string replacements.
+- [ ] **Prove one real payment before pointing families at Stripe.** Pay the $500 deposit
+      link with a real card, confirm it lands with the puppy name on it, refund it, then
+      check Balances a couple of days later to confirm a payout actually reached Hope's
+      bank. Until a payout has landed once, the loop is unproven.
+- [ ] **Live payment methods have to be re-checked after any Stripe review.** Clearing the
+      1 Sep review silently ACTIVATED Klarna and Affirm, which had been parked at "Requires
+      action". They were disabled again the same day, along with Link (which force-bundles
+      a US bank debit with no separate switch), Amazon Pay and Cash App Pay. Target state is
+      **Cards, Apple Pay, Google Pay and nothing else** for a US buyer. Hardening the account
+      before a review does not survive it.
+- [ ] **Settled 1 Sep 2026: the cash price requires the WHOLE amount in cash.** Any card
+      anywhere in the transaction means $2,060. The $60 discount is sized to the card fee on
+      the full amount, so paying only the $500 deposit by card and claiming the discount
+      would give away more than the fee it offsets. Four places on the site said "where the
+      balance is paid in cash", which read as the opposite, and all four were corrected.
+      **The `.docx` purchase agreement in `source-files/` still needs the same line**: its
+      "Payment method (circle one): Card $2,060 / Cash $2,000" assumes one method for the
+      whole sale and says nothing about the mixed case.
 - [ ] **Do NOT enable ACH or bank debit on the link charging $2,060.** The dual pricing
       holds only while every payment at the card price is a card payment.
 - [ ] Worth a look before launch, and a judgement call, not a defect: once someone submits
