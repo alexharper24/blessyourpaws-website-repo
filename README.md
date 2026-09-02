@@ -78,23 +78,32 @@ is irreversible in practice, because Google caches what it finds.
 - [ ] Still worth doing: send a real test to `info@` and watch it land, so the first live
       message is not the first test.
 
-## 0. Launching without Stripe — already works, nothing to build
+## 0. Stripe is LIVE as of 1 Sep 2026
 
-Confirmed 2026-08-27. **The site is safe to launch before Stripe exists.** All 21 pay
-links across the seven puppy pages still point at `buy.stripe.com/REPLACE_DEPOSIT`,
-`REPLACE_BALANCE` and `REPLACE_FULL`, and `main.js` keys its guard on the literal string
-`REPLACE`: any such link has its click cancelled and reveals the message beside it instead.
-A visitor clicking Deposit on Caleb's page sees
+**All three pay links take real money.** Account `acct_1U7mPsB2pxbGhCAi`.
 
-> Online payments are almost ready. To reserve Caleb today, call or text Hope at
-> (574) 377-8023.
+| Button | Charges | Link |
+|---|---|---|
+| Deposit | $500.00 | `buy.stripe.com/4gM14meuRfQecvPfO2ew802` |
+| Full payment | $2,204.20 | `buy.stripe.com/8x2eVc86tfQegM5eJYew804` |
+| Pay your balance | $1,560.00 | `buy.stripe.com/cNicN43Qd0Vk0N70T8ew800` |
 
-So the buttons cannot take money, cannot 404, and cannot land anyone on a broken Stripe
-page. Nothing needs disabling before launch.
+Each collects the customer's name and a **required** `Which puppy?` field, has adjustable
+quantity off, and offers card and Apple Pay only. $2,204.20 is $2,060 with 7% Indiana sales
+tax inside it, because **a Payment Link cannot add a tax rate**; the deposit and balance are
+pre-tax and the $144.20 is collected in cash at pickup on that path.
 
-**When the real links exist**, paste them over the three `REPLACE_*` placeholders in
-`scripts/scaffold.py`, bump `V`, regenerate. The guard disarms itself, because the string
-`REPLACE` is gone. No code change.
+**A Payment Link's amount cannot be edited after creation.** The first full-payment link was
+built at $2,060, which would have under-collected $144.20 of tax on every family who used
+it. There is no fix but to create a replacement and deactivate the old one, so get the
+amount right first time.
+
+**The historical guard, still in the code and still worth understanding.** Until today the
+three links were `REPLACE_*` placeholders and `main.js` keyed a guard on the literal string
+`REPLACE`: any such link had its click cancelled and revealed a call-or-text message
+instead. That is why the site could launch months before Stripe existed. The mechanism is
+untouched, so reverting any href to a `REPLACE_*` placeholder disarms that button safely
+without a code change. Useful if a link ever has to be pulled in a hurry.
 
 - [ ] **Send the balance link directly when a family reserves.** The site now shows a
       "Pay your balance" line on every puppy page without requiring an application, and the
@@ -103,15 +112,6 @@ page. Nothing needs disabling before launch.
       new visitor as far as the browser is concerned. The reliable handling is that Hope
       texts or emails the balance link to the family she has already reserved for. The
       website is discovery and the first step; it is not a customer portal.
-- [ ] **The three LIVE payment links do not exist yet, and that is the only thing left.**
-      Stripe cleared its review on 1 Sep 2026 (account `acct_1U7mPsB2pxbGhCAi`, Cards
-      enabled, no active tasks), so the account is ready. Create three links in the live
-      dashboard: **deposit $500**, **paid in full $2,204.20** (tax inside the amount,
-      because a Payment Link cannot add a tax rate), **balance $1,560** (tax collected in
-      cash at pickup). Each needs a REQUIRED custom field `Which puppy?`, collect customer
-      name, adjustable quantity OFF. Then paste the three URLs over the placeholders in
-      `scripts/scaffold.py` and bump `V`. There is a ready-to-run patch script from the
-      1 Sep session if it is still around; if not, it is three string replacements.
 - [ ] **Prove one real payment before pointing families at Stripe.** Pay the $500 deposit
       link with a real card, confirm it lands with the puppy name on it, refund it, then
       check Balances a couple of days later to confirm a payout actually reached Hope's
