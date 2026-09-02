@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 150
+V = 151
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -3304,11 +3304,11 @@ def build_pages():
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
         <div class="pay-row" hidden>
-          <a class="btn btn-primary pay-link" href="https://buy.stripe.com/REPLACE_DEPOSIT">Deposit &middot; ${DEPOSIT}</a>
+          <a class="btn btn-primary pay-link" href="https://buy.stripe.com/4gM14meuRfQecvPfO2ew802">Deposit &middot; ${DEPOSIT}</a>
           <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/REPLACE_FULL">Full payment &middot; ${M_PRICE_TAXED:,.2f}</a>
         </div>
         <p class="fine balance-note">Already reserved {name}?
-          <a class="pay-link" href="https://buy.stripe.com/REPLACE_BALANCE">Pay your balance</a>.</p>
+          <a class="pay-link" href="https://buy.stripe.com/cNicN43Qd0Vk0N70T8ew800">Pay your balance</a>.</p>
         <p class="guard-msg">Online payments are almost ready. To reserve {name}
           today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
         <p class="fine talk-first">Prefer to talk first? <a href="contact.html">Start an
