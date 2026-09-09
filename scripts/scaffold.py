@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 152
+V = 153
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -797,7 +797,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .chat-fab:hover{background:var(--forest-soft)}
 .chat-fab svg{width:18px;height:18px}
 .chat-panel{position:fixed;right:18px;bottom:82px;z-index:60;display:none;
-  width:min(92vw,22rem);background:#fff;border:1.5px solid var(--forest);
+  width:min(92vw,26rem);background:#fff;border:1.5px solid var(--forest);
   border-radius:6px;padding:1.35rem;box-shadow:0 12px 32px rgba(34,61,44,.22)}
 .chat-panel.open{display:block}
 .chat-panel h3{font-size:1.25rem;margin-bottom:.3em}
@@ -2062,7 +2062,7 @@ def share_row(name, path, img):
   <a href="https://www.facebook.com/sharer/sharer.php?u={u}" target="_blank" rel="noopener" aria-label="Share {name} on Facebook">{ic('<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>')}</a>
   <button type="button" class="share-native" hidden data-share-url="{u}" data-share-title="{name} at Bless Your Paws Puppies" aria-label="Share {name}">{ic('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>')}</button>
   <a href="https://wa.me/?text={t}%20{u}" target="_blank" rel="noopener" aria-label="Share {name} on WhatsApp">{ic('<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M9 10a4 4 0 0 0 5 5"/>')}</a>
-  <a href="sms:?&amp;body={t}%20{u}" aria-label="Share {name} by text">{ic('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')}</a>
+  <a href="sms:?body={t}%20{u}" aria-label="Share {name} by text">{ic('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')}</a>
   <a href="mailto:?subject={t}&amp;body={u}" aria-label="Share {name} by email">{ic('<path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/>')}</a>
 </div>"""
 
