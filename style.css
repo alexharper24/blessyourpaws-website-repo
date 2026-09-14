@@ -1016,3 +1016,62 @@ textarea{min-height:8rem}
 @media (max-width:900px){
   .hero{overflow:visible}
 }
+
+/* --------------------------------------------------------------------------
+   Footer columns fold on a phone (2026-09-14).
+   Measured at 390px wide, the footer ran 905px: more than a screen of links
+   under the brand mark. Our puppies and Before you visit fold behind their own
+   headings as one list, bringing it to about 560px.
+
+   The breakpoint is 900px because that is where .foot-grid already collapses to
+   one column, so the fold is scoped to the widths where the footer is a single
+   stack.
+
+   Get in touch never folds: it carries the phone, the email and the service
+   area. Neither does the brand block.
+
+   This stylesheet is GENERATED. The source is the CSS constant in
+   scripts/scaffold.py.
+   Scoped to .footer-accordion-ready, a class main.js adds at run time rather
+   than one written into the pages, so a footer whose script never loaded
+   renders exactly as it did before: every link visible, every toggle hidden.
+
+   Closed panels set visibility:hidden as well as a zero grid row. The zero row
+   collapses the height; visibility is what takes the links out of the tab order
+   and out of the way of taps, the way display:none used to.
+   -------------------------------------------------------------------------- */
+.footer-col-toggle{display:none}
+
+@media (max-width:900px){
+  .footer-accordion-ready .footer-col h3,
+  .footer-accordion-ready .footer-col h4{margin-bottom:0}
+  .footer-accordion-ready .footer-col-label{display:none}
+  .footer-accordion-ready .foot-grid{gap:0}
+  .footer-accordion-ready .footer-col-toggle{
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    width:100%;min-height:48px;padding:.7rem 0;
+    background:none;border:0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);
+    text-align:left;cursor:pointer;font-family:inherit;font-size:1rem;font-weight:700;color:var(--paper)}
+  .footer-accordion-ready .footer-col-toggle svg{
+    flex:0 0 auto;transition:transform .24s cubic-bezier(.4,0,.6,1)}
+  .footer-accordion-ready .footer-col.open .footer-col-toggle svg{transform:rotate(180deg)}
+  .footer-accordion-ready .footer-col.open .footer-col-toggle{border-bottom-color:transparent}
+  .footer-accordion-ready .footer-col-panel{
+    display:grid;grid-template-rows:0fr;
+    transition:grid-template-rows .32s cubic-bezier(.4,0,.6,1)}
+  .footer-accordion-ready .footer-col-panel>div{
+    overflow:hidden;min-height:0;visibility:hidden;transition:visibility .32s step-end}
+  .footer-accordion-ready .footer-col.open .footer-col-panel{grid-template-rows:1fr}
+  .footer-accordion-ready .footer-col.open .footer-col-panel>div{
+    visibility:visible;transition:visibility 0s}
+  /* The breathing room goes on the first child INSIDE the clipped div, not on
+     the div itself. Padding on the clipped element is not collapsed by a 0fr
+     track, so it left a 12.8px sliver under every closed row. */
+  .footer-accordion-ready .footer-col-panel>div>:first-child{margin-top:.8rem}
+}
+
+@media (max-width:900px) and (prefers-reduced-motion:reduce){
+  .footer-accordion-ready .footer-col-panel,
+  .footer-accordion-ready .footer-col-panel>div,
+  .footer-accordion-ready .footer-col-toggle svg{transition:none}
+}

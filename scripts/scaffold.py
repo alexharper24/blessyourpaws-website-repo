@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 153
+V = 154
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1210,6 +1210,64 @@ textarea{min-height:8rem}
 @media (max-width:900px){
   .hero{overflow:visible}
 }
+
+/* --------------------------------------------------------------------------
+   Footer columns fold on a phone (2026-09-14).
+   Measured at 390px wide, the footer ran 905px: more than a screen of links
+   under the brand mark. Our puppies and Before you visit fold behind their own
+   headings as one list, bringing it to about 560px.
+
+   The breakpoint is 900px because that is where .foot-grid already collapses to
+   one column, so the fold is scoped to the widths where the footer is a single
+   stack.
+
+   Get in touch never folds: it carries the phone, the email and the service
+   area. Neither does the brand block.
+
+   This stylesheet is GENERATED. The source is the CSS constant in
+   scripts/scaffold.py.
+   Scoped to .footer-accordion-ready, a class main.js adds at run time rather
+   than one written into the pages, so a footer whose script never loaded
+   renders exactly as it did before: every link visible, every toggle hidden.
+
+   Closed panels set visibility:hidden as well as a zero grid row. The zero row
+   collapses the height; visibility is what takes the links out of the tab order
+   and out of the way of taps, the way display:none used to.
+   -------------------------------------------------------------------------- */
+.footer-col-toggle{display:none}
+
+@media (max-width:900px){
+  .footer-accordion-ready .footer-col h3,
+  .footer-accordion-ready .footer-col h4{margin-bottom:0}
+  .footer-accordion-ready .footer-col-label{display:none}
+  .footer-accordion-ready .foot-grid{gap:0}\n  .footer-accordion-ready .footer-col-toggle{
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    width:100%;min-height:48px;padding:.7rem 0;
+    background:none;border:0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);
+    text-align:left;cursor:pointer;font-family:inherit;font-size:1rem;font-weight:700;color:var(--paper)}
+  .footer-accordion-ready .footer-col-toggle svg{
+    flex:0 0 auto;transition:transform .24s cubic-bezier(.4,0,.6,1)}
+  .footer-accordion-ready .footer-col.open .footer-col-toggle svg{transform:rotate(180deg)}
+  .footer-accordion-ready .footer-col.open .footer-col-toggle{border-bottom-color:transparent}
+  .footer-accordion-ready .footer-col-panel{
+    display:grid;grid-template-rows:0fr;
+    transition:grid-template-rows .32s cubic-bezier(.4,0,.6,1)}
+  .footer-accordion-ready .footer-col-panel>div{
+    overflow:hidden;min-height:0;visibility:hidden;transition:visibility .32s step-end}
+  .footer-accordion-ready .footer-col.open .footer-col-panel{grid-template-rows:1fr}
+  .footer-accordion-ready .footer-col.open .footer-col-panel>div{
+    visibility:visible;transition:visibility 0s}
+  /* The breathing room goes on the first child INSIDE the clipped div, not on
+     the div itself. Padding on the clipped element is not collapsed by a 0fr
+     track, so it left a 12.8px sliver under every closed row. */
+  .footer-accordion-ready .footer-col-panel>div>:first-child{margin-top:.8rem}
+}
+
+@media (max-width:900px) and (prefers-reduced-motion:reduce){
+  .footer-accordion-ready .footer-col-panel,
+  .footer-accordion-ready .footer-col-panel>div,
+  .footer-accordion-ready .footer-col-toggle svg{transition:none}
+}
 """
 
 JS = """// Bless Your Paws Puppies - v2
@@ -1614,6 +1672,81 @@ JS = """// Bless Your Paws Puppies - v2
   if (document.readyState === 'complete') start();
   else window.addEventListener('load', start);
 })();
+
+
+/* ---------- footer columns fold on a phone ----------
+   At 390px wide the footer ran 905px. Our puppies and Before you visit fold
+   behind their own headings below 900px, which is where .foot-grid already
+   collapses to one column.
+
+   Get in touch never folds: it carries the phone number, the email address and
+   the service area, and contact details do not belong behind a tap. Neither does
+   the brand block.
+
+   Note for whoever edits this next: this file is GENERATED. The source is the JS
+   constant in scripts/scaffold.py. Editing main.js directly is overwritten on
+   the next build.
+   The toggle and the panel are BUILT HERE rather than written into the pages,
+   which carry only class="footer-col" to say which columns fold. The heading
+   text is then written once, so renaming a column cannot leave the phone and the
+   desktop disagreeing, and a footer whose script never loaded keeps plain
+   headings with every link visible, because the elements that do the folding
+   never come into being. Hiding links behind a control that cannot open them is
+   the one failure this pattern must not have.
+
+   Everything after the heading is moved into the panel, not cloned, so this
+   block is identical on every site whether the links sit in a <ul> or as bare
+   <a>, and any listener already bound to a footer link survives. */
+(function () {
+  var cols = document.querySelectorAll('.footer-col');
+  var foot = document.querySelector('.site-foot');
+  if (!cols.length || !foot) return;
+
+  var CHEVRON = '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"' +
+    ' focusable="false"><path d="M2 4.5L6 8.5L10 4.5" fill="none" stroke="currentColor"' +
+    ' stroke-width="1.8" stroke-linecap="square"></path></svg>';
+
+  Array.prototype.forEach.call(cols, function (col) {
+    var heading = col.querySelector('h3, h4');
+    if (!heading) return;
+
+    var label = heading.textContent.trim();
+    if (!label) return;
+    var id = 'footer-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+    var panel = document.createElement('div');
+    panel.className = 'footer-col-panel';
+    panel.id = id;
+    var clip = document.createElement('div');
+    var node = heading.nextSibling;
+    while (node) { var next = node.nextSibling; clip.appendChild(node); node = next; }
+    panel.appendChild(clip);
+    col.appendChild(panel);
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'footer-col-toggle';
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', id);
+    button.appendChild(document.createTextNode(label));
+    button.insertAdjacentHTML('beforeend', CHEVRON);
+
+    var text = document.createElement('span');
+    text.className = 'footer-col-label';
+    text.textContent = label;
+    heading.textContent = '';
+    heading.appendChild(text);
+    heading.appendChild(button);
+
+    button.addEventListener('click', function () {
+      var open = !col.classList.contains('open');
+      col.classList.toggle('open', open);
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  foot.classList.add('footer-accordion-ready');
+})();
 """
 JS = (JS.replace("__WHO__", "Hope raises the Munchkin Bernedoodles and Joy raises the Dobermans."
                  if SHOW_DOBERMANS else "Hope and Joy raise the puppies between them.")
@@ -1664,7 +1797,7 @@ def footer():
         <span class="fb-sub">Puppies</span></span>
     </div>
     <div class="foot-grid">
-      <div><h3>Our puppies</h3><ul>
+      <div class="footer-col"><h3>Our puppies</h3><ul>
         <li><a href="puppies.html">All available puppies</a></li>
         <li><a href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'puppies.html'}">Munchkin Bernedoodles</a></li>
 {dob('        <li><a href="dobermans.html">Doberman Pinschers</a></li>')}
@@ -1672,7 +1805,7 @@ def footer():
         <li><a href="gallery.html">Photo gallery</a></li>
         <li><a href="reviews.html">Reviews</a></li>
       </ul></div>
-      <div><h3>Before you visit</h3><ul>
+      <div class="footer-col"><h3>Before you visit</h3><ul>
         <li><a href="process.html">How it works</a></li>
         <li><a href="parents.html">The parents and their health</a></li>
         <li><a href="about.html">About Hope and Joy</a></li>
