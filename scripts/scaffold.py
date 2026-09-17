@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 155
+V = 156
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -163,7 +163,7 @@ FF_URL   = "https://www.furryfreightdelivery.com/"
 FF_PHONE = "(260) 585-5209"
 FF_TEL   = "tel:+12605855209"
 FF_TOWN  = "Pierceton, Indiana"
-FF_LOGO  = "img/placeholder/furry-freight-logo.svg"   # REPLACE THIS: real logo from the partner
+FF_LOGO  = "img/brand/furry-freight-logo.png"   # the partner's own file, 420x331
 # What the Full payment link actually charges: the list price with tax inside it,
 # because a Stripe Payment Link cannot add a tax rate itself.
 M_PRICE_TAXED = round(M_PRICE * (1 + IN_TAX_RATE), 2)
@@ -217,6 +217,8 @@ CSS = """/* Bless Your Paws Puppies - v2
   font-display:swap;src:url("fonts/mulish-variable.woff2") format("woff2")}
 
 :root{
+  /* Sticky header height, used by the anchor offset below. 82px row + 1px border. */
+  --head-h:83px;
   --forest:#223d2c; --forest-soft:#34523f;
   --sage:#7f8e79; --sage-deep:#6d7a68; --sage-light:#a8b89e;
   --rose:#feb5bc; --pink-pale:#fbc4db;
@@ -270,6 +272,11 @@ a{color:var(--forest)}
 .chip-sample{background:var(--pink-pale);color:var(--forest);border:1px dashed var(--sage)}
 
 /* ---------- header ---------- */
+/* The header is sticky, so a fragment jump would otherwise scroll the target to y=0 and
+   leave it underneath. Set on [id] rather than one section: it only affects fragment
+   navigation and scrollIntoView, so it is inert elsewhere, and it covers every future
+   anchor plus the form fields a browser scrolls to on a validation error. */
+[id]{scroll-margin-top:calc(var(--head-h) + 1rem)}
 .site-head{background:var(--paper);border-bottom:1px solid var(--rule);
   position:sticky;top:0;z-index:40}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
@@ -1226,6 +1233,7 @@ textarea{min-height:8rem}
 
   /* ---- a slimmer bar gives a phone back some screen */
   .head-row{min-height:68px}
+  :root{--head-h:69px}   /* keep in step with the line above */
   .brand img{height:42px}
 }
 /* No stacking breakpoint here on purpose. Stacking the key above its value doubles the
@@ -2947,7 +2955,7 @@ def build_pages():
     end the conversation.</p>
   <div class="partner">
     <img class="partner-logo" src="{FF_LOGO}{asset_v(FF_LOGO)}"
-      alt="{FF_NAME} Pet Transportation" width="600" height="300" loading="lazy" decoding="async">
+      alt="{FF_NAME} Pet Transportation" width="420" height="331" loading="lazy" decoding="async">
     <div class="partner-copy">
       <p>We work with <strong>{FF_NAME}</strong>, a pet transportation company in {FF_TOWN},
         about ten miles from us. They have been moving puppies since 2019 and run regular

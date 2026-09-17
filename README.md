@@ -194,9 +194,10 @@ without a code change. Useful if a link ever has to be pulled in a hurry.
 - [ ] Diary: **Troy's OFA eye certificate expires 14 Aug 2027.** The page states the exam
       date but no longer states the one-year validity, so after that date it implies a
       currency it does not have.
-- [ ] **Furry Freight logo: the real file is still needed.** `process.html` ships a
-      visible placeholder at `img/placeholder/furry-freight-logo.svg`. Ask the partner for
-      a PNG with transparency or an SVG, drop it in `img/brand/`, and point `FF_LOGO` at it.
+- [x] Furry Freight logo done 2026-09-16: the partner's own file, pulled from their site,
+      resized to 420px and quantized (88.8KB to 20KB) at `img/brand/furry-freight-logo.png`.
+      Untouched 756px source archived alongside it. The placeholder SVG is left in
+      `img/placeholder/` per the never-delete-an-image rule, unreferenced.
 - [ ] **Confirm Furry Freight's email before publishing it.** Two addresses are in
       circulation: Puppy Connection's page shows `furryfreightdelivery@gmail.com`, the
       partner's own site shows `furryfreightpetdelivery@gmail.com`. The page deliberately

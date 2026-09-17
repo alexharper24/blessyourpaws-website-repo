@@ -12,6 +12,8 @@
   font-display:swap;src:url("fonts/mulish-variable.woff2") format("woff2")}
 
 :root{
+  /* Sticky header height, used by the anchor offset below. 82px row + 1px border. */
+  --head-h:83px;
   --forest:#223d2c; --forest-soft:#34523f;
   --sage:#7f8e79; --sage-deep:#6d7a68; --sage-light:#a8b89e;
   --rose:#feb5bc; --pink-pale:#fbc4db;
@@ -65,6 +67,11 @@ a{color:var(--forest)}
 .chip-sample{background:var(--pink-pale);color:var(--forest);border:1px dashed var(--sage)}
 
 /* ---------- header ---------- */
+/* The header is sticky, so a fragment jump would otherwise scroll the target to y=0 and
+   leave it underneath. Set on [id] rather than one section: it only affects fragment
+   navigation and scrollIntoView, so it is inert elsewhere, and it covers every future
+   anchor plus the form fields a browser scrolls to on a validation error. */
+[id]{scroll-margin-top:calc(var(--head-h) + 1rem)}
 .site-head{background:var(--paper);border-bottom:1px solid var(--rule);
   position:sticky;top:0;z-index:40}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
@@ -1021,6 +1028,7 @@ textarea{min-height:8rem}
 
   /* ---- a slimmer bar gives a phone back some screen */
   .head-row{min-height:68px}
+  :root{--head-h:69px}   /* keep in step with the line above */
   .brand img{height:42px}
 }
 /* No stacking breakpoint here on purpose. Stacking the key above its value doubles the
