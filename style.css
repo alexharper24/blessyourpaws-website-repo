@@ -267,14 +267,12 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .band-forest .btn-primary:hover{background:var(--pink-pale);color:var(--forest)}
 .band-forest .section-cta p{color:#e9ded9}
 .band-forest .checklist li::before{border-color:var(--sage-light)}
-/* .tri>div paints itself white, so the band's light text must not reach inside it.
-   Revert to the page palette within any card sitting on a dark band. Measured on white:
-   forest 11.85:1, the sage tick 3.47:1 against a 3:1 graphic floor. */
-.band-forest .tri>div{color:var(--forest)}
-.band-forest .tri>div h3{color:var(--forest)}
-.band-forest .tri>div p,.band-forest .tri>div li{color:var(--forest)}
-.band-forest .tri>div a{color:var(--sage-deep)}
-.band-forest .tri>div .checklist li::before{border-color:var(--sage)}
+/* .tri>div paints itself background:var(--card,#fff). On a dark band that fill punches a
+   bright block through the middle of the thing the band exists to create, so it goes, and
+   the band's own light treatment takes back over. The border goes with it: --rule is a
+   pale pink-grey at 8.55:1 on forest and would leave a stark outline around nothing.
+   border-color:transparent, not border:0, so the box metrics do not shift. */
+.band-forest .tri>div{background:none;border-color:transparent}
 .band-pink{background:var(--pink-pale)}
 /* a coloured band whose height is set by a tall photo reads as a big slab. this
    trims the vertical padding so the colour hugs the content. */
