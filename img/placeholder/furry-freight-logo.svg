@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" role="img"
+     aria-label="Furry Freight logo placeholder">
+<rect width="600" height="300" fill="#a8b89e"/>
+<rect x="16" y="16" width="568" height="268" fill="none" stroke="#fdf9f9"
+      stroke-width="3" stroke-dasharray="12 9"/>
+<g fill="#fdf9f9" font-family="system-ui,sans-serif" text-anchor="middle">
+  <text x="300" y="132" font-size="46" font-weight="700" letter-spacing="2">FURRY FREIGHT</text>
+  <text x="300" y="176" font-size="22" letter-spacing="3">PET TRANSPORTATION</text>
+  <text x="300" y="228" font-size="19" font-weight="700" letter-spacing="1">REPLACE THIS: logo file needed</text>
+</g>
+</svg>

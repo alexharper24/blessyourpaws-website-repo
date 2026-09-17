@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 154
+V = 155
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -153,6 +153,17 @@ def dob(html):
 
 M_PRICE, D_PRICE, DEPOSIT = 2060, 2200, 500   # M_PRICE is the card/list price
 CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
+
+# ---- delivery partner. Hope and Joy already work with them (Alex, 2026-09-16).
+# Verified from furryfreightdelivery.com. NOT furryfreight.com, which is an unrelated
+# international pet relocation company in Los Angeles with a confusingly similar name.
+# Email deliberately absent: two conflicting addresses circulate and neither is confirmed.
+FF_NAME  = "Furry Freight"
+FF_URL   = "https://www.furryfreightdelivery.com/"
+FF_PHONE = "(260) 585-5209"
+FF_TEL   = "tel:+12605855209"
+FF_TOWN  = "Pierceton, Indiana"
+FF_LOGO  = "img/placeholder/furry-freight-logo.svg"   # REPLACE THIS: real logo from the partner
 # What the Full payment link actually charges: the list price with tax inside it,
 # because a Stripe Payment Link cannot add a tax rate itself.
 M_PRICE_TAXED = round(M_PRICE * (1 + IN_TAX_RATE), 2)
@@ -455,6 +466,20 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
   padding-bottom:clamp(1.5rem,2.5vw,2.25rem)}
 .band-tight .grid-2{align-items:center}
 .band-raise{background:var(--paper-raise)}
+/* Delivery partner card. The logo column is capped rather than fluid so a wordmark does
+   not balloon on a wide screen, and the whole thing stacks and centres under 700px. */
+.partner{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr);gap:1.7rem;
+  align-items:center;max-width:58rem;margin:0 auto;padding:1.5rem 1.6rem;
+  background:var(--paper);border:1.5px solid var(--rule);border-radius:6px}
+.partner>*{min-width:0}
+.partner-logo{display:block;width:100%;height:auto;border-radius:4px}
+.partner-copy>:last-child{margin-bottom:0}
+.partner .btn-row{margin-top:1.1rem}
+@media (max-width:700px){
+  .partner{grid-template-columns:minmax(0,1fr);text-align:center;padding:1.3rem}
+  .partner-logo{max-width:210px;margin:0 auto}
+  .partner .btn-row{justify-content:center}
+}
 
 /* ---------- cards ---------- */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
@@ -2914,6 +2939,31 @@ def build_pages():
   </div>
 </div></section>
 
+<section id="delivery"><div class="wrap">
+  <p class="eyebrow center">If you are not local</p>
+  <h2 class="center">Too far to visit? We can still get her to you</h2>
+  <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">We would rather you
+    came and met her, and a video call is the next best thing. Distance does not have to
+    end the conversation.</p>
+  <div class="partner">
+    <img class="partner-logo" src="{FF_LOGO}{asset_v(FF_LOGO)}"
+      alt="{FF_NAME} Pet Transportation" width="600" height="300" loading="lazy" decoding="async">
+    <div class="partner-copy">
+      <p>We work with <strong>{FF_NAME}</strong>, a pet transportation company in {FF_TOWN},
+        about ten miles from us. They have been moving puppies since 2019 and run regular
+        ground routes to the East Coast, the West Coast and the South. When the timing calls
+        for it they can fly a puppy with a chaperone, or meet you at an airport.</p>
+      <p class="fine">You arrange delivery and pay for it with {FF_NAME} directly, not
+        through us. Ask them for a quote before you reserve, so the whole cost is in front
+        of you when you decide.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{FF_URL}" target="_blank" rel="noopener">Get a delivery quote</a>
+        <a class="btn btn-ghost" href="{FF_TEL}">{FF_PHONE}</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+
 <section class="band-pink" style="margin-bottom:0"><div class="wrap grid-2 narrow-left hic">
   <div class="hic-head">
     <p class="eyebrow">Before you ask</p>
@@ -2928,6 +2978,9 @@ def build_pages():
       checks.</p>
     <p><strong>Can we visit first?</strong> Yes, and we encourage it. Video calls work
       well for families further away.</p>
+    <p><strong>Do you deliver?</strong> Yes, through {FF_NAME}, a transport company near
+      us. They run regular routes to the coasts and can fly a puppy with a chaperone. You
+      book and pay them directly. <a href="#delivery">See delivery options</a>.</p>
     <p><strong>Will my puppy shed?</strong> It varies by puppy, even in one litter. We
       never promise a non-shedding coat.
       <a href="what-is-a-munchkin-bernedoodle.html">More on coats</a>.</p>
@@ -3447,6 +3500,8 @@ def build_pages():
         <p class="fine talk-first">Prefer to talk first? <a href="contact.html">Start an
           inquiry</a>, or call or text <a href="{owner_href}">{owner_phone}</a>.
           Visits and video calls are always welcome before you decide.</p>
+        <p class="fine">Not local? <a href="process.html#delivery">We can arrange
+          delivery</a> through {FF_NAME}, our transport partner.</p>
       </div>'''
         cnt = COUNTS[slug]
         first = PRIMARY.get(slug, 1)

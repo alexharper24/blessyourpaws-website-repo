@@ -194,8 +194,22 @@ without a code change. Useful if a link ever has to be pulled in a hurry.
 - [ ] Diary: **Troy's OFA eye certificate expires 14 Aug 2027.** The page states the exam
       date but no longer states the one-year validity, so after that date it implies a
       currency it does not have.
-- [ ] Delivery options and the balance payment method are still marked draft on
-      `process.html`. Decide or remove.
+- [ ] **Furry Freight logo: the real file is still needed.** `process.html` ships a
+      visible placeholder at `img/placeholder/furry-freight-logo.svg`. Ask the partner for
+      a PNG with transparency or an SVG, drop it in `img/brand/`, and point `FF_LOGO` at it.
+- [ ] **Confirm Furry Freight's email before publishing it.** Two addresses are in
+      circulation: Puppy Connection's page shows `furryfreightdelivery@gmail.com`, the
+      partner's own site shows `furryfreightpetdelivery@gmail.com`. The page deliberately
+      carries only the phone and the website link until Hope says which one reaches them.
+- [ ] **Open question raised 2026-09-16 and not yet answered: does shipping change Hope's
+      USDA position?** APHIS treats a breeder selling sight unseen and shipping very
+      differently from one selling face to face on her own premises, which is the exemption
+      Bless Your Paws currently sits inside. Needs APHIS or an attorney, not a guess. Also
+      worth knowing that the Stripe account cleared its restricted-business review in
+      September partly as a local, in-person-pickup breeder.
+- [x] Delivery options decided 2026-09-16: Furry Freight as a named partner, on
+      `process.html#delivery`, in the FAQ, and linked from every available puppy page. The
+      balance payment method resolved when the Stripe links went live.
 
 ---
 

@@ -261,6 +261,20 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
   padding-bottom:clamp(1.5rem,2.5vw,2.25rem)}
 .band-tight .grid-2{align-items:center}
 .band-raise{background:var(--paper-raise)}
+/* Delivery partner card. The logo column is capped rather than fluid so a wordmark does
+   not balloon on a wide screen, and the whole thing stacks and centres under 700px. */
+.partner{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr);gap:1.7rem;
+  align-items:center;max-width:58rem;margin:0 auto;padding:1.5rem 1.6rem;
+  background:var(--paper);border:1.5px solid var(--rule);border-radius:6px}
+.partner>*{min-width:0}
+.partner-logo{display:block;width:100%;height:auto;border-radius:4px}
+.partner-copy>:last-child{margin-bottom:0}
+.partner .btn-row{margin-top:1.1rem}
+@media (max-width:700px){
+  .partner{grid-template-columns:minmax(0,1fr);text-align:center;padding:1.3rem}
+  .partner-logo{max-width:210px;margin:0 auto}
+  .partner .btn-row{justify-content:center}
+}
 
 /* ---------- cards ---------- */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
