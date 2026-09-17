@@ -249,7 +249,7 @@ h1,h2,h3,.eyebrow,.dog-kicker{text-wrap:balance}
 .section-cta{display:flex;justify-content:center;align-items:center;gap:1rem;
   margin-top:clamp(1.75rem,3vw,2.75rem);padding-top:clamp(1.5rem,2.5vw,2rem);
   border-top:1px solid var(--rule);flex-wrap:wrap}
-.section-cta p{margin:0;color:var(--sage-deep);font-size:.95rem}
+.section-cta p{margin:0;color:var(--forest-soft);font-size:.95rem}
 .band-forest .section-cta{border-top-color:rgba(253,249,249,.28)}
 .band-pink .section-cta,.band-raise .section-cta{border-top-color:var(--sage-light)}
 
@@ -267,6 +267,14 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .band-forest .btn-primary:hover{background:var(--pink-pale);color:var(--forest)}
 .band-forest .section-cta p{color:#e9ded9}
 .band-forest .checklist li::before{border-color:var(--sage-light)}
+/* .tri>div paints itself white, so the band's light text must not reach inside it.
+   Revert to the page palette within any card sitting on a dark band. Measured on white:
+   forest 11.85:1, the sage tick 3.47:1 against a 3:1 graphic floor. */
+.band-forest .tri>div{color:var(--forest)}
+.band-forest .tri>div h3{color:var(--forest)}
+.band-forest .tri>div p,.band-forest .tri>div li{color:var(--forest)}
+.band-forest .tri>div a{color:var(--sage-deep)}
+.band-forest .tri>div .checklist li::before{border-color:var(--sage)}
 .band-pink{background:var(--pink-pale)}
 /* a coloured band whose height is set by a tall photo reads as a big slab. this
    trims the vertical padding so the colour hugs the content. */
@@ -283,6 +291,7 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 .partner-logo{display:block;width:100%;height:auto;border-radius:4px}
 .partner-copy>:last-child{margin-bottom:0}
 .partner .btn-row{margin-top:1.1rem}
+.partner .btn-row+.fine{margin-top:.85rem}
 @media (max-width:700px){
   .partner{grid-template-columns:minmax(0,1fr);text-align:center;padding:1.3rem}
   .partner-logo{max-width:210px;margin:0 auto}

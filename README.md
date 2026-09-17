@@ -17,11 +17,8 @@ copy** (Alex, 2026-08-26).
 
 ## Still to do after launch
 
-- [ ] **Pre-existing, found 2026-09-16 and not caused by that change: `.section-cta p` is
-      `--sage-deep` on `--paper-raise` at 4.11:1, and at .95rem it needs 4.5:1.** It is
-      marginal, it affects every `.section-cta` on a raised band, and the fix is one token
-      (`--forest-soft` measures far better). Left alone because it is outside what was
-      asked and touches several pages at once.
+- [x] `.section-cta p` contrast fixed 2026-09-16: was `--sage-deep` on `--paper-raise` at
+      4.11:1, under the 4.5 it needs at .95rem. Now `--forest-soft` at 7.85:1, site-wide.
 - [ ] **`www` -> apex redirect rule** on the zone. Low urgency, not zero: www serves the
       same site as a custom domain and every page it serves carries a canonical pointing
       at the apex, so Google will consolidate them on its own. The rule makes it explicit.
