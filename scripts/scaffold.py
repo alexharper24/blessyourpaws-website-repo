@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 157
+V = 158
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -468,6 +468,12 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
 .band-forest .eyebrow{color:var(--rose)}
 .band-forest p,.band-forest li{color:#e9ded9}
 .band-forest a{color:var(--pink-pale)}
+/* Anything other than plain text on this band needs its own treatment. A btn-primary is
+   forest on forest, 1.00:1, which passes every geometric check while being invisible. */
+.band-forest .btn-primary{background:var(--paper);color:var(--forest)}
+.band-forest .btn-primary:hover{background:var(--pink-pale);color:var(--forest)}
+.band-forest .section-cta p{color:#e9ded9}
+.band-forest .checklist li::before{border-color:var(--sage-light)}
 .band-pink{background:var(--pink-pale)}
 /* a coloured band whose height is set by a tall photo reads as a big slab. this
    trims the vertical padding so the colour hugs the content. */
@@ -2935,7 +2941,7 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise"><div class="wrap">
+<section class="band-forest"><div class="wrap">
   <p class="eyebrow center">In the go-home bag</p>
   <h2 class="center">What comes home with your puppy</h2>
   <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">{'Both litters leave' if SHOW_DOBERMANS else 'Every puppy leaves'}
