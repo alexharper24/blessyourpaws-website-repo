@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 156
+V = 157
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -163,6 +163,8 @@ FF_URL   = "https://www.furryfreightdelivery.com/"
 FF_PHONE = "(260) 585-5209"
 FF_TEL   = "tel:+12605855209"
 FF_TOWN  = "Pierceton, Indiana"
+FF_EMAIL = "furryfreightpetdelivery@gmail.com"   # confirmed by Alex 2026-09-16;
+# Puppy Connection lists furryfreightdelivery@gmail.com, which is a different address.
 FF_LOGO  = "img/brand/furry-freight-logo.png"   # the partner's own file, 420x331
 # What the Full payment link actually charges: the list price with tax inside it,
 # because a Stripe Payment Link cannot add a tax rate itself.
@@ -2968,6 +2970,7 @@ def build_pages():
         <a class="btn btn-primary" href="{FF_URL}" target="_blank" rel="noopener">Get a delivery quote</a>
         <a class="btn btn-ghost" href="{FF_TEL}">{FF_PHONE}</a>
       </div>
+      <p class="fine">Or email <a href="mailto:{FF_EMAIL}">{FF_EMAIL}</a>.</p>
     </div>
   </div>
 </div></section>

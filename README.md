@@ -198,10 +198,9 @@ without a code change. Useful if a link ever has to be pulled in a hurry.
       resized to 420px and quantized (88.8KB to 20KB) at `img/brand/furry-freight-logo.png`.
       Untouched 756px source archived alongside it. The placeholder SVG is left in
       `img/placeholder/` per the never-delete-an-image rule, unreferenced.
-- [ ] **Confirm Furry Freight's email before publishing it.** Two addresses are in
-      circulation: Puppy Connection's page shows `furryfreightdelivery@gmail.com`, the
-      partner's own site shows `furryfreightpetdelivery@gmail.com`. The page deliberately
-      carries only the phone and the website link until Hope says which one reaches them.
+- [x] Furry Freight email confirmed 2026-09-16: `furryfreightpetdelivery@gmail.com`, the
+      address on the partner's own site. Puppy Connection's page lists
+      `furryfreightdelivery@gmail.com`, which is a different string and appears stale.
 - [ ] **Open question raised 2026-09-16 and not yet answered: does shipping change Hope's
       USDA position?** APHIS treats a breeder selling sight unseen and shipping very
       differently from one selling face to face on her own premises, which is the exemption
