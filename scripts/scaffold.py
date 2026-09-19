@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 160
+V = 161
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -159,7 +159,7 @@ CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
 # international pet relocation company in Los Angeles with a confusingly similar name.
 # Email deliberately absent: two conflicting addresses circulate and neither is confirmed.
 FF_NAME  = "Furry Freight"
-FF_URL   = "https://www.furryfreightdelivery.com/"
+FF_QUOTE_URL = "https://www.furryfreightdelivery.com/schedule-a-delivery"
 FF_PHONE = "(260) 585-5209"
 FF_TEL   = "tel:+12605855209"
 FF_TOWN  = "Pierceton, Indiana"
@@ -1108,7 +1108,7 @@ textarea{min-height:8rem}
 .foot-grid ul{list-style:none;margin:0;padding:0}
 .foot-grid li{margin-bottom:.5rem;font-size:.93rem}
 .foot-legal{border-top:1px solid rgba(253,249,249,.25);padding:1.35rem 0;
-  font-size:.85rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  font-size:.85rem;display:flex;justify-content:flex-start;gap:1.6rem;flex-wrap:wrap}
 
 @media print{
   .site-head,.site-foot,.btn,.nav,.cthumbs,.filter-row,.chat-fab,.chat-panel,
@@ -2980,7 +2980,7 @@ def build_pages():
         through us. Ask them for a quote before you reserve, so the whole cost is in front
         of you when you decide.</p>
       <div class="btn-row">
-        <a class="btn btn-primary" href="{FF_URL}" target="_blank" rel="noopener">Get a delivery quote</a>
+        <a class="btn btn-primary" href="{FF_QUOTE_URL}" target="_blank" rel="noopener">Get a delivery quote</a>
         <a class="btn btn-ghost" href="{FF_TEL}">{FF_PHONE}</a>
       </div>
       <p class="fine">Or email <a href="mailto:{FF_EMAIL}">{FF_EMAIL}</a>.</p>

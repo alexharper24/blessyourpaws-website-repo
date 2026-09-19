@@ -901,7 +901,7 @@ textarea{min-height:8rem}
 .foot-grid ul{list-style:none;margin:0;padding:0}
 .foot-grid li{margin-bottom:.5rem;font-size:.93rem}
 .foot-legal{border-top:1px solid rgba(253,249,249,.25);padding:1.35rem 0;
-  font-size:.85rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  font-size:.85rem;display:flex;justify-content:flex-start;gap:1.6rem;flex-wrap:wrap}
 
 @media print{
   .site-head,.site-foot,.btn,.nav,.cthumbs,.filter-row,.chat-fab,.chat-panel,
