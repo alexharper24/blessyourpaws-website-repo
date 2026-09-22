@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 161
+V = 162
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -109,6 +109,22 @@ PRIMARY = {"malcolm": 2}
 def lead(slug):
     """Gallery stem to use as the card and hero image for a puppy."""
     return "%s-%02d" % (slug, PRIMARY.get(slug, 1))
+
+# The index each puppy's CURRENT photographs start at. The younger set keeps 1..PAGE_FROM-1
+# and stays on the cards, in the gallery, and on the pages that reference a specific early
+# photo. Tirzah is absent on purpose: no new folder was supplied, so her page is unchanged.
+PAGE_FROM = {"caleb": 8, "eden": 10, "havilah": 12, "jericho": 13,
+             "jordan": 9, "joshua": 9, "shiloh": 10}
+
+def page_lead(slug):
+    """The photo a puppy's own page opens on, and the image it shares as.
+
+    Distinct from lead() because the two now differ. lead() stays on photo 01 so that
+    puppies.html and index.html keep the younger photograph on their cards, which is what
+    Alex asked for. The page itself shows only the current set, so its og:image and schema
+    image follow the cover of that set instead.
+    """
+    return "%s-%02d" % (slug, PAGE_FROM[slug]) if slug in PAGE_FROM else lead(slug)
 
 MUNCHKINS = [
     ("joshua",  "Joshua",  "Boy",  "Red and white parti", ""),
@@ -717,7 +733,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
-.frame img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.frame img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}   /* 3:2 matches the source files, so the carousel crops nothing */
 /* stacked slides, crossfaded. the first keeps position:relative so the frame still
    derives its height from a real image rather than collapsing. */
 .frame img{position:absolute;inset:0;height:100%;opacity:0;
@@ -3527,9 +3543,19 @@ def build_pages():
         <p class="fine">Not local? <a href="process.html#delivery">We can arrange
           delivery</a> through {FF_NAME}, our transport partner.</p>
       </div>'''
-        cnt = COUNTS[slug]
-        first = PRIMARY.get(slug, 1)
-        order = [first] + [i for i in range(1, cnt + 1) if i != first]
+        # The page shows the CURRENT photographs only. They were appended after the
+        # younger set rather than replacing it, so the gallery still carries both while
+        # this range starts at PAGE_FROM. cover.jpg was imported as the first file of that
+        # run, so the natural order already opens on it and needs no separate map.
+        if slug in PAGE_FROM:
+            order = list(range(PAGE_FROM[slug], COUNTS[slug] + 1))
+        else:
+            first = PRIMARY.get(slug, 1)
+            order = [first] + [i for i in range(1, COUNTS[slug] + 1) if i != first]
+        # the counter reads "1 / N" over the carousel, so N is how many photos the
+        # carousel actually holds, not how many the puppy has in total now that the
+        # gallery carries the younger ones as well
+        cnt = len(order)
         slides = "\n".join(
             "        " + img_tag(f"{slug}-{i:02d}", alt=f"{name}, photo {k+1}",
                                  lazy=(k > 0), hidden=(k > 0), priority=(k == 0),
@@ -3568,7 +3594,7 @@ def build_pages():
                  "item": f"{BASE}/" + (href[:-5] if href.endswith(".html") else href)}
                 for i, (label, href) in enumerate(crumb_items)]})
         ld = json.dumps({"@context": "https://schema.org", "@type": "Product",
-            "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{lead(slug)}.jpg",
+            "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{page_lead(slug)}.jpg",
             "description": (f"{name} is a {colour.lower()} {breed} puppy from our litter, "
                             f"already adopted." if adopted else
                             f"{name} is a {colour.lower()} {breed} puppy, available now."),
@@ -3619,7 +3645,7 @@ def build_pages():
         stimulation
         from the first weeks. Ask us anything about {him}; we are happy to send more
         photos or hop on a video call.</p>
-      {share_row(name, f'puppy-{slug}.html', f'img/puppies/{lead(slug)}.jpg')}
+      {share_row(name, f'puppy-{slug}.html', f'img/puppies/{page_lead(slug)}.jpg')}
     </div>
   </div>
 </div></section>
@@ -3647,7 +3673,7 @@ def build_pages():
 </div></section>""",
           extra_head=(f'<script type="application/ld+json">{ld}</script>\n'
                       f'<script type="application/ld+json">{crumb_ld}</script>\n'),
-          og_image=f"img/puppies/{lead(slug)}.jpg")
+          og_image=f"img/puppies/{page_lead(slug)}.jpg")
 
     # No "(draft)": the figure is confirmed copy, not a placeholder. SIZE_DRAFT was
     # emptied then and this second copy was missed, which is why it was still live.

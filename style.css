@@ -510,7 +510,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
-.frame img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.frame img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}   /* 3:2 matches the source files, so the carousel crops nothing */
 /* stacked slides, crossfaded. the first keeps position:relative so the frame still
    derives its height from a real image rather than collapsing. */
 .frame img{position:absolute;inset:0;height:100%;opacity:0;
