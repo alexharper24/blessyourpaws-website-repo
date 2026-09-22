@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 163
+V = 164
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2357,7 +2357,7 @@ def build_pages():
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else AVAIL_EYEBROW}</p>
       <h1>Munchkin Bernedoodle puppies</h1>
     </div>
-    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
+    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle puppies together', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">{n_word(M_TOTAL)} puppies from <a href="parents.html">Troy</a>, our Mini Multi Gen
         Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
