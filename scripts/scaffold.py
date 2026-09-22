@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 162
+V = 163
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2212,7 +2212,7 @@ def warm_for(path):
     real request are two different URLs: the visit pays twice and feels no faster.
     """
     if path == "index.html":
-        cards = [[srcset_for(lead(sl)), CARD_SIZES] for sl, *_ in list(MUNCHKINS) + D_LIST]
+        cards = [[srcset_for(page_lead(sl)), CARD_SIZES] for sl, *_ in list(MUNCHKINS) + D_LIST]
         return {"doc": [pretty_path("puppies.html") or "/"],
                 # The puppies page's largest-contentful element, desktop only. Keep
                 # this stem in step with the hero in PUPPIES_INTRO: it was jericho-01
@@ -2237,7 +2237,7 @@ def card(slug, name, sex, colour, price, breed, first=False):
     badge = ('<span class="status status-adopted">Adopted!</span>' if adopted
              else '<span class="status">Available</span>')
     return f"""<a class="packet-link{' is-adopted' if adopted else ''}" href="puppy-{slug}.html" data-warm-sizes="{PUPPY_HERO_SIZES}"><article class="packet">
-  {img_tag(lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy', sizes=CARD_SIZES,
+  {img_tag(page_lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy', sizes=CARD_SIZES,
            lazy=not first, priority=first)}
   <div class="packet-body">
     <p class="packet-name">{name}</p>
