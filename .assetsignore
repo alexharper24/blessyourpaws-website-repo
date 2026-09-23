@@ -23,3 +23,5 @@ wrangler.jsonc
 .assetsignore
 package.json
 package-lock.json
+# project state and checklist, internal only (see .claude/guides/project-checklist.md)
+_claude-state.md
