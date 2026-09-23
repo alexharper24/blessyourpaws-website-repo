@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 166
+V = 167
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -181,7 +181,13 @@ FF_TEL   = "tel:+12605855209"
 FF_TOWN  = "Pierceton, Indiana"
 FF_EMAIL = "furryfreightpetdelivery@gmail.com"   # confirmed by Alex 2026-09-16;
 # Puppy Connection lists furryfreightdelivery@gmail.com, which is a different address.
-FF_LOGO  = "img/brand/furry-freight-logo.png"   # the partner's own file, 420x331
+FF_LOGO  = "img/brand/furry-freight-logo.png"
+
+# Verified Google Business Profile (category "Dog breeder", address hidden, 19 service
+# areas). CID read from the Business Profile Manager 2026-09-23 and confirmed by loading
+# this URL. Used in the homepage LocalBusiness sameAs.
+GBP_CID = "4658031195710535829"
+GBP_URL = f"https://www.google.com/maps?cid={GBP_CID}"   # the partner's own file, 420x331
 # What the Full payment link actually charges: the list price with tax inside it,
 # because a Stripe Payment Link cannot add a tax rate itself.
 M_PRICE_TAXED = round(M_PRICE * (1 + IN_TAX_RATE), 2)
@@ -2447,6 +2453,11 @@ def build_pages():
             {"@type": "City",  "name": "Winona Lake",  "addressRegion": "IN",
              "addressCountry": "US"},
             {"@type": "State", "name": "Indiana",      "addressCountry": "US"}],
+        # The verified Google Business Profile, by its CID. Read from the Business Profile
+        # Manager and verified by loading the Maps URL, which returns this business with
+        # this site as its website. Several unrelated businesses share the name, so the
+        # link is what tells Google which one this is.
+        "sameAs": [GBP_URL],
         "priceRange": f"${M_PRICE:,}",
         "logo": BASE + "/img/brand/logo-horizontal-forest.png",
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
