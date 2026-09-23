@@ -328,16 +328,16 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       all Cavaliers carry CDDY, so "clear" meant clear of Cavalier-specific conditions only.
       Removed from all three places it appeared: his row on parents, his parent card (ten
       pages), and the breed guide FAQ answer plus its FAQPage schema. Each now says only
-      that his results are being gathered. **Do not reinstate "clear" in any form** until
-      his results are published, and publish nothing about his CDDY status until Hope has
-      approved the exact wording.
+      that his results are being gathered. Superseded the same day by the scoped
+      wording below, so **never an unscoped "clear"**.
 - [ ] **Joy is photographing Finch's results at his kennel, expected early October 2026.**
       Once they are in, they get published the way Troy's are and his row gets the real
       finding. Blocked on Joy.
-- [ ] **Finch's CDDY wording, blocked on Hope.** What the site says about a sire expected
-      to carry CDDY, and what that means for the litter, given Troy carries one copy and
-      CDDY is dominant. A medical claim, so it is drafted for her approval rather than
-      written here.
+- [x] **DECIDED 2026-09-23 (Alex): state only what Finch is clear of, do not address
+      CDDY.** All three places read "clear of Cavalier-specific conditions". The scope is
+      deliberate: CDDY is common in Cavaliers but not specific to them, so the phrase is
+      true and does not imply he is clear of it. Never shorten it to a bare "Clear". When
+      Joy's photos arrive, name the specific conditions from his report.
 - [x] **Residual risk, OVERTAKEN 2026-09-23 by the retraction above.** The site stated it as
       fact while the commit recorded it as Hope's position.** Those are not the same claim. Troy carries one copy of CDDY
       and one copy is enough to pass on, so his status is the single most consequential

@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 170
+V = 171
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2344,11 +2344,10 @@ def build_pages():
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
                    # RETRACTED 2026-09-23 (Hope via Alex): "clear" was wrong. Nearly all
                    # Cavaliers carry CDDY, so he is clear of Cavalier-specific conditions
-                   # only. Nothing about his genetics goes back on the site until his
-                   # results are photographed and published, and the CDDY wording is
-                   # Hope's to approve. This card is on ten pages; change all three
+                   # only. Alex 2026-09-23: say what he is clear of, leave CDDY unaddressed.
+                   # Never an unscoped "Clear". This card is on ten pages; change all three
                    # Finch statements together.
-                   ("Genetic testing", "Results being gathered")]))
+                   ("Genetic testing", "Clear of Cavalier-specific conditions")]))
     D_PARENTS = (
       parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
                   [("Registered", "Kingdom's Miraculous Grace"),
@@ -2671,7 +2670,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she has a copy of. Bip Finch is our AKC-registered sire, and we are gathering his full results to publish the same way."
+       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she has a copy of. Bip Finch, our AKC-registered sire, is clear of Cavalier-specific conditions, and we are gathering his full results to publish the same way."
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a microchip, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
@@ -2795,9 +2794,12 @@ def build_pages():
          # "clear, including for CDDY/IVDD" was Hope's statement of 2026-08-26, made with
          # no document, and RETRACTED 2026-09-23: nearly all Cavaliers carry CDDY, so he
          # is clear of Cavalier-specific conditions only. Joy is photographing his results
-         # at his kennel. Until they are published, this row makes no claim at all.
-         ("Genetic testing:", "we are gathering his full results to publish "
-          "here the same way we publish Troy&rsquo;s.")],
+         # at his kennel. Alex, 2026-09-23: state plainly what he is clear of and do not
+         # address CDDY. "Cavalier-specific" is the precise scope: CDDY is common in
+         # Cavaliers but not specific to them, so the phrase is true and excludes it.
+         ("Genetic testing:", "clear of Cavalier-specific conditions. We are "
+          "gathering his full results to publish here the same way we publish "
+          "Troy&rsquo;s.")],
         []))
     D_DOGS = (
       dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",

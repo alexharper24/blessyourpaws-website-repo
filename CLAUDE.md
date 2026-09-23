@@ -165,8 +165,10 @@ over fine. Prose and identity do not.
 - **RETRACTED 2026-09-23: Bip Finch is not clear for CDDY.** The site said he was, on
   Hope's word and with no document behind it, and Hope has since learned that nearly all
   Cavaliers carry CDDY. Every statement about his genetics now says only that his results
-  are being gathered. Do not reinstate "clear" in any form. Publish his CDDY status only
-  from his own results and only in wording Hope has approved. The general rule: a health
+  now read "clear of Cavalier-specific conditions" (Alex, 2026-09-23), and CDDY is
+  deliberately not addressed for him. The scope word is load-bearing: CDDY is common in
+  Cavaliers but not specific to them, so "common in Cavaliers" would be false and a bare
+  "Clear" would repeat the retracted claim. The general rule: a health
   claim with no document behind it is a claim waiting to be retracted.
 - Do not write short-leg or dwarfism language *as marketing*. That is different from
   denying the genetics, which is what the old rule had the site doing.
