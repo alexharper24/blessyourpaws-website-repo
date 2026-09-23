@@ -18,6 +18,12 @@ open:
   - {id: g5-name-collision, gate: G5, blocked_on: alex, item: "At least four unrelated businesses trade as Bless Your Paws: a groomer in Shelbyville TN, a pet sitter in Asheville, a Yelp pet-sitting listing in New Mexico, and a Pup Strut Society account. They crowd page one for the bare brand name. The site ranks first for the full name, so the exposure is on the short form"}
   - {id: g5-lancaster-price, gate: G5, blocked_on: alex, item: "A Lancaster Puppies breeder listing under this business name shows $1,350.00 in Google results, against $2,060 card and $2,000 cash on the site. Not ours to change and not verified as current, but a third-party listing carrying a different price for the same brand is worth Hope knowing about"}
   - {id: g5-reviews, gate: G5, blocked_on: client, item: "No review habit established and the site has no reviews to mark up. aggregateRating must stay absent until real reviews exist"}
+  - {id: g5-indexing, gate: G5, blocked_on: claude, item: "Google has discovered 20 of the 22 pages and chosen not to index them, so only the homepage and the breed guide have ever been served for any query. This outranks every other SEO item, because a page that is not indexed cannot earn whatever else is done to it. Ordinary for a four-week-old site with few external links, and the levers are internal linking here and external mentions with Hope"}
+  - {id: g5-money-pages, gate: G5, blocked_on: claude, item: "Two of the three breeder money pages earn nothing. Available puppies has drawn no impressions at all and parents is among the undiscovered pages, so the breed guide is carrying all three roles on its own"}
+  - {id: g5-guide-converts, gate: G5, blocked_on: claude, item: "The breed guide holds most of the site's impressions and almost none of its clicks, because it reads as a reference article rather than a place to buy a puppy. It is also the only money page that survives the litter, so it is where the buying path belongs"}
+  - {id: g5-cluster-size, gate: G5, blocked_on: alex, item: "Cluster page one: how big a Munchkin Bernedoodle gets. Four real queries ask it and the best position any of them reaches is 57. The site already publishes the expected adult size, but no page is shaped like the question"}
+  - {id: g5-cluster-cost, gate: G5, blocked_on: alex, item: "Cluster page two: what a Munchkin Bernedoodle costs. Ranking at position 72 for a query the site has the answer to, since both prices are already published"}
+  - {id: g5-http-variant, gate: G5, blocked_on: alex, item: "An http:// version of the homepage is still being served in results. Visitors are redirected so nothing is broken, but it is a URL Google should not be holding. Same root as g4-www-redirect"}
   - {id: g5-monthly, gate: G5, blocked_on: alex, item: "Monthly Search Console and profile check not running, and no content cluster in progress"}
   - {id: g5-ai-check, gate: G5, blocked_on: alex, item: "AI visibility check never run. Ask the buying questions in ChatGPT, Perplexity and Gemini and record who gets named"}
   # Breeder-specific, from the lifecycle business-type table
@@ -42,6 +48,11 @@ decisions:
   - {date: 2026-09-23, decision: "Site sits at G5 and carries its G2 gaps as open items, per the lifecycle rule that a live site still owes its earlier gates"}
   - {date: 2026-09-23, decision: "aggregateRating stays out of the schema until real reviews exist and are visible on the page"}
   - {date: 2026-09-23, decision: "No address in LocalBusiness. areaServed only, because this is a home-based business"}
+  - {date: 2026-09-23, decision: "Keyword research is taken from Search Console rather than from a keyword tool, per the lifecycle rule that tool volumes for small markets are unreliable. Sixteen real queries have arrived on their own and every one of them is the breed term or a question about it, so the breed name is how demand reaches this business and the category and place terms are not worth chasing"}
+  - {date: 2026-09-23, decision: "The munchkin dog and munchkin dog breed queries are deliberately declined rather than targeted. Ranking for them would mean writing short-leg and dwarfism language as marketing, which Troy's panel result makes a claim this business should not be making"}
+  - {date: 2026-09-23, decision: "No town pages. A set of place-swapped copies is the doorway pattern the lifecycle warns about, and this business has no town-specific content to put on them"}
+  - {date: 2026-09-23, decision: "One cluster, around the breed guide, built from the two questions that already rank badly for real queries. The breed guide is the only money page that outlives the litter, so it is the page authority should accumulate on"}
+  - {date: 2026-09-23, decision: "Performance figures, query data and the cluster plan live in source-files, which is gitignored, because this repo is served publicly and they are a client's business numbers. Only the decisions and the open items are here"}
   - {date: 2026-09-23, decision: "sameAs carries the Google Business Profile only. The site has no social accounts of its own, and the Bless Your Paws accounts that surface in search belong to other businesses, so none of them may be claimed here"}
   - {date: 2026-09-23, decision: "Litter lifecycle (Alex): an adopted puppy stays on the site marked Adopted until every puppy in the litter is adopted, then the whole set of puppy pages comes down together to make room for the next litter. So retirement is one batched event per litter rather than a trickle, and the redirects are written once"}
 ---
@@ -52,9 +63,10 @@ decisions:
 and Joy's Munchkin Bernedoodle business in northern Indiana.
 
 **Status.** Live and complete as a build, sitting at G5. Structured data and the Google
-Business Profile are now closed out, so what remains is the local-presence and measurement half of G5 plus two small
-on-page items, and the biggest open question is no longer technical but editorial, being
-what this site publishes between litters.
+Business Profile are both closed out and the profile reads correctly against the site, so
+the constraint is no longer on-page at all. Google has discovered twenty of the twenty-two
+pages and not indexed them, which means the money pages and the cluster plan are both
+waiting on indexing rather than on content.
 
 ## Open questions
 
@@ -65,9 +77,11 @@ what this site publishes between litters.
 
 ## Next
 
-Work the content cluster around the breed guide, because after the litter retires it is
-the only money page left standing and it currently has the fewest inbound links of the
-three.
+Get the pages indexed, because nothing else pays until that moves. Twenty of twenty-two
+are discovered and not indexed, so the cluster work and the money-page work are both
+waiting on a problem neither of them solves. Internal linking is the half this repo
+controls and the breed guide is where it should point, since it already has the fewest
+inbound links and the most impressions.
 
 ## Where things landed
 
