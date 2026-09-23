@@ -10,7 +10,7 @@ and Hope Williams** (twin sisters, sisters-in-law to Alex via Mary). Two breed l
 at launch:
 
 - **Munchkin Bernedoodles** (Hope) — dam **Troy**, a Mini Multi Gen Bernedoodle
-  (21 lbs, blue merle parti, born 21 Jan 2024, unregistered) × an AKC Cavalier King
+  (22 lbs, confirmed 2026-08-23; blue merle parti, born 21 Jan 2024, unregistered) × an AKC Cavalier King
   Charles Spaniel sire (19 lbs, ruby, born 24 Dec 2024, **name unknown**).
   CORRECTED 2026-08-22: Troy is the DAM, female. Earlier notes had Troy as the
   Cavalier sire; that was a transcription error. "Mira" was never a Bernedoodle,
@@ -26,8 +26,8 @@ Deposit $500. Quote tentatively accepted; Phase 1 build authorized.
 copy and mark it visibly; where images are missing, ship branded placeholders. The
 health guarantee and purchase agreement get DRAFT pages flagged for review before
 launch. Expected adult weight may be shown as a DRAFT estimate from the 19 lb and
-the parents' weights. SUPERSEDED 2026-08-23: it is 15–20 lbs per Alex, held in
-`M_SIZE`, still chip-marked for confirmation. Faith element is
+the parents' weights. SUPERSEDED twice: 15–20 lbs on 2026-08-23, then **15 to 24 lbs, confirmed by Alex
+2026-09-23**, held in `M_SIZE`. No confirmation chip; the figure is settled. Faith element is
 ON HOLD pending the questionnaire; do not add or rule out.
 
 A **Maltipoo** line is roughly 18 months out and is deliberately NOT in the launch

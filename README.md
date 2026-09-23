@@ -337,8 +337,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [x] **RESOLVED 2026-08-23: Troy is 22 lbs** (Alex). Updated in all eight places it
       appeared, and the draft chip on her weight is removed since it is confirmed. This
       also squares with the panel's predicted ideal range, which is recorded in
-      `source-files/` rather than here. The puppy estimate is 15-20 lbs
-      (Alex, 2026-08-23), superseding the 15-25 I had derived from the parents' weights.
+      `source-files/` rather than here. The puppy estimate was 15-20 lbs
+      (Alex, 2026-08-23), and is now 15 to 24 lbs (Alex, 2026-09-23).
 - [x] **Troy's ancestry is NOT published** (Alex, 2026-08-23). It was briefly, then the
       report was trimmed to drop its breed-ancestry page and the percentages came off the
       site with it, so nothing on the page is unevidenced by the linked document. The
@@ -354,7 +354,8 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
 - [x] **Per-puppy records complete for all seven Munchkin Bernedoodles** — real names
       Joshua, Eden, Havilah, Jordan, Caleb, Shiloh, Jericho, with sex and colour. Born
       22 July 2026, home 16 September 2026. Full table in the litter dossier.
-- [ ] **Expected adult size is 15 to 20 lbs** (Alex, 2026-08-23). Held in one constant,
+- [x] **RESOLVED 2026-09-23: expected adult size is 15 to 24 lbs** (Alex), superseding
+      the 15 to 20 of 2026-08-23. The chip is already off every page. Earlier note: Held in one constant,
       `M_SIZE`, and shown on ten pages. Still carries a visible chip reading "Expected
       size, confirm before launch". **Open question: is 15-20 Hope's confirmed figure?**
       If so the chip comes off, the way Troy's weight chip did. The chip no longer claims

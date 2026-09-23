@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 168
+V = 169
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2902,7 +2902,7 @@ def build_pages():
   <div class="hic-copy">
     <p>A puppy's first eight weeks decide a lot about the dog they become. That is
       why ours are never raised apart from the household. The first weeks include early
-      neurological stimulation, and after that it is steady desensitising: new sounds,
+      neurological stimulation, and after that it is steady desensitizing: new sounds,
       new textures, new smells. The point is to build confidence, not to startle it out
       of them.</p>
     <p>They grow up in the room where we groom, so the blow dryer is an ordinary noise to
@@ -3342,7 +3342,7 @@ def build_pages():
     follows is the whole of it in plain order. The signed copy is the guarantee; this page
     is a summary&nbsp;of&nbsp;it.</p>
   <p>We raise every puppy on a strict vaccination and deworming schedule, in a clean home,
-    and we hand over a confident, well socialised puppy who has been loved since the day
+    and we hand over a confident, well socialized puppy who has been loved since the day
     they were born.</p>
 
   <h3>What is covered</h3>
@@ -3381,7 +3381,7 @@ def build_pages():
       minor illness.</li>
     <li><strong>Veterinary bills are yours.</strong> We care about these puppies long after
       they leave, but we cannot take on medical expenses, death, allergies, training
-      difficulties or behaviour problems once a puppy is in your home.</li>
+      difficulties or behavior problems once a puppy is in your home.</li>
   </ul>
   <p>Anything we already know about, including cosmetic issues or any surgery before
     go-home, is written on your copy and told to you before you commit. You sign to say you
@@ -3404,7 +3404,7 @@ def build_pages():
   <h3>What the signed agreement records</h3>
   <ul>
     <li><strong>You.</strong> Your name, address, phone number and email.</li>
-    <li><strong>Your puppy.</strong> Name, sex, colour, date of birth, microchip number,
+    <li><strong>Your puppy.</strong> Name, sex, color, date of birth, microchip number,
       and both parents&rsquo; names.</li>
     <li><strong>The money.</strong> The adoption fee, {IN_TAX_PCT} Indiana sales tax, and
       the full amount. The fee is ${M_PRICE:,}, or ${M_PRICE_CASH:,} where the balance is
@@ -3487,7 +3487,7 @@ def build_pages():
     most looked at, roughly what part of the country a visit came from, and whether someone
     arrived from a search or a link. It does not tell us who you are, and we never try to
     work that out.</p>
-  <p>Google Analytics sets its own cookies in your browser to recognise a repeat visit. If
+  <p>Google Analytics sets its own cookies in your browser to recognize a repeat visit. If
     you would rather not be counted, your browser&rsquo;s settings can block cookies for
     this site, or Google publishes a browser add-on that turns Analytics off everywhere.
     Nothing on this site stops working either way.</p>
