@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 165
+V = 166
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1921,6 +1921,27 @@ def prettify_links(text):
     return re.sub(r'href=\\"([a-z0-9-]+)\.html(\?[^"\\]*)?\\"',
                   lambda m: 'href=\\"%s%s\\"' % (m.group(1), m.group(2) or ""), text)
 
+def breadcrumb_ld(path, title):
+    """Home -> this page, as a BreadcrumbList.
+
+    Emitted from page() for every page that does not already supply one, so a page added
+    later cannot quietly ship without it. The puppy pages build their own deeper trail
+    from their visible crumb and are left alone by the guard in page().
+
+    The label is the title with the brand suffix removed, which keeps the crumb and the
+    title from drifting apart. index.html is the root of the trail rather than a step in
+    it, and 404.html is not a place in the hierarchy at all, so neither gets one.
+    """
+    if path in ("index.html", "404.html"):
+        return ""
+    label = title.split(" | ")[0].strip()
+    items = [("Bless Your Paws Puppies", ""), (label, path)]
+    return json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": i + 1, "name": name,
+             "item": f"{BASE}/" + (href[:-5] if href.endswith(".html") else href)}
+            for i, (name, href) in enumerate(items)]})
+
 def page(path, title, desc, body, extra_head="", og_image="img/og-card.png"):
     # og_image defaults to the site card. A page with its own photograph should pass
     # it: this was hardcoded to the card everywhere, so every shared puppy showed the
@@ -1931,6 +1952,14 @@ def page(path, title, desc, body, extra_head="", og_image="img/og-card.png"):
     warm = warm_for(path)
     warm_tag = ("" if not warm else '<script type="application/json" id="warm">'
                 + json.dumps(warm, separators=(",", ":")) + "</script>\n")
+    # Breadcrumbs for every page that does not bring its own. The puppy pages pass a
+    # three-level trail built from their visible crumb, so the guard checks rather than
+    # overwrites.
+    if "BreadcrumbList" not in extra_head:
+        _crumb = breadcrumb_ld(path, title)
+        if _crumb:
+            extra_head += f'<script type="application/ld+json">{_crumb}</script>\n'
+
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2405,7 +2434,10 @@ def build_pages():
     # machine can read where they operate without anyone reading where they live.
     # "sameAs" is deliberately absent rather than empty: it belongs there the day Hope and
     # Joy hand over their social profiles, and an empty array asserts they have none.
+    # @id so the puppy Product nodes can name this business as their seller instead of
+    # redeclaring it or, as before, leaving the seller out entirely.
     org_ld = json.dumps({"@context": "https://schema.org", "@type": "LocalBusiness",
+        "@id": f"{BASE}/#business",
         "name": "Bless Your Paws Puppies",
         "description": f"Family-raised {BREEDS_PHRASE} puppies in northern Indiana.",
         "telephone": "+1-574-377-8023", "email": EMAIL,
@@ -2500,7 +2532,19 @@ def build_pages():
 </div></section>""",
       extra_head=f'<script type="application/ld+json">{org_ld}</script>\n')
 
-    page("puppies.html", PUPPIES_TITLE, PUPPIES_DESC, PUPPIES_BODY)
+    # The breeder money page had no structured data at all. An ItemList names the
+    # puppies the page visibly lists, in the order it lists them, each pointing at its own
+    # page. Nothing here is asserted that a visitor cannot see.
+    puppies_ld = json.dumps({"@context": "https://schema.org", "@type": "ItemList",
+        "name": "Available Munchkin Bernedoodle puppies",
+        "itemListOrder": "https://schema.org/ItemListOrderAscending",
+        "numberOfItems": len(MUNCHKINS),
+        "itemListElement": [
+            {"@type": "ListItem", "position": i + 1, "name": n,
+             "url": f"{BASE}/puppy-{sl}"}
+            for i, (sl, n, *_rest) in enumerate(MUNCHKINS)]})
+    page("puppies.html", PUPPIES_TITLE, PUPPIES_DESC, PUPPIES_BODY,
+      extra_head=f'<script type="application/ld+json">{puppies_ld}</script>\n')
 
     if SHOW_DOBERMANS:
       page("munchkin-bernedoodles.html", "Munchkin Bernedoodle Puppies for Sale | Bless Your Paws Puppies",
@@ -3599,6 +3643,7 @@ def build_pages():
                             f"already adopted." if adopted else
                             f"{name} is a {colour.lower()} {breed} puppy, available now."),
             "offers": {"@type": "Offer", "priceCurrency": "USD", "price": str(price),
+                       "seller": {"@id": f"{BASE}/#business"},
                        "availability": ("https://schema.org/SoldOut" if adopted
                                         else "https://schema.org/InStock")}})
         page(f"puppy-{slug}.html", f"{name}, {breed} Puppy | {BRAND}",
