@@ -162,6 +162,12 @@ over fine. Prose and identity do not.
   because of it: "There is no dwarf gene involved" and the FAQ answer "No. ... not from a
   short-legged or dwarfism gene." Do not reinstate either. What replaces them is Hope's
   decision, not ours, because CDDY is dominant and therefore inheritable by the puppies.
+- **RETRACTED 2026-09-23: Bip Finch is not clear for CDDY.** The site said he was, on
+  Hope's word and with no document behind it, and Hope has since learned that nearly all
+  Cavaliers carry CDDY. Every statement about his genetics now says only that his results
+  are being gathered. Do not reinstate "clear" in any form. Publish his CDDY status only
+  from his own results and only in wording Hope has approved. The general rule: a health
+  claim with no document behind it is a claim waiting to be retracted.
 - Do not write short-leg or dwarfism language *as marketing*. That is different from
   denying the genetics, which is what the old rule had the site doing.
 - **Never promise non-shedding or hypoallergenic coats.** Even the established

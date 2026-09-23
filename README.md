@@ -324,8 +324,22 @@ Before committing: `python check_site.py blessyourpaws-website-repo` from the
       way we publish Troy's." There is still **no document**, because his breeder can only
       fax. This is a recorded decision, not an oversight, and the retraction note above it
       was the stale thing.
-- [ ] **Residual risk, worth one decision: the site states it as fact, the commit records
-      it as Hope's position.** Those are not the same claim. Troy carries one copy of CDDY
+- [x] **RETRACTED 2026-09-23: Bip Finch is NOT clear for CDDY** (Hope, via Alex). Nearly
+      all Cavaliers carry CDDY, so "clear" meant clear of Cavalier-specific conditions only.
+      Removed from all three places it appeared: his row on parents, his parent card (ten
+      pages), and the breed guide FAQ answer plus its FAQPage schema. Each now says only
+      that his results are being gathered. **Do not reinstate "clear" in any form** until
+      his results are published, and publish nothing about his CDDY status until Hope has
+      approved the exact wording.
+- [ ] **Joy is photographing Finch's results at his kennel, expected early October 2026.**
+      Once they are in, they get published the way Troy's are and his row gets the real
+      finding. Blocked on Joy.
+- [ ] **Finch's CDDY wording, blocked on Hope.** What the site says about a sire expected
+      to carry CDDY, and what that means for the litter, given Troy carries one copy and
+      CDDY is dominant. A medical claim, so it is drafted for her approval rather than
+      written here.
+- [x] **Residual risk, OVERTAKEN 2026-09-23 by the retraction above.** The site stated it as
+      fact while the commit recorded it as Hope's position.** Those are not the same claim. Troy carries one copy of CDDY
       and one copy is enough to pass on, so his status is the single most consequential
       health sentence on the site. Attributing it ("Hope's breeder reports him clear,
       including for CDDY; we are gathering the written panel") costs nothing and is

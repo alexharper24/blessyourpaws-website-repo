@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 169
+V = 170
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2342,9 +2342,13 @@ def build_pages():
       parent_card("cavalier-sire-01", "Bip Finch", "Dad",
                   "Cavalier King Charles Spaniel, AKC",
                   [("Weight", "19 lbs"), ("Color", "Ruby"),
-                   # "Clear" was retracted from his detail row and his FAQ answer for want
-                   # of a document. It survived here, on ten pages, saying the opposite.
-                   ("Genetic testing", "Clear, results being gathered")]))
+                   # RETRACTED 2026-09-23 (Hope via Alex): "clear" was wrong. Nearly all
+                   # Cavaliers carry CDDY, so he is clear of Cavalier-specific conditions
+                   # only. Nothing about his genetics goes back on the site until his
+                   # results are photographed and published, and the CDDY wording is
+                   # Hope's to approve. This card is on ten pages; change all three
+                   # Finch statements together.
+                   ("Genetic testing", "Results being gathered")]))
     D_PARENTS = (
       parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
                   [("Registered", "Kingdom's Miraculous Grace"),
@@ -2667,7 +2671,7 @@ def build_pages():
       ("Are they good for a first-time owner?",
        "Yes, if you can give them company and a routine. They are affectionate, moderate energy, and highly trainable, which is a forgiving combination for a first dog."),
       ("What health testing do the parents have?",
-       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she has a copy of. Bip Finch, our AKC-registered sire, is clear, and we are gathering his full results to publish the same way."
+       "<a href=\"parents.html\">Troy</a> has a full Wisdom Panel and we publish it in full, including the one variant she has a copy of. Bip Finch is our AKC-registered sire, and we are gathering his full results to publish the same way."
        + (" On the Doberman side, Mira has a full genetic panel plus OFA heart and eye screening, and we link her actual records." if SHOW_DOBERMANS else "")),
       ("What comes home with the puppy?",
        "A vaccination and health record, our vet's exam, a microchip, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
@@ -2788,13 +2792,12 @@ def build_pages():
         "and the Cavalier side is where the lap-dog nature comes from.",
         [("Registration:", "AKC registered, TS65827904."),
          ("Weight:", "19 lbs, ruby."),
-         # Hope's own statement, given 2026-08-26. She has seen his results; what she does
-         # not yet have is a legible copy to publish, because his breeder can only fax.
-         # CDDY is named because it is the one that matters here: Troy carries a copy and
-         # it takes only one to pass on, so his status is the question a buyer should ask.
-         ("Genetic testing:", "clear, including for CDDY/IVDD. We are "
-          "gathering his full results to publish here the same way we publish "
-          "Troy&rsquo;s.")],
+         # "clear, including for CDDY/IVDD" was Hope's statement of 2026-08-26, made with
+         # no document, and RETRACTED 2026-09-23: nearly all Cavaliers carry CDDY, so he
+         # is clear of Cavalier-specific conditions only. Joy is photographing his results
+         # at his kennel. Until they are published, this row makes no claim at all.
+         ("Genetic testing:", "we are gathering his full results to publish "
+          "here the same way we publish Troy&rsquo;s.")],
         []))
     D_DOGS = (
       dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",
