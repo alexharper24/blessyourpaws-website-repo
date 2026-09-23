@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 167
+V = 168
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2641,7 +2641,7 @@ def build_pages():
 
     faq = [
       ("How big does a Munchkin Bernedoodle get?",
-       f"Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. Our current litter is expected at {M_SIZE} full grown. Size varies puppy to puppy, so ask us about the one you love."),
+       f"Most mature between 10 and 25 lbs and stand roughly 12 to 15 inches at the shoulder. <a href=\"puppies.html\">Our current litter</a> is expected at {M_SIZE} full grown. Size varies puppy to puppy, so ask us about the one you love."),
       ("How does a Munchkin Bernedoodle end up so small?",
        "By breeding down through generations and crossing in a naturally smaller parent breed. Ours come from a 22 lb Mini Multi Gen Bernedoodle mother and a 19 lb Cavalier father."),
       ("How is this different from a Mini or Micro Bernedoodle?",
@@ -2653,7 +2653,7 @@ def build_pages():
       ("How long do they live?",
        "Small doodles commonly live twelve to fifteen years, and smaller dogs generally live longer than large ones. Good care, healthy weight and regular vet visits matter more than size."),
       ("What is their temperament like?",
-       "The Cavalier side tends to bring a calm, affectionate, lap-loving nature. The Bernedoodle side brings playfulness and clever, trainable energy. Every puppy is an individual, which is why we socialise them early and match carefully rather than first come first served."),
+       "The Cavalier side tends to bring a calm, affectionate, lap-loving nature. The Bernedoodle side brings playfulness and clever, trainable energy. Every puppy is an individual, which is why we socialize them early and match carefully rather than first come first served."),
       ("Are they good with children and other dogs?",
        "Ours are raised around both from day one, with our own kids and our own dogs. We still ask families with very young children to supervise, mostly to protect the puppy."),
       ("Will one be happy in an apartment?",
@@ -2673,11 +2673,11 @@ def build_pages():
        "A vaccination and health record, our vet's exam, a microchip, a small bag of the food they are already eating, a collar and leash, a blanket, and toys."
        + (" Doberman puppies also come with AKC registration, a one year genetic health guarantee, microchipping, tail docked and dew claws removed." if SHOW_DOBERMANS else "")),
       ("How do I reserve one, and is the deposit refundable?",
-       "A $500 deposit reserves your puppy and applies to your balance. The deposit is non-refundable. If you change your mind about which puppy, you can move it to another available puppy."),
+       "<a href=\"process.html\">A $500 deposit reserves your puppy</a> and applies to your balance. The deposit is non-refundable. If you change your mind about which puppy, you can move it to another available puppy."),
     ]
     faq_ld = json.dumps({"@context": "https://schema.org", "@type": "FAQPage",
       "mainEntity": [{"@type": "Question", "name": q,
-        "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]})
+        "acceptedAnswer": {"@type": "Answer", "text": re.sub(r"<[^>]+>", "", a)}} for q, a in faq]})
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
@@ -2757,7 +2757,7 @@ def build_pages():
 {faq_html}
   </div>
   <div class="section-cta">
-    <p>Still deciding? Meet them on a visit or a video call first.</p>
+    <p>Still deciding? Meet them on <a href="contact.html">a visit or a video call</a> first.</p>
     <a class="btn btn-primary" href="{'munchkin-bernedoodles.html' if SHOW_DOBERMANS else 'puppies.html'}">See available puppies</a>
     <a class="btn btn-ghost" href="waitlist.html">Join the waitlist</a>
   </div>
