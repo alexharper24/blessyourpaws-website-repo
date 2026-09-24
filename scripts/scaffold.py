@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 180
+V = 181
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2726,6 +2726,9 @@ def build_pages():
       ("munchkin-bernedoodle-size.html", "Full grown size", page_lead("jordan"),
        "Jordan, a blue merle parti Munchkin Bernedoodle puppy",
        "How big they get, the parent breeds' sizes, and when they stop growing."),
+      ("munchkin-vs-mini-bernedoodle.html", "Munchkin vs Mini vs Micro", page_lead("shiloh"),
+       "Shiloh, a blue merle phantom Munchkin Bernedoodle puppy",
+       "How the three small Bernedoodles differ, and why the names overlap."),
       ("bernedoodle-colors.html", "Colors and patterns", page_lead("havilah"),
        "Havilah, a blue merle phantom Munchkin Bernedoodle puppy",
        "Merle, phantom, parti, red and tri color, and the genetics behind them."),
@@ -2754,6 +2757,74 @@ def build_pages():
           + f'<div class="packet-body"><p class="packet-name">{t}</p><p class="fine">{blurb}</p></div>'
           '</article></a>'
           for h, t, stem, alt, blurb in GUIDE_SPOKES)
+
+    # ---- Munchkin vs Mini vs Micro -------------------------------------------------------
+    # Never labels these puppies Mini. Parent-breed sizes are the AKC's; Mini and Micro are
+    # breeder terms with no registry standard. No dwarfism or genetics discussion.
+    page("munchkin-vs-mini-bernedoodle.html",
+      f"Munchkin vs Mini vs Micro Bernedoodle | {BRAND}",
+      "How a Munchkin Bernedoodle differs from a Mini or Micro Bernedoodle: how each is "
+      "bred to be small, the parent breeds' sizes, and why the names overlap.",
+      f"""<section><div class="wrap">
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Breed guide</p>
+      <h1>Munchkin vs Mini vs Micro Bernedoodle</h1>
+    </div>
+    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, the Mini Multi Gen Bernedoodle who is the mother of our litter', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    <div class="hic-copy">
+      <p class="lede">All three are small Bernedoodles, and the names get used loosely.
+        The real difference is how each one is bred to be small, and only one of them
+        brings in a third breed.</p>
+      <p>Our litter's mom, Troy, is a Mini Multi Gen Bernedoodle. The puppies' dad is a Cavalier
+        King Charles Spaniel. That Cavalier is what makes the puppies Munchkins rather than
+        Minis.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <p class="eyebrow center">Side by side</p>
+  <h2 class="center">How each one gets small</h2>
+  <div class="tri" style="margin-top:2rem">
+    <div><h3>Mini Bernedoodle</h3><p>A Bernese Mountain Dog and Poodle cross that gets its
+      smaller size from a smaller Poodle. It stays a two-breed dog.</p></div>
+    <div><h3>Micro Bernedoodle</h3><p>A name for Bernedoodles bred smaller than a typical
+      Mini. Like Mini, it describes size rather than a fixed recipe.</p></div>
+    <div><h3>Munchkin Bernedoodle</h3><p>A Bernedoodle crossed with a Cavalier King Charles
+      Spaniel. The Cavalier brings the size down and adds a third breed's temperament.</p></div>
+  </div>
+</div></section>
+
+{hic_pair('Why the names overlap',
+  img_tag(page_lead('jericho'), cls='framed hic-photo', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>None of these names has an official standard. The American Kennel Club registers purebred breeds, and the Bernedoodle is not one of them, so there is no registry that defines how big a Mini or a Micro has to be. Each breeder uses the words in their own way.</p><p>What is standardized is the breeds behind them. When you compare small Bernedoodles, the parent dogs\' own sizes tell you far more than the label does, which is why it is worth asking any breeder for the parents\' weights.</p>',
+  flip=True, sid='names')}
+
+<section class="band-forest"><div class="wrap">
+  <p class="eyebrow center">The parent breeds</p>
+  <h2 class="center">The sizes that are standardized</h2>
+  <p class="lede center" style="max-width:58ch;margin:.5rem auto 2rem">The American Kennel
+    Club's figures for the breeds that small Bernedoodles are made from.</p>
+  <div class="tri">
+    <div><h3>Toy Poodle</h3><p>10 inches or under at the shoulder, and 4 to 6 lbs.</p></div>
+    <div><h3>Miniature Poodle</h3><p>Over 10 and up to 15 inches, and 10 to 15 lbs.</p></div>
+    <div><h3>Cavalier King Charles Spaniel</h3><p>12 to 13 inches, and 13 to 18 lbs.</p></div>
+  </div>
+  <p class="center" style="max-width:62ch;margin:2rem auto 0">For scale, a Bernese Mountain
+    Dog stands 23 to 27.5 inches and weighs 70 to 115 lbs, which is why every small
+    Bernedoodle needs a much smaller breed in the mix.</p>
+</div></section>
+
+{hic_pair('Choosing between them',
+  img_tag(page_lead('havilah'), cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>If size matters most, look at the parents rather than the name. Our <a href="munchkin-bernedoodle-size.html">size guide</a> shows how we estimate this litter\'s adult weight from theirs.</p><p>If temperament matters most, the Cavalier is the difference a Munchkin brings. Its breed standard describes a friendly, non-aggressive dog with no tendency toward nervousness or shyness. More on that is in our page on <a href="bernedoodle-lifespan-temperament.html#temperament">temperament</a>.</p><p>In the Bernedoodle world, Munchkin describes small overall size, not a separate breed.</p>',
+  band='band-raise')}
+
+{sibling_links('munchkin-vs-mini-bernedoodle.html')}
+
+{closing_band('Meet the Munchkins in our current litter.', ('puppies.html', 'See available puppies'), ('waitlist.html', 'Join the waitlist'))}""",
+      og_image="img/dogs/troy-01.jpg")
 
     # ---- Munchkin Bernedoodle price ------------------------------------------------------
     # Every figure from the constants, every term in the site's published wording, shown as
