@@ -24,7 +24,6 @@ open:
   - {id: g5-growth-data, gate: G5, blocked_on: client, item: "The size page has no growth-by-age section because no real figures exist. When this litter is weighed at intervals, or grows up, those numbers are what searchers want and what replaces the parents-based projection"}
   - {id: g5-http-variant, gate: G5, blocked_on: alex, item: "An http:// version of the homepage is still being served in results. Visitors are redirected so nothing is broken, but it is a URL Google should not be holding. Same root as g4-www-redirect"}
   - {id: g5-cash-tax, gate: G5, blocked_on: alex, item: "The site never says whether 7% sales tax applies to the $2,000 cash price. Process says $2,060 plus sales tax, or $2,000 in cash; the application says tax is added and the cash fee applies only when both payments are cash. A buyer paying cash cannot tell what they owe. Alex or Hope to state it, then every place gets the same wording"}
-  - {id: g5-hope-review, gate: G5, blocked_on: client, item: "Hope to skim the voice-of-the-business statements in source-files/semrush/hope-review.md; pages are already live"}
   - {id: g5-monthly, gate: G5, blocked_on: alex, item: "Monthly Search Console and profile check not running, and no content cluster in progress"}
   - {id: g5-ai-check, gate: G5, blocked_on: alex, item: "AI visibility check never run. Ask the buying questions in ChatGPT, Perplexity and Gemini and record who gets named"}
   # Breeder-specific, from the lifecycle business-type table
@@ -55,6 +54,7 @@ closed:
   - {id: g5-compare-page, closed: 2026-09-24, evidence: "munchkin-vs-mini-bernedoodle live (200) after commit 4484f76; AKC parent-breed sizes, Mini and Micro described as breeder terms with no standard, puppies never labeled Mini. Sitemap at 28"}
   - {id: g5-delivery-states, closed: 2026-09-24, evidence: "Commit 92f81c6: puppies page lists the 26 states on Furry Freight's rate map (Alex's screenshot), grouped by region, prices deliberately omitted; live at v=182"}
   - {id: g5-eyebrow-contrast, closed: 2026-09-24, evidence: "Commit 92f81c6: --sage-deep to #657160 (4.66 to 5.14), footer fine print to --sage-light (was 2.6:1 on all 23 pages, now 5.65), pink-band eyebrow to forest (7.91). Sweep of 2,025 text elements on every page: no failures"}
+  - {id: g5-hope-review, closed: 2026-09-24, evidence: "Alex: good to go, on the voice-of-the-business statements in source-files/semrush/hope-review.md, including that pickup costs nothing beyond the adoption fee"}
   - {id: g5-gbp-sameas, closed: 2026-09-23, evidence: "CID 4658031195710535829 read from the Business Profile Manager and verified by loading the Maps URL, which returns this business with this site as its website. Wired as GBP_URL into the LocalBusiness sameAs"}
   - {id: g5-gbp-complete, closed: 2026-09-23, evidence: "Read in Chrome against the live Maps listing: category Dog breeder, NO address published, 19 service areas led by Goshen and Warsaw, hours set, website and phone present, women-owned attribute set. Phone matches the site character for character at (574) 377-8023. Photos split out as g5-gbp-photos, the one thing still short"}
 decisions:
