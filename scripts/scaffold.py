@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 175
+V = 176
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2686,6 +2686,79 @@ def build_pages():
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
+    # ---- Munchkin Bernedoodle price ------------------------------------------------------
+    # Every figure from the constants, every term in the site's published wording, shown as
+    # a table. Whether tax applies to the cash price is NOT stated, because the site does
+    # not say. No ownership cost estimates and no competitor prices.
+    kit_items = "\n".join(
+        ('        <li><a href="health-guarantee.html">%s</a></li>' % k) if "health guarantee" in k.lower()
+        else '        <li>%s</li>' % k for k in M_KIT)
+    page("munchkin-bernedoodle-price.html",
+      f"Munchkin Bernedoodle Price and Cost | {BRAND}",
+      f"What a Munchkin Bernedoodle from us costs: the ${M_PRICE:,} adoption fee, the "
+      f"${M_PRICE_CASH:,} cash price, the ${DEPOSIT} deposit, and what comes home with it.",
+      f"""<section><div class="wrap">
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Breed guide</p>
+      <h1>How much is a Munchkin Bernedoodle?</h1>
+    </div>
+    {img_tag(page_lead('jericho'), cls='framed hic-photo', alt='Jericho, a blue merle parti Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    <div class="hic-copy">
+      <p class="lede">A Munchkin Bernedoodle from our litter has an adoption fee of
+        ${M_PRICE:,}. Here is exactly what that covers, how the deposit and the cash price
+        work, and what else to plan for once your puppy is home.</p>
+      <ul class="facts">
+        <li><span class="k">Adoption fee</span><span class="v">${M_PRICE:,}</span></li>
+        <li><span class="k">Indiana sales tax</span><span class="v">{IN_TAX_PCT}, added to the total</span></li>
+        <li><span class="k">Paid in full by card</span><span class="v">${M_PRICE_TAXED:,.2f} with tax</span></li>
+        <li><span class="k">Cash adoption fee</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
+        <li><span class="k">Balance due</span><span class="v">Before or at pickup</span></li>
+        <li><span class="k">We accept</span><span class="v">Card or cash, not checks</span></li>
+      </ul>
+      <p class="fine">The ${M_PRICE_CASH:,} cash fee applies only when the deposit and the
+        balance are both paid in cash.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="band-raise" id="deposit"><div class="wrap">
+  <h2>How the deposit works</h2>
+  <p style="max-width:68ch">A short <a href="apply.html">application</a> comes before the
+    deposit. The ${DEPOSIT} deposit then holds your puppy while they finish growing up with
+    us, and it comes off what you owe at pickup. The deposit is non-refundable. If your
+    plans change, it can move to another available puppy. The whole sequence, from first
+    visit to going home, is on our <a href="process.html">how it works</a> page.</p>
+</div></section>
+
+<section id="included"><div class="wrap">
+  <h2>What comes home with your puppy</h2>
+  <p style="max-width:68ch">The adoption fee covers the puppy and everything below. Color,
+    sex and coat do not change it, so every puppy in the litter carries the same fee.</p>
+  <ul class="checklist" style="max-width:68ch">
+{kit_items}
+  </ul>
+  <p style="max-width:68ch">Delivery is not included. If you would like your puppy
+    brought to you, you arrange it and pay for it directly with our
+    <a href="process.html#delivery">delivery partner</a>.</p>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <h2>What to budget for afterward</h2>
+  <p style="max-width:68ch">The adoption fee is the largest single cost, but it is not the
+    last one. Plan for food, vaccinations and routine vet care,
+    and professional grooming every six to eight weeks, since a doodle coat needs it.
+    Our page on <a href="bernedoodle-shedding.html#grooming">shedding and grooming</a>
+    explains why. Costs vary by area, so ask a local vet and groomer for their prices
+    before your puppy comes home.</p>
+  <div class="section-cta">
+    <p>Every puppy is listed with their current status.</p>
+    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  </div>
+</div></section>""",
+      og_image=f"img/puppies/{page_lead('jericho')}.jpg")
+
     # ---- Bernedoodle lifespan and temperament --------------------------------------------
     # Only facts the breed guide already publishes, reworded. No health conditions of any
     # kind. "Children", not "our own kids" or "nieces and nephews", until Alex says which.
@@ -3362,7 +3435,7 @@ def build_pages():
       online and comes off the balance. The balance is due before or at pickup. The price
       is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} if you pay the whole amount in
       cash, deposit included, which saves you ${CASH_DISCOUNT}. We take card or cash, not
-      checks.</p>
+      checks. <a href="munchkin-bernedoodle-price.html">See the full price breakdown</a>.</p>
     <p><strong>Can we visit first?</strong> Yes, and we encourage it. Video calls work
       well for families further away.</p>
     <p><strong>Do you deliver?</strong> Yes, through {FF_NAME}, a transport company near
@@ -3872,7 +3945,8 @@ def build_pages():
             reserve_block = f'''<div class="reserve">
         <h3>Reserve {name}</h3>
         <p class="terms">A ${DEPOSIT} deposit holds {him}. ${M_PRICE:,} plus sales tax,
-          or ${M_PRICE_CASH:,} paid entirely in cash.</p>
+          or ${M_PRICE_CASH:,} paid entirely in cash.
+          <a href="munchkin-bernedoodle-price.html">What the price covers</a>.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
