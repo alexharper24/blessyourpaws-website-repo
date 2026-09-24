@@ -750,6 +750,18 @@ specificity and does not care where it sits in the file.** That is the way out o
 media-query ordering trap this stylesheet has hit three times: raise specificity rather than
 chasing declaration order.
 
+## Guide pages follow the hand-built rhythm (2026-09-23)
+
+The first five guide pages (colors, size, shedding, lifespan and temperament, price) shipped
+as a hero with a photo followed by text-only sections filling half the screen, and Alex
+asked for them to match the pages he had worked on. Those pages pair nearly every section
+with a photograph and alternate its side, use one forest band, turn parallel points into
+cards or checklists, and close on a pink band. `scripts/scaffold.py` now has two helpers
+for this, defined ahead of the guide pages: `hic_pair(h2, photo, copy, band, flip, sid)` for
+the alternating photo section and `closing_band(lede, primary, secondary)` for the pink
+close. **A new guide page starts from those, not from bare text sections.** Every
+`.hic-photo` takes `PHOTO_WIDE`, flipped or not.
+
 ## Alt text must not assert what only a photograph could tell you
 
 The litter photo's alt derived its count from `M_TOTAL` (`"The litter of eight ... puppies
