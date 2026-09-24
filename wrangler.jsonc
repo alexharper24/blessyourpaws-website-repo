@@ -14,6 +14,9 @@
   // Canonical host is the apex; every canonical, OG tag and sitemap entry derives from
   // BASE in scripts/scaffold.py and must agree with this. www serves the same Worker so
   // that typing it does not error; the www -> apex redirect is a rule on the zone.
+  // In place since 2026-09-24: Redirect Rule "Canonical host: www and http to https apex",
+  // (http.host eq "www.blessyourpawspuppies.com") or (not ssl) -> 301 to the https apex,
+  // path and query string kept. It also closes plain http, which had been serving 200.
   // Explicit, not incidental: the deploy that added the custom domains warned it was
   // disabling workers.dev "by default" because this key was absent. The site should be
   // reachable on ONE hostname, so this is written down rather than left to a default.

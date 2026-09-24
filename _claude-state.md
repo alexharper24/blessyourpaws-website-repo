@@ -9,7 +9,6 @@ live_url: "https://blessyourpawspuppies.com"
 open:
   # G2 Build, still owed by a live site
   # G4 Launch
-  - {id: g4-www-redirect, gate: G4, blocked_on: alex, item: "One zone Redirect Rule, approved by Alex 2026-09-24: www OR plain http to https://blessyourpawspuppies.com with path and query, 301. Measured 2026-09-24: https://www and http://www AND http:// apex all return 200, so http is not redirected either. Blocked on Alex signing into Cloudflare in Chrome; not built in the Worker, which would route every request through it"}
   - {id: g4-bing, gate: G4, blocked_on: alex, item: "Bing Webmaster Tools not set up. Google Search Console is verified with the sitemap submitted"}
   # G5 Grow
   - {id: g5-gbp-photos, gate: G5, blocked_on: client, item: "The profile carries ONE photo, owner-posted 29 days ago. Everything else about the profile is right, so photos are the whole remaining gap. Hope and Joy already have the puppy sets used on the site"}
@@ -19,7 +18,6 @@ open:
   - {id: g5-money-pages, gate: G5, blocked_on: claude, item: "Two of the three breeder money pages earn nothing. Available puppies has drawn no impressions at all and parents is among the undiscovered pages, so the breed guide is carrying all three roles on its own"}
   - {id: g5-guide-converts, gate: G5, blocked_on: claude, item: "The breed guide holds most of the site's impressions and almost none of its clicks, because it reads as a reference article rather than a place to buy a puppy. It is also the only money page that survives the litter, so it is where the buying path belongs"}
   - {id: g5-growth-data, gate: G5, blocked_on: client, item: "The size page has no growth-by-age section because no real figures exist. When this litter is weighed at intervals, or grows up, those numbers are what searchers want and what replaces the parents-based projection"}
-  - {id: g5-http-variant, gate: G5, blocked_on: alex, item: "An http:// version of the homepage is still being served in results. Visitors are redirected so nothing is broken, but it is a URL Google should not be holding. Same root as g4-www-redirect"}
   - {id: g5-agreement-cash, gate: G5, blocked_on: alex, item: "The purchase agreement page contradicts itself: its summary says the $2,000 price applies where the balance is paid in cash, its terms say the deposit and balance must both be cash. Legal copy, so not edited"}
   - {id: g5-monthly, gate: G5, blocked_on: alex, item: "Monthly Search Console and profile check not running, and no content cluster in progress"}
   - {id: g5-ai-check, gate: G5, blocked_on: alex, item: "AI visibility check never run. Ask the buying questions in ChatGPT, Perplexity and Gemini and record who gets named"}
@@ -56,6 +54,8 @@ closed:
   - {id: g5-cash-tax, closed: 2026-09-24, evidence: "Alex: 7% applies to the $2,000 cash price, on top. Commit bb9b792: process FAQ and puppy reserve blocks say plus sales tax, price page shows $2,140.00 cash total; live at v=183"}
   - {id: g5-lancaster-price, closed: 2026-09-24, evidence: "Alex: ignore, not meaningful. Won't fix"}
   - {id: breeder-breed-links, closed: 2026-09-24, evidence: "Breed guide inbound body links 4 to 17: hub sibling rows, and the breed name on every puppy page now links to it (commit bb9b792)"}
+  - {id: g4-www-redirect, closed: 2026-09-24, evidence: "Zone Redirect Rule deployed in the dashboard with Alex signed in: (http.host eq www) or (not ssl) to concat(https apex, path), 301, query kept. curl: https://www, http://www and http:// apex all 301 to the https apex in one hop, apex serves 200"}
+  - {id: g5-http-variant, closed: 2026-09-24, evidence: "Same rule: http:// apex now 301s to https; it had been serving 200"}
   - {id: g5-gbp-sameas, closed: 2026-09-23, evidence: "CID 4658031195710535829 read from the Business Profile Manager and verified by loading the Maps URL, which returns this business with this site as its website. Wired as GBP_URL into the LocalBusiness sameAs"}
   - {id: g5-gbp-complete, closed: 2026-09-23, evidence: "Read in Chrome against the live Maps listing: category Dog breeder, NO address published, 19 service areas led by Goshen and Warsaw, hours set, website and phone present, women-owned attribute set. Phone matches the site character for character at (574) 377-8023. Photos split out as g5-gbp-photos, the one thing still short"}
 decisions:
