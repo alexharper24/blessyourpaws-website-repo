@@ -139,7 +139,7 @@ MUNCHKINS = [
 # Puppies that are spoken for. ADOPTED means reserved by a family, NOT already gone: they
 # go home on the same date as their littermates. They stay on the site so the litter reads
 # as a whole rather than looking like one went missing, and they are never offered for sale.
-ADOPTED = {"tirzah"}
+ADOPTED = {"tirzah", "shiloh"}
 
 def n_word(n):
     return {1:"One",2:"Two",3:"Three",4:"Four",5:"Five",6:"Six",7:"Seven",8:"Eight",
