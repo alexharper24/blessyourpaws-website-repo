@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 171
+V = 172
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2386,14 +2386,14 @@ def build_pages():
 {dob_litter_block}'''
         PUPPIES_TAIL = ""
     else:
-        PUPPIES_TITLE = f"Munchkin Bernedoodle Puppies for Sale | {BRAND}"
+        PUPPIES_TITLE = f"Munchkin Bernedoodles for Sale in Indiana | {BRAND}"
         PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle "
                          f"dam and an AKC Cavalier sire. Born {M_BORN}, going home from "
                          f"{M_HOME}. ${M_PRICE:,} with a ${DEPOSIT} deposit.")
         PUPPIES_INTRO = f'''  <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else AVAIL_EYEBROW}</p>
-      <h1>Munchkin Bernedoodle puppies</h1>
+      <h1>Munchkin Bernedoodle puppies for sale</h1>
     </div>
     {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
@@ -2412,6 +2412,7 @@ def build_pages():
       <p class="fine">{SIZE_NOTE}</p>
       <div class="btn-row" style="margin-top:1rem">
         <a class="btn btn-pink breed-link" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
+        <a class="btn btn-ghost" href="bernedoodle-colors.html">Colors and patterns</a>
       </div>
     </div>
   </div>
@@ -2465,7 +2466,7 @@ def build_pages():
         "logo": BASE + "/img/brand/logo-horizontal-forest.png",
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
 
-    page("index.html", f"{BREEDS_SHORT} Puppies in Indiana | {BRAND}",
+    page("index.html", f"{BREEDS_SHORT} Breeder in Indiana | {BRAND}",
       f"Family-raised {BREEDS_PHRASE} puppies from two sisters in northern Indiana. Raised in the home, around nieces and nephews, with early socialization.",
       f"""<section class="hero">
   <div class="hero-drift">
@@ -2684,6 +2685,82 @@ def build_pages():
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
+    # ---- Bernedoodle colors -------------------------------------------------------------
+    # Every example comes from a puppy's RECORDED colour in MUNCHKINS, matched by word, so
+    # nothing here is read off a photograph and the examples vanish when the litter
+    # retires. A puppy can appear under more than one heading: a blue merle phantom is
+    # both merle and phantom. No health or genetics claims on this page.
+    COLOR_SECTIONS = [
+      ("merle", "Merle and blue merle",
+       "Merle is a pattern rather than a color. Patches of full color sit over a lighter, "
+       "diluted version of the same color, so the coat looks marbled. On a blue merle the "
+       "patches are black and the diluted areas read as gray or silver-blue, and no two "
+       "merle coats are marked the same way."),
+      ("phantom", "Phantom",
+       "A phantom coat is one main color with lighter markings in set places: above the "
+       "eyes, on the muzzle, the chest and the legs, and under the tail. The markings are "
+       "usually tan. A phantom can also be merle, which gives the marbled coat the same "
+       "points."),
+      ("parti", "Parti",
+       "A parti coat is mostly white with large patches of color. The patches can be any "
+       "color the dog carries, including merle, so a blue merle parti is a white coat with "
+       "marbled blue patches."),
+      ("red", "Red",
+       "Red runs from a light, warm red to a deep mahogany, and it can be solid or paired "
+       "with white. Our sire is a ruby Cavalier, which is the Cavalier name for solid red."),
+      ("tri", "Tri color",
+       "Tri color is the classic Bernese look: a dark base with white on the face, chest "
+       "and paws and tan or rust points on the eyebrows, cheeks and legs."),
+    ]
+    def color_cards(word):
+        hits = [m for m in MUNCHKINS if word in m[3].lower().split()]
+        if not hits:
+            return ""
+        cards = "".join(card(sl, nm, sx, co, M_PRICE, "Munchkin Bernedoodle")
+                        for sl, nm, sx, co, *_ in hits)
+        return (f'\n  <p class="eyebrow" style="margin-top:1.5rem">In this litter</p>'
+                f'\n  <div class="pgrid cols-4">{cards}</div>')
+    color_blocks = "\n".join(
+        ('<section' + (' class="band-raise"' if i % 2 else '') + f' id="{w}"><div class="wrap">\n'
+         f'  <h2>{h}</h2>\n  <p style="max-width:68ch">{t}</p>{color_cards(w)}\n</div></section>')
+        for i, (w, h, t) in enumerate(COLOR_SECTIONS))
+    page("bernedoodle-colors.html",
+      f"Merle, Phantom and Parti Bernedoodle Colors | {BRAND}",
+      "What merle, blue merle, phantom, parti, red and tri color mean on a Bernedoodle, "
+      "shown on the puppies in our Munchkin Bernedoodle litter.",
+      f"""<section><div class="wrap">
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Breed guide</p>
+      <h1>Munchkin Bernedoodle colors and patterns</h1>
+    </div>
+    {img_tag(page_lead('havilah'), cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    <div class="hic-copy">
+      <p class="lede">A Bernedoodle's coat is described by two things: its colors, and
+        the pattern they are laid out in. Merle, phantom and parti are patterns. Red,
+        black and blue are colors. Most coats are a mix of the two.</p>
+      <p>Each section below explains one of them and, where our current litter has it,
+        shows you the puppies who wear it. Every puppy in the litter is the same price
+        whatever its color.</p>
+    </div>
+  </div>
+</div></section>
+
+{color_blocks}
+
+<section><div class="wrap">
+  <h2>Where our colors come from</h2>
+  <p style="max-width:68ch">The litter's mom, <a href="parents.html">Troy</a>, is a blue
+    merle parti Mini Multi Gen Bernedoodle, and their dad is a ruby Cavalier King Charles
+    Spaniel. A puppy's coat can lighten or shift as the adult coat comes in, so if color
+    matters to you, ask us what we are seeing as your puppy grows.</p>
+  <div class="section-cta">
+    <p>See every puppy in the litter, with their colors.</p>
+    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  </div>
+</div></section>""",
+      og_image=f"img/puppies/{page_lead('havilah')}.jpg")
+
     page("what-is-a-munchkin-bernedoodle.html", f"What Is a Munchkin Bernedoodle? | {BRAND}",
       "A plain-language guide to the Munchkin Bernedoodle: the cross, the size, the coat, and the temperament, from a family that breeds them.",
       f"""<section><div class="wrap">
@@ -2692,7 +2769,7 @@ def build_pages():
       <p class="eyebrow">Breed guide</p>
       <h1>What is a Munchkin Bernedoodle?</h1>
     </div>
-    {img_tag('shiloh-01', cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_NARROW)}
+    {img_tag('shiloh-01', cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">A Munchkin Bernedoodle is an intentionally small Bernedoodle cross.
       Ours come from a Mini Multi Gen Bernedoodle mom and an AKC Cavalier King Charles
@@ -2747,6 +2824,9 @@ def build_pages():
       non-shedding or hypoallergenic dog, because no honest breeder can.</p>
     <p>What we will do is tell you exactly what we see in the coat of the puppy you
       ask about, and let you feel it yourself when you visit.</p>
+    <p>Color is a separate question from coat type, and our
+      <a href="bernedoodle-colors.html">guide to Bernedoodle colors</a> covers merle,
+      phantom, parti, red and tri color.</p>
   </div>
 </div></section>
 
