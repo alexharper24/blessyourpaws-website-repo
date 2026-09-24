@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 176
+V = 178
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2222,7 +2222,9 @@ def parent_card(stem, name, role, breed, facts, note=""):
 # measured, per column ratio, at 1440
 PHOTO_WIDE   = "(max-width:900px) 94vw, 58vw"   # narrow-left: photo in the 1.30fr column
 PHOTO_LEAN   = "(max-width:900px) 94vw, 46vw"   # lean-left
-PHOTO_NARROW = "(max-width:900px) 94vw, 29vw"   # narrow-right + flip: copy takes the width
+PHOTO_NARROW = "(max-width:900px) 94vw, 29vw"   # UNUSED since 2026-09-23. Measured: a hic photo
+# renders ~842px at 1440 whether narrow-left or narrow-right + hic-flip, because the flip
+# moves the photo into the wide column. Use PHOTO_WIDE for every .hic-photo.
 
 CARD_SIZES = ("(max-width:460px) 92vw, (max-width:760px) 46vw, "
               "(max-width:1100px) 30vw, 22vw")
@@ -2686,6 +2688,27 @@ def build_pages():
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
+    # ---- guide-page helpers ---------------------------------------------------------------
+    # The closing pink band the hand-built pages end on, and the alternating photo-and-text
+    # pair (hic) they are made of. flip=True puts a smaller photo on the left.
+    def closing_band(lede, primary, secondary=None):
+        btns = f'<a class="btn btn-primary" href="{primary[0]}">{primary[1]}</a>'
+        if secondary:
+            btns += f'<a class="btn btn-ghost" href="{secondary[0]}">{secondary[1]}</a>'
+        return ('<section class="band-pink" style="margin-bottom:0"><div class="wrap center">\n'
+                f'  <p class="lede">{lede}</p>\n'
+                f'  <div class="btn-row" style="justify-content:center">{btns}</div>\n'
+                '</div></section>')
+    def hic_pair(h2, photo, copy, band="", flip=False, sid=""):
+        grid = "grid-2 narrow-right hic hic-flip" if flip else "grid-2 narrow-left hic"
+        cls = f' class="{band}"' if band else ""
+        idattr = f' id="{sid}"' if sid else ""
+        return (f'<section{cls}{idattr}><div class="wrap {grid}">\n'
+                f'  <div class="hic-head"><h2>{h2}</h2></div>\n'
+                f'  {photo}\n'
+                f'  <div class="hic-copy">{copy}</div>\n'
+                '</div></section>')
+
     # ---- Munchkin Bernedoodle price ------------------------------------------------------
     # Every figure from the constants, every term in the site's published wording, shown as
     # a table. Whether tax applies to the cash price is NOT stated, because the site does
@@ -2723,40 +2746,30 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise" id="deposit"><div class="wrap">
-  <h2>How the deposit works</h2>
-  <p style="max-width:68ch">A short <a href="apply.html">application</a> comes before the
-    deposit. The ${DEPOSIT} deposit then holds your puppy while they finish growing up with
-    us, and it comes off what you owe at pickup. The deposit is non-refundable. If your
-    plans change, it can move to another available puppy. The whole sequence, from first
-    visit to going home, is on our <a href="process.html">how it works</a> page.</p>
-</div></section>
+{hic_pair('How the deposit works',
+  img_tag(page_lead('shiloh'), cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  f'<p>A short <a href="apply.html">application</a> comes before the deposit. The ${DEPOSIT} deposit then holds your puppy while they finish growing up with us, and it comes off what you owe at pickup. The deposit is non-refundable. If your plans change, it can move to another available puppy.</p><p>The whole sequence, from first visit to going home, is on our <a href="process.html">how it works</a> page.</p>',
+  band='band-raise', flip=True, sid='deposit')}
 
-<section id="included"><div class="wrap">
-  <h2>What comes home with your puppy</h2>
-  <p style="max-width:68ch">The adoption fee covers the puppy and everything below. Color,
-    sex and coat do not change it, so every puppy in the litter carries the same fee.</p>
-  <ul class="checklist" style="max-width:68ch">
+<section class="band-forest" id="included"><div class="wrap">
+  <p class="eyebrow center">Included in the fee</p>
+  <h2 class="center">What comes home with your puppy</h2>
+  <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">The adoption fee
+    covers the puppy and everything below. Color, sex and coat do not change it, so every
+    puppy in the litter carries the same fee.</p>
+  <div class="tri one"><div><h3>Every puppy goes home with</h3><ul class="checklist">
 {kit_items}
-  </ul>
-  <p style="max-width:68ch">Delivery is not included. If you would like your puppy
-    brought to you, you arrange it and pay for it directly with our
-    <a href="process.html#delivery">delivery partner</a>.</p>
+  </ul></div></div>
+  <p class="center" style="max-width:56ch;margin:2rem auto 0">Delivery is not included. If
+    you would like your puppy brought to you, you arrange it and pay for it directly with
+    our <a href="process.html#delivery">delivery partner</a>.</p>
 </div></section>
 
-<section class="band-raise"><div class="wrap">
-  <h2>What to budget for afterward</h2>
-  <p style="max-width:68ch">The adoption fee is the largest single cost, but it is not the
-    last one. Plan for food, vaccinations and routine vet care,
-    and professional grooming every six to eight weeks, since a doodle coat needs it.
-    Our page on <a href="bernedoodle-shedding.html#grooming">shedding and grooming</a>
-    explains why. Costs vary by area, so ask a local vet and groomer for their prices
-    before your puppy comes home.</p>
-  <div class="section-cta">
-    <p>Every puppy is listed with their current status.</p>
-    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
-  </div>
-</div></section>""",
+{hic_pair('What to budget for afterward',
+  img_tag(page_lead('caleb'), cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>The adoption fee is the largest single cost, but it is not the last one. Plan for food, vaccinations and routine vet care, and professional grooming every six to eight weeks, since a doodle coat needs it. Our page on <a href="bernedoodle-shedding.html#grooming">shedding and grooming</a> explains why.</p><p>Costs vary by area, so ask a local vet and groomer for their prices before your puppy comes home.</p>')}
+
+{closing_band('Every puppy is listed with their current status.', ('puppies.html', 'See available puppies'), ('apply.html', 'Start an application'))}""",
       og_image=f"img/puppies/{page_lead('jericho')}.jpg")
 
     # ---- Bernedoodle lifespan and temperament --------------------------------------------
@@ -2786,48 +2799,38 @@ def build_pages():
   </div>
 </div></section>
 
-<section class="band-raise" id="lifespan"><div class="wrap">
-  <h2>How long they live</h2>
-  <p style="max-width:68ch">Small doodles like the Munchkin often reach twelve to fifteen
-    years. Their size works in their favor, because as a rule small dogs outlive big ones.
-    Past that, how long a dog lives comes down mostly to how it is looked after. Keeping
-    it at a healthy weight, feeding it well and keeping up with vet checkups do more for
-    a long life than anything written on its pedigree.</p>
-</div></section>
+{hic_pair('How long they live',
+  img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, the Mini Multi Gen Bernedoodle who is the mother of our litter', sizes=PHOTO_WIDE),
+  '<p>Small doodles like the Munchkin often reach twelve to fifteen years. Their size works in their favor, because as a rule small dogs outlive big ones. Past that, how long a dog lives comes down mostly to how it is looked after. Keeping it at a healthy weight, feeding it well and keeping up with vet checkups do more for a long life than anything written on its pedigree.</p>',
+  band='band-raise', flip=True, sid='lifespan')}
 
-<section id="temperament"><div class="wrap">
-  <h2>Where the personality comes from</h2>
-  <p style="max-width:68ch">The Cavalier King Charles Spaniel half is where the
-    gentleness comes from: a calm, cuddly dog that is happiest in a lap. The Bernedoodle
-    half adds a playful streak and a quick mind that takes well to training. Most
-    Munchkins land somewhere between the two, and each puppy is its own mix of them,
-    which is why we get to know every puppy before we suggest one to a family.</p>
-</div></section>
+{hic_pair('Where the personality comes from',
+  img_tag('cavalier-sire-01', folder='dogs', cls='framed hic-photo', alt='Bip Finch, the ruby Cavalier King Charles Spaniel who is the father of our litter', sizes=PHOTO_WIDE),
+  '<p>The Cavalier King Charles Spaniel half is where the gentleness comes from: a calm, cuddly dog that is happiest in a lap. The Bernedoodle half adds a playful streak and a quick mind that takes well to training.</p><p>Most Munchkins land somewhere between the two, and each puppy is its own mix of them, which is why we get to know every puppy before we suggest one to a family.</p>',
+  sid='temperament')}
 
-<section class="band-raise"><div class="wrap">
-  <h2>With children and other dogs</h2>
-  <p style="max-width:68ch">Our puppies grow up around children and other dogs from their
-    first days, so a busy house is ordinary to them by the time they leave. We still ask
-    families with very young children to keep an eye on things, mostly for the puppy's
-    sake, because a small dog is easy for a toddler to hurt by accident. You can read
-    more about <a href="about.html">how we raise them</a>.</p>
-</div></section>
+{hic_pair('With children and other dogs',
+  img_tag(page_lead('havilah'), cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>Our puppies grow up around children and other dogs from their first days, so a busy house is ordinary to them by the time they leave. We still ask families with very young children to keep an eye on things, mostly for the puppy\'s sake, because a small dog is easy for a toddler to hurt by accident. You can read more about <a href="about.html">how we raise them</a>.</p>',
+  band='band-raise', flip=True)}
 
-<section><div class="wrap">
-  <h2>What they need day to day</h2>
-  <p style="max-width:68ch">Half an hour to an hour of activity a day covers most of what
-    they need, and it does not all have to be walking. Training games and puzzle toys
-    wear out a clever dog as well as a run does.</p>
-  <p style="max-width:68ch">What they handle badly is long hours on their own, because
-    this is a companion dog through and through. They would rather greet a visitor than
-    guard against one, so do not count on a watchdog. Give them company and a steady
-    routine, though, and their affection and willingness to learn make them a forgiving
-    choice for a first dog.</p>
-  <div class="section-cta">
-    <p>Ask us about the personality of the puppy you are considering.</p>
-    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+<section class="band-forest"><div class="wrap">
+  <p class="eyebrow center">Day to day</p>
+  <h2 class="center">What they need day to day</h2>
+  <div class="tri" style="margin-top:2rem">
+    <div><h3>Activity</h3><p>Half an hour to an hour a day covers most of what they
+      need, and it does not all have to be walking. Training games and puzzle toys wear
+      out a clever dog as well as a run does.</p></div>
+    <div><h3>Company</h3><p>What they handle badly is long hours on their own, because
+      this is a companion dog through and through. They would rather greet a visitor than
+      guard against one, so do not count on a watchdog.</p></div>
+    <div><h3>A first dog</h3><p>Give them company and a steady routine, and their
+      affection and willingness to learn make them a forgiving choice for a first
+      dog.</p></div>
   </div>
-</div></section>""",
+</div></section>
+
+{closing_band('Ask us about the personality of the puppy you are considering.', ('puppies.html', 'See available puppies'), ('about.html', 'How we raise them'))}""",
       og_image=f"img/puppies/{page_lead('joshua')}.jpg")
 
     # ---- Bernedoodle shedding ------------------------------------------------------------
@@ -2856,46 +2859,45 @@ def build_pages():
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <h2>Why one litter can grow different coats</h2>
-  <p style="max-width:68ch">A Munchkin Bernedoodle draws on three breeds. The Poodle brings
-    the wavy to curly coat that tends to hold on to its hair. The Bernese Mountain Dog and
-    the Cavalier King Charles Spaniel both shed, the Bernese heavily. Every puppy inherits
-    its own blend of the three, so two littermates can finish with noticeably different
-    coats. As a rule of thumb, the curlier the coat, the less of it ends up on your
-    floor.</p>
-</div></section>
-
-<section id="hypoallergenic"><div class="wrap">
-  <h2>What hypoallergenic actually means</h2>
-  <p style="max-width:68ch">There is no such thing as an allergy-free dog. The proteins
-    people react to come from a dog's skin and saliva as well as its hair, so every dog
-    carries them. A coat that sheds less can leave less of that behind on floors and
-    furniture, which is why some people with mild allergies do better with a doodle,
-    but it is not a guarantee. If anyone in your home has allergies, spend real time with
-    a Bernedoodle before you commit, and ask to meet ours on
-    <a href="contact.html">a visit</a>.</p>
-</div></section>
-
-<section class="band-raise"><div class="wrap">
-  <h2>Reading a puppy's coat</h2>
-  <p style="max-width:68ch">The coat you see at eight weeks is a preview rather than the
-    final coat. The adult coat comes in over the first year, and its texture often
-    changes partway through. We can tell you whether a puppy's coat is looking wavy,
-    curly or straighter, and we will, but nobody can promise how it finishes.</p>
-</div></section>
-
-<section id="grooming"><div class="wrap">
-  <h2>Less shedding means more grooming</h2>
-  <p style="max-width:68ch">A coat that holds its hair needs brushing, because the loose
-    hair stays in the coat instead of landing on the couch, and it mats if it is left.
-    Budget for brushing it through several times a week and for a groomer roughly every
-    six to eight weeks, ideally one who knows doodle coats. Expect a stretch of extra
-    brushing while the puppy coat changes over to the adult one.</p>
-  <div class="section-cta">
-    <p>Ask us about the coat on the puppy you are considering.</p>
-    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  <p class="eyebrow center">Three breeds, three coats</p>
+  <h2 class="center">Why one litter can grow different coats</h2>
+  <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">A Munchkin
+    Bernedoodle draws on three breeds, and each brings its own coat.</p>
+  <div class="tri">
+    <div><h3>Poodle</h3><p>The wavy to curly coat that tends to hold on to its hair.</p></div>
+    <div><h3>Bernese Mountain Dog</h3><p>A coat that sheds, and sheds heavily.</p></div>
+    <div><h3>Cavalier King Charles Spaniel</h3><p>A coat that sheds as well.</p></div>
   </div>
-</div></section>""",
+  <p class="center" style="max-width:62ch;margin:2rem auto 0">Every puppy inherits its own
+    blend of the three, so two littermates can finish with noticeably different coats. As
+    a rule of thumb, the curlier the coat, the less of it ends up on your floor.</p>
+</div></section>
+
+{hic_pair('What hypoallergenic actually means',
+  img_tag(page_lead('shiloh'), cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>There is no such thing as an allergy-free dog. The proteins people react to come from a dog\'s skin and saliva as well as its hair, so every dog carries them. A coat that sheds less can leave less of that behind on floors and furniture, which is why some people with mild allergies do better with a doodle, but it is not a guarantee.</p><p>If anyone in your home has allergies, spend real time with a Bernedoodle before you commit, and ask to meet ours on <a href="contact.html">a visit</a>.</p>',
+  band='band-forest', sid='hypoallergenic')}
+
+{hic_pair('Reading a puppy\'s coat',
+  img_tag(page_lead('caleb'), cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>The coat you see at eight weeks is a preview rather than the final coat. The adult coat comes in over the first year, and its texture often changes partway through. We can tell you whether a puppy\'s coat is looking wavy, curly or straighter, and we will, but nobody can promise how it finishes.</p>',
+  flip=True)}
+
+<section class="band-raise" id="grooming"><div class="wrap">
+  <p class="eyebrow center">Grooming</p>
+  <h2 class="center">Less shedding means more grooming</h2>
+  <p class="lede center" style="max-width:60ch;margin:.5rem auto 2rem">A coat that holds
+    its hair needs brushing, because the loose hair stays in the coat instead of landing
+    on the couch, and it mats if it is left.</p>
+  <div class="tri one"><div><h3>What to plan for</h3><ul class="checklist">
+    <li>Brushing it through several times a week</li>
+    <li>A groomer roughly every six to eight weeks</li>
+    <li>Ideally, a groomer who knows doodle coats</li>
+    <li>Extra brushing while the puppy coat changes over to the adult one</li>
+  </ul></div></div>
+</div></section>
+
+{closing_band('Ask us about the coat on the puppy you are considering.', ('puppies.html', 'See available puppies'), ('contact.html', 'Arrange a visit'))}""",
       og_image=f"img/puppies/{page_lead('eden')}.jpg")
 
     # ---- Munchkin Bernedoodle size --------------------------------------------------------
@@ -2912,7 +2914,7 @@ def build_pages():
       <p class="eyebrow">Breed guide</p>
       <h1>Munchkin Bernedoodle full grown size</h1>
     </div>
-    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, the 22 lb Mini Multi Gen Bernedoodle who is the mother of our litter', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    {img_tag(page_lead('jordan'), cls='framed hic-photo', alt='Jordan, a blue merle parti Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">Our current litter is expected to be {M_SIZE} full grown. That is
         an estimate from the parents' weights rather than a measurement of grown puppies,
@@ -2929,36 +2931,34 @@ def build_pages():
 </div></section>
 
 <section class="band-raise"><div class="wrap">
-  <h2>Start with the parents</h2>
-  <p style="max-width:68ch">The best guide to how big a puppy will grow is the size of the
-    dogs it came from. <a href="parents.html">Troy</a> weighs 22 lbs and Bip Finch weighs
-    19 lbs, so we expect most of the litter to mature somewhere near them. We set the top
-    of our range above Troy's own weight on purpose. A puppy can outgrow both parents,
-    and we would rather you plan for a slightly bigger dog than be surprised by one.</p>
-</div></section>
-
-<section><div class="wrap">
-  <h2>Why littermates grow to different sizes</h2>
-  <p style="max-width:68ch">Puppies from the same litter do not all finish at one weight.
-    Each one inherits its own mix from both sides of the cross, so a sister can mature
-    near the bottom of the range while her brother lands near the top. That is why we
-    give a range for the litter instead of a number for each puppy, and why we will tell
-    you what we are seeing in the one you have your eye on.</p>
-</div></section>
-
-<section class="band-raise"><div class="wrap">
-  <h2>How small a Munchkin really is</h2>
-  <p style="max-width:68ch">In practice, "Munchkin" means a dog you can pick up and carry.
-    Across the cross, most adults weigh between 10 and 25 lbs and stand about 12 to 15
-    inches at the shoulder. A standard Bernedoodle can weigh three times that, at 70 lbs
-    or more, which is the difference between a lap dog and a dog that fills the back
-    seat.</p>
-  <div class="section-cta">
-    <p>Ask us what we are seeing in the puppy you are interested in.</p>
-    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">The parents</p>
+      <h2>Start with the parents</h2>
+      <p class="lede" style="max-width:62ch;margin:0">The best guide to how big a puppy will
+        grow is the size of the dogs it came from. Troy weighs 22 lbs and Bip Finch weighs
+        19 lbs, so we expect most of the litter to mature somewhere near them. We set the
+        top of our range above Troy's own weight on purpose. A puppy can outgrow both
+        parents, and we would rather you plan for a slightly bigger dog than be surprised
+        by one.</p>
+    </div>
+    <a class="btn btn-primary" href="parents.html">Meet the parents</a>
   </div>
-</div></section>""",
-      og_image="img/dogs/troy-01.jpg")
+  <div class="parent-grid">{M_PARENTS}</div>
+</div></section>
+
+{hic_pair('Why littermates grow to different sizes',
+  img_tag('litter-01', cls='framed hic-photo keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE),
+  '<p>Puppies from the same litter do not all finish at one weight. Each one inherits its own mix from both sides of the cross, so a sister can mature near the bottom of the range while her brother lands near the top. That is why we give a range for the litter instead of a number for each puppy, and why we will tell you what we are seeing in the one you have your eye on.</p>',
+  flip=True)}
+
+{hic_pair('How small a Munchkin really is',
+  img_tag(page_lead('eden'), cls='framed hic-photo', alt='Eden, a red with white Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>In practice, "Munchkin" means a dog you can pick up and carry. Across the cross, most adults weigh between 10 and 25 lbs and stand about 12 to 15 inches at the shoulder. A standard Bernedoodle can weigh three times that, at 70 lbs or more, which is the difference between a lap dog and a dog that fills the back seat.</p>',
+  band='band-forest')}
+
+{closing_band('Ask us what we are seeing in the puppy you are interested in.', ('puppies.html', 'See available puppies'), ('contact.html', 'Ask us a question'))}""",
+      og_image=f"img/puppies/{page_lead('jordan')}.jpg")
 
     # ---- Bernedoodle colors -------------------------------------------------------------
     # Every example comes from a puppy's RECORDED colour in MUNCHKINS, matched by word, so
@@ -3009,7 +3009,7 @@ def build_pages():
       <p class="eyebrow">Breed guide</p>
       <h1>Munchkin Bernedoodle colors and patterns</h1>
     </div>
-    {img_tag(page_lead('havilah'), cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    {img_tag('litter-01', cls='framed hic-photo keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', lazy=False, priority=True, sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">A Bernedoodle's coat is described by two things: its colors, and
         the pattern they are laid out in. Merle, phantom and parti are patterns. Red,
@@ -3024,17 +3024,22 @@ def build_pages():
 {color_blocks}
 
 <section><div class="wrap">
-  <h2>Where our colors come from</h2>
-  <p style="max-width:68ch">The litter's mom, <a href="parents.html">Troy</a>, is a blue
-    merle parti Mini Multi Gen Bernedoodle, and their dad is a ruby Cavalier King Charles
-    Spaniel. A puppy's coat can lighten or shift as the adult coat comes in, so if color
-    matters to you, ask us what we are seeing as your puppy grows.</p>
-  <div class="section-cta">
-    <p>See every puppy in the litter, with their colors.</p>
-    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">The parents</p>
+      <h2>Where our colors come from</h2>
+      <p class="lede" style="max-width:62ch;margin:0">The litter's mom, Troy, is a blue
+        merle parti Mini Multi Gen Bernedoodle, and their dad is a ruby Cavalier King
+        Charles Spaniel. A puppy's coat can lighten or shift as the adult coat comes in, so
+        if color matters to you, ask us what we are seeing as your puppy grows.</p>
+    </div>
+    <a class="btn btn-primary" href="parents.html">Meet the parents</a>
   </div>
-</div></section>""",
-      og_image=f"img/puppies/{page_lead('havilah')}.jpg")
+  <div class="parent-grid">{M_PARENTS}</div>
+</div></section>
+
+{closing_band('See every puppy in the litter, with their colors.', ('puppies.html', 'See available puppies'), ('waitlist.html', 'Join the waitlist'))}""",
+      og_image="img/puppies/litter-01.jpg")
 
     page("what-is-a-munchkin-bernedoodle.html", f"What Is a Munchkin Bernedoodle? | {BRAND}",
       "A plain-language guide to the Munchkin Bernedoodle: the cross, the size, the coat, and the temperament, from a family that breeds them.",
@@ -3057,7 +3062,7 @@ def build_pages():
 <section class="band-raise"><div class="wrap">
   <div class="grid-2 narrow-right hic hic-flip">
     <div class="col-title hic-head"><h2>Where the small size comes from</h2></div>
-    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 22 lb Mini Multi Gen Bernedoodle dam', sizes=PHOTO_NARROW)}
+    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, our 22 lb Mini Multi Gen Bernedoodle dam', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p>The name confuses people, so here is the honest version. "Munchkin"
         describes small overall size. A Munchkin Bernedoodle is a little dog that keeps
@@ -3095,7 +3100,7 @@ def build_pages():
 
 <section class="band-forest"><div class="wrap grid-2 narrow-left hic">
   <div class="hic-head"><h2>Honest words about the coat</h2></div>
-  {img_tag('havilah-03', cls='framed hic-photo', alt='Close view of a Munchkin Bernedoodle puppy coat', sizes=PHOTO_NARROW)}
+  {img_tag('havilah-03', cls='framed hic-photo', alt='Close view of a Munchkin Bernedoodle puppy coat', sizes=PHOTO_WIDE)}
   <div class="hic-copy">
     <p>Doodle coats vary by individual puppy, even within one litter. Many are wavy
       to curly and shed lightly. Some shed more. We will not promise you a

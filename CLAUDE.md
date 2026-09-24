@@ -220,7 +220,7 @@ Named constants now, each measured at 1440 against the real grid track:
 | `GAL_SIZES` | gallery tiles | 321px | 22vw + breakpoints |
 | `PHOTO_WIDE` | `narrow-left` 1.30fr | 843px | 58vw |
 | `PHOTO_LEAN` | `lean-left` 1.15fr | 745px | 46vw |
-| `PHOTO_NARROW` | `narrow-right` + flip, .70fr | 403px | 29vw |
+| `PHOTO_NARROW` | UNUSED. Measured 2026-09-23: `narrow-right` + `hic-flip` puts the photo in the WIDE column, 842px at 1440, so it takes `PHOTO_WIDE` like every `.hic-photo` | n/a | n/a |
 
 The card grid alone was picking a 1000px file for a 289px slot: 372KB where 74KB does, and
 the gallery 5.2MB where 979KB does. **When adding a section, pick the constant that matches
