@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 182
+V = 183
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -169,6 +169,8 @@ def dob(html):
 
 M_PRICE, D_PRICE, DEPOSIT = 2060, 2200, 500   # M_PRICE is the card/list price
 CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
+# Sales tax applies to the cash price too, on top of it (Alex, 2026-09-24).
+M_PRICE_CASH_TAXED = round(M_PRICE_CASH * (1 + IN_TAX_RATE), 2)
 
 # ---- delivery partner. Hope and Joy already work with them (Alex, 2026-09-16).
 # Verified from furryfreightdelivery.com. NOT furryfreight.com, which is an unrelated
@@ -293,7 +295,7 @@ h1,h2,h3{font-weight:600;line-height:1.14;margin:0 0 .5rem;text-wrap:balance;
   letter-spacing:-.01em}
 h1{font-size:clamp(2rem,3.6vw,3.1rem)}
 h2{font-size:clamp(1.55rem,2.3vw,2.2rem)}
-h3{font-size:1.2rem}
+h3,h2.h3{font-size:1.2rem}
 p{margin:0 0 1rem}
 a{color:var(--forest)}
 .wrap{width:min(94%,var(--maxw));margin-inline:auto}
@@ -832,7 +834,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
    the wrong signal on the one box that asks for $500. */
 .reserve{background:var(--paper-raise);border:1px solid var(--sage-light);
   border-radius:6px;padding:1.25rem 1.3rem;margin:1.5rem 0}
-.reserve h3{margin-bottom:.35rem}
+.reserve h3,.reserve h2.h3{margin-bottom:.35rem}
 /* The reserve box sits in the narrow puppy-info column, about 353px of usable width, so
    there is no room to put the button beside the text. Filling the column is the next best
    use of the space: it removed a ragged 127px gap to the right of a 227px button. */
@@ -963,7 +965,7 @@ textarea{min-height:8rem}
   color:var(--paper);font-family:"Lora",Georgia,serif;font-size:1rem;
   font-weight:600;flex:none}
 .step-head{display:flex;align-items:center;gap:.6rem}
-.step h3{font-size:1.02rem;margin:0;line-height:1.25}
+.step h3,.step h2.h3{font-size:1.02rem;margin:0;line-height:1.25}
 .step p{margin:0 0 .45rem;font-size:.9rem}
 .step .fine{font-size:.82rem}
 @media (max-width:760px){.steps-row{grid-template-columns:repeat(2,1fr)}}
@@ -980,7 +982,7 @@ textarea{min-height:8rem}
 @media (max-width:860px){.dogpair{grid-template-columns:1fr}}
 .dog-kicker{font-size:.76rem;font-weight:700;letter-spacing:.19em;
   text-transform:uppercase;color:var(--sage-deep);margin:0 0 .35rem}
-.dogrow h3{font-size:clamp(1.5rem,2.2vw,2rem);margin-bottom:.15rem}
+.dogrow h3,.dogrow h2.h3{font-size:clamp(1.5rem,2.2vw,2rem);margin-bottom:.15rem}
 /* set apart from the body copy without shouting: a rule down the side, the display face,
    and the same sage the rest of the page uses for secondary text */
 /* forest, not sage-deep. sage-deep measures 4.34:1 against --paper, which is under the
@@ -2220,7 +2222,7 @@ def dog_row(stem, name, breed, reg, story, health, links, qr=None, qr_num=None,
                 sizes="(max-width:900px) 94vw, 56vw")
       + '<div>'
         '<p class="dog-kicker">' + breed + '</p>'
-        '<h3>' + name + '</h3>' + reg_html
+        '<h2 class="h3">' + name + '</h2>' + reg_html
       + '<p>' + story + '</p>'
       + '<div class="' + hcls + '"><div class="health-copy">' + hp
       + '<div class="health-btns">' + btns + '</div></div>' + qrfig + '</div>'
@@ -2420,9 +2422,9 @@ def build_pages():
         PUPPIES_TAIL = ""
     else:
         PUPPIES_TITLE = f"Munchkin Bernedoodles for Sale in Indiana | {BRAND}"
-        PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies from a Mini Multi Gen Bernedoodle "
-                         f"dam and an AKC Cavalier sire. Born {M_BORN}, going home from "
-                         f"{M_HOME}. ${M_PRICE:,} with a ${DEPOSIT} deposit.")
+        PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies for sale in Indiana, from a Mini "
+                         f"Multi Gen Bernedoodle mom and an AKC Cavalier dad. Born {M_BORN}. "
+                         f"${M_PRICE:,}, ${DEPOSIT} deposit.")
         PUPPIES_INTRO = f'''  <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else AVAIL_EYEBROW}</p>
@@ -2886,6 +2888,7 @@ def build_pages():
         <li><span class="k">Indiana sales tax</span><span class="v">{IN_TAX_PCT}, added to the total</span></li>
         <li><span class="k">Paid in full by card</span><span class="v">${M_PRICE_TAXED:,.2f} with tax</span></li>
         <li><span class="k">Cash adoption fee</span><span class="v">${M_PRICE_CASH:,}</span></li>
+        <li><span class="k">Paid in full in cash</span><span class="v">${M_PRICE_CASH_TAXED:,.2f} with tax</span></li>
         <li><span class="k">Deposit to reserve</span><span class="v">${DEPOSIT}</span></li>
         <li><span class="k">Balance due</span><span class="v">Before or at pickup</span></li>
         <li><span class="k">We accept</span><span class="v">Card or cash, not checks</span></li>
@@ -3606,7 +3609,7 @@ def build_pages():
     steps_html = "\n".join(
       f'''    <article class="step">
       <div class="step-media">{img_tag(stem, alt=title, sizes="(max-width:460px) 92vw, (max-width:760px) 46vw, (max-width:1100px) 30vw, 19vw", lazy=(i > 1), priority=(i == 1))}</div>
-      <div class="step-head"><span class="step-num">{i}</span><h3>{title}</h3></div>
+      <div class="step-head"><span class="step-num">{i}</span><h2 class="h3">{title}</h2></div>
       <p>{body}</p>
       <p class="fine">{note}</p>
     </article>'''
@@ -3677,8 +3680,8 @@ def build_pages():
   <div class="hic-copy">
     <p><strong>How do payments work?</strong> The ${DEPOSIT} deposit reserves your puppy
       online and comes off the balance. The balance is due before or at pickup. The price
-      is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} if you pay the whole amount in
-      cash, deposit included, which saves you ${CASH_DISCOUNT}. We take card or cash, not
+      is ${M_PRICE:,} plus sales tax, or ${M_PRICE_CASH:,} plus sales tax if you pay the whole
+      amount in cash, deposit included, which takes ${CASH_DISCOUNT} off the fee. We take card or cash, not
       checks. <a href="munchkin-bernedoodle-price.html">See the full price breakdown</a>.</p>
     <p><strong>Can we visit first?</strong> Yes, and we encourage it. Video calls work
       well for families further away.</p>
@@ -3954,7 +3957,7 @@ def build_pages():
     and we hand over a confident, well socialized puppy who has been loved since the day
     they were born.</p>
 
-  <h3>What is covered</h3>
+  <h2 class="h3">What is covered</h2>
   <ul>
     <li><strong>Viral disease, seven days.</strong> Your puppy is guaranteed against viral
       disease for seven days after going home.</li>
@@ -3963,7 +3966,7 @@ def build_pages():
       lungs, liver, kidneys and the like.</li>
   </ul>
 
-  <h3>What you need to do</h3>
+  <h2 class="h3">What you need to do</h2>
   <ul>
     <li><strong>A vet exam within 72 hours. This one is a condition.</strong> Your puppy
       must be examined by a veterinarian within 72 hours of going home or the guarantee is
@@ -3978,13 +3981,13 @@ def build_pages():
       or reimbursement.</li>
   </ul>
 
-  <h3>How a claim is settled</h3>
+  <h2 class="h3">How a claim is settled</h2>
   <p>Once we have the veterinarian&rsquo;s documentation and have reviewed it, you can
     bring the puppy back in exchange for another puppy of equal or lesser value, or we
     reimburse you in part or in whole at our discretion. <strong>Credit never exceeds the
     purchase price of your puppy.</strong></p>
 
-  <h3>What is not covered</h3>
+  <h2 class="h3">What is not covered</h2>
   <ul>
     <li>Hypoglycemia, coccidia, giardia, colds and upper respiratory infections, and other
       minor illness.</li>
@@ -4010,7 +4013,7 @@ def build_pages():
     breeder. This page is a summary so nothing in it is a surprise on the day. The signed
     document is the agreement; this page is not.</p>
 
-  <h3>What the signed agreement records</h3>
+  <h2 class="h3">What the signed agreement records</h2>
   <ul>
     <li><strong>You.</strong> Your name, address, phone number and email.</li>
     <li><strong>Your puppy.</strong> Name, sex, color, date of birth, microchip number,
@@ -4025,7 +4028,7 @@ def build_pages():
     advance if the puppy is going home to a different name or address than the one on the
     application.</p>
 
-  <h3>Terms</h3>
+  <h2 class="h3">Terms</h2>
   <ul>
     <li><strong>Price and deposit.</strong> The purchase price is ${M_PRICE:,}, or
       ${M_PRICE_CASH:,} where the entire amount is paid in cash. The cash price needs both
@@ -4057,8 +4060,8 @@ def build_pages():
 </div></section>""")
 
     page("privacy-policy.html", "Privacy Policy | Bless Your Paws Puppies",
-      "What we collect when you use our forms, who else handles it, and how to have it "
-      "removed. We use Google Analytics to count visits, and no advertising trackers.",
+      "What we collect through our forms, who else handles it, and how to have it "
+      "removed. We use Google Analytics to count visits, and no ad trackers.",
       f"""<section><div class="wrap prose">
   <p class="eyebrow">Privacy</p>
   <h1>Privacy policy</h1>
@@ -4066,7 +4069,7 @@ def build_pages():
     This is a small family website. We collect only what you send us, we use it only to
     talk to you about a puppy, and we do not sell it to anyone.</p>
 
-  <h3>What we collect</h3>
+  <h2 class="h3">What we collect</h2>
   <p>Only what you type into a form, or tell us when you call, text or email.</p>
   <ul>
     <li><strong>Inquiry form:</strong> your name, email, phone number and your message.</li>
@@ -4081,7 +4084,7 @@ def build_pages():
     want to answer you properly. None of it is required to talk to us: if you would rather
     not put any of it in a form, call or text {PHONE_DISPLAY} instead.</p>
 
-  <h3>What we do not do</h3>
+  <h2 class="h3">What we do not do</h2>
   <ul>
     <li>No advertising. This site carries no ad trackers and no advertising pixels,
       and we do not run ads that follow you around the internet.</li>
@@ -4090,7 +4093,7 @@ def build_pages():
     <li>We do not run credit or background checks on you.</li>
   </ul>
 
-  <h3>Counting visits</h3>
+  <h2 class="h3">Counting visits</h2>
   <p>We use Google Analytics to see how many people visit and which pages they read, so we
     know whether the site is doing its job. It tells us things like which puppy pages are
     most looked at, roughly what part of the country a visit came from, and whether someone
@@ -4101,12 +4104,12 @@ def build_pages():
     this site, or Google publishes a browser add-on that turns Analytics off everywhere.
     Nothing on this site stops working either way.</p>
 
-  <h3>One thing your browser stores by itself</h3>
+  <h2 class="h3">One thing your browser stores by itself</h2>
   <p>When you send an application, your browser remembers it for the rest of that visit so
     the deposit buttons appear without you filling the form in again. It is not a cookie,
     it holds nothing about you, and it disappears when you close the tab.</p>
 
-  <h3>Who else handles it</h3>
+  <h2 class="h3">Who else handles it</h2>
   <ul>
     <li><strong>Our form provider</strong> receives each submission and keeps a copy, which
       is how a message reaches us even if an email goes astray.</li>
@@ -4121,19 +4124,19 @@ def build_pages():
       never see them.</li>
   </ul>
 
-  <h3>Children</h3>
+  <h2 class="h3">Children</h2>
   <p>This site is meant for adults buying a puppy, and the application asks you to confirm
     you are 18 or older. We ask whether there are children in your home, and their ages,
     because it tells us which puppy suits you. That is information a parent gives us about
     their own family. We do not knowingly collect anything directly from children.</p>
 
-  <h3>How long we keep it</h3>
+  <h2 class="h3">How long we keep it</h2>
   <p>Inquiries and waitlist entries we keep while they are useful, and we clear them out
     once a litter is placed and you have told us you are no longer looking. If you buy a
     puppy, we keep the paperwork for that sale, including the signed agreement and health
     guarantee, because it is a record of a real transaction and we may need it years later.</p>
 
-  <h3>Your choices</h3>
+  <h2 class="h3">Your choices</h2>
   <p>Ask us what we hold about you, ask us to correct it, or ask us to delete it. Call or
     text {PHONE_DISPLAY}, or email <a href="mailto:{EMAIL}">{EMAIL}</a>, and we will do it.
     We will keep only what a completed sale requires us to keep.</p>
@@ -4177,7 +4180,7 @@ def build_pages():
             obj = "her" if sex == "Girl" else "him"
             reserve_block = (
               '<div class="reserve is-adopted">'
-              f'<h3>{name} is adopted</h3>'
+              f'<h2 class="h3">{name} is adopted</h2>'
               f'<p class="fine">{name} has found {poss} forever family. {subj} is on the '
               'site so you can see the whole litter, not because '
               f'{subj.lower()} is available.</p>'
@@ -4187,9 +4190,9 @@ def build_pages():
               '</div>')
         else:
             reserve_block = f'''<div class="reserve">
-        <h3>Reserve {name}</h3>
+        <h2 class="h3">Reserve {name}</h2>
         <p class="terms">A ${DEPOSIT} deposit holds {him}. ${M_PRICE:,} plus sales tax,
-          or ${M_PRICE_CASH:,} paid entirely in cash.
+          or ${M_PRICE_CASH:,} plus sales tax paid entirely in cash.
           <a href="munchkin-bernedoodle-price.html">What the price covers</a>.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
@@ -4291,7 +4294,7 @@ def build_pages():
     </div>
     <div class="puppy-info">
       <div class="name-row"><h1>{name}</h1>{'<span class="status status-adopted">Adopted!</span>' if slug in ADOPTED else f'<span class="price">${price:,}</span>'}</div>
-      <p class="lede">{sex} &middot; {colour} &middot; {breed}</p>
+      <p class="lede">{sex} &middot; {colour} &middot; {('<a href="what-is-a-munchkin-bernedoodle.html">' + breed + '</a>') if breed.startswith("Munchkin") else breed}</p>
       <ul class="facts">
         <li><span class="k">Status</span><span class="v">{'Adopted!' if slug in ADOPTED else 'Available'}</span></li>
         <li><span class="k">Sex</span><span class="v">{sex}</span></li>
