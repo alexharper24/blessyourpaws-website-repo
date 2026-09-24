@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 181
+V = 182
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -179,6 +179,19 @@ FF_QUOTE_URL = "https://www.furryfreightdelivery.com/schedule-a-delivery"
 FF_PHONE = "(260) 585-5209"
 FF_TEL   = "tel:+12605855209"
 FF_TOWN  = "Pierceton, Indiana"
+# States on Furry Freight's delivery rate map (screenshot from Alex, 2026-09-24). Their map
+# prices each state at a flat rate; the rates are theirs and deliberately NOT published here,
+# because they would go stale the moment Furry Freight changed them. The quote link carries
+# the current figure. Regions are for reading only. Update this list from their map.
+FF_STATES = {
+    "Midwest": ["Indiana", "Illinois", "Michigan", "Ohio", "Wisconsin"],
+    "South": ["Kentucky", "West Virginia", "Virginia", "Tennessee", "North Carolina",
+              "South Carolina", "Georgia", "Alabama", "Mississippi", "Florida"],
+    "Mid-Atlantic and Northeast": ["Pennsylvania", "New York", "New Jersey", "Maryland",
+              "Delaware", "Connecticut", "Rhode Island", "Massachusetts", "Vermont",
+              "New Hampshire", "Maine"],
+}
+FF_STATE_COUNT = sum(len(v) for v in FF_STATES.values())
 FF_EMAIL = "furryfreightpetdelivery@gmail.com"   # confirmed by Alex 2026-09-16;
 # Puppy Connection lists furryfreightdelivery@gmail.com, which is a different address.
 FF_LOGO  = "img/brand/furry-freight-logo.png"
@@ -245,7 +258,10 @@ CSS = """/* Bless Your Paws Puppies - v2
   /* Sticky header height, used by the anchor offset below. 82px row + 1px border. */
   --head-h:83px;
   --forest:#223d2c; --forest-soft:#34523f;
-  --sage:#7f8e79; --sage-deep:#6d7a68; --sage-light:#a8b89e;
+  /* --sage-deep darkened from #6d7a68 (Alex, 2026-09-24): it measured 4.34:1 on paper and
+     4.11:1 on paper-raise, under 4.5 for the small text it carries. #657160 is the lightest
+     shade of the same sage that clears it: 5.14 white, 4.92 paper, 4.66 paper-raise. */
+  --sage:#7f8e79; --sage-deep:#657160; --sage-light:#a8b89e;
   --rose:#feb5bc; --pink-pale:#fbc4db;
   --paper:#fdf9f9; --paper-raise:#faf2f1; --rule:#e4d7d6;
   --draft:#8a5512; --draft-bg:#f8ecd9;
@@ -504,6 +520,8 @@ section{padding:clamp(2.5rem,4vw,4rem) 0}
    border-color:transparent, not border:0, so the box metrics do not shift. */
 .band-forest .tri>div{background:none;border-color:transparent}
 .band-pink{background:var(--pink-pale)}
+/* No shade of sage reaches 4.5:1 on pale pink without turning gray; forest is 7.91. */
+.band-pink .eyebrow{color:var(--forest)}
 /* a coloured band whose height is set by a tall photo reads as a big slab. this
    trims the vertical padding so the colour hugs the content. */
 section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
@@ -1123,6 +1141,8 @@ textarea{min-height:8rem}
    otherwise a strip of page background shows through between them */
 .site-foot{background:var(--forest);color:#e9ded9}
 .site-foot a{color:var(--pink-pale)}
+/* The footer's fine print inherited --sage-deep, 2.6:1 on forest on every page. */
+.site-foot .fine{color:var(--sage-light)}
 .foot-top{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:start;
   padding:3rem 0 1rem}
 /* a cream panel around a colour logo reads as a sticker on the footer. instead:
@@ -2437,6 +2457,19 @@ def build_pages():
     <a class="btn btn-primary" href="parents.html">Full health details</a>
   </div>
   <div class="parent-grid">{M_PARENTS}</div>
+</div></section>
+
+<section id="delivery-states"><div class="wrap">
+  <p class="eyebrow center">Delivery</p>
+  <h2 class="center">Bernedoodle puppies delivered across the eastern US</h2>
+  <p class="lede center" style="max-width:60ch;margin:.5rem auto 2rem">Collecting your
+    puppy from us in northern Indiana is always an option. If you are farther away, our
+    delivery partner, {FF_NAME}, brings puppies to families in {FF_STATE_COUNT} states at a
+    flat rate set by your state. You book and pay them directly.</p>
+  <div class="tri">
+    {"".join(f'<div><h3>{r}</h3><p>{", ".join(v[:-1])} and {v[-1]}</p></div>' for r, v in FF_STATES.items())}
+  </div>
+  <div class="btn-row" style="justify-content:center;margin-top:2rem"><a class="btn btn-primary" href="{FF_QUOTE_URL}" target="_blank" rel="noopener">Get a delivery quote</a><a class="btn btn-ghost" href="process.html#delivery">How delivery works</a></div>
 </div></section>'''
     # a breed chooser needs at least two breeds to choose between
     breed_doors_section = dob(BREED_DOORS_HTML)
@@ -2455,8 +2488,8 @@ def build_pages():
     # departures section of .claude/guides/local-seo-aeo.md. areaServed carries the
     # geography instead, as structured Places rather than the sentence it used to be, so a
     # machine can read where they operate without anyone reading where they live.
-    # "sameAs" is deliberately absent rather than empty: it belongs there the day Hope and
-    # Joy hand over their social profiles, and an empty array asserts they have none.
+    # "sameAs" carries the verified Google Business Profile (2026-09-23). Add their social
+    # profiles to it if they ever hand them over; never the other businesses of this name.
     # @id so the puppy Product nodes can name this business as their seller instead of
     # redeclaring it or, as before, leaving the seller out entirely.
     org_ld = json.dumps({"@context": "https://schema.org", "@type": "LocalBusiness",

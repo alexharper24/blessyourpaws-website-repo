@@ -39,7 +39,7 @@ build. Build the breed-page pattern so it drops in as content, not a redesign.
 :root {
   --forest:      #223d2c;  /* ink + dark bands. 11.85:1 on white */
   --sage:        #7f8e79;  /* mid accent. 3.47:1 — LARGE TEXT ONLY */
-  --sage-deep:   #6d7a68;  /* derived. 4.53:1 on white — use for small text/links */
+  --sage-deep:   #657160;  /* derived; darkened 2026-09-24 from #6d7a68. 5.14 white, 4.92 paper, 4.66 paper-raise */
   --sage-light:  #a8b89e;  /* surface tint */
   --rose:        #feb5bc;  /* surface tint / accent */
   --pink-pale:   #fbc4db;  /* surface tint */
@@ -266,7 +266,7 @@ site. Scoping the media list to her product was not enough; each photo still had
 looked at. Publishing that one as "Tirzah" would have been exactly the mistake the standing
 rule about not drawing conclusions from photographs is there to prevent.
 
-**`--sage-deep` is 4.34:1 on `--paper`, not 4.53.** The 4.53 figure in the palette notes is
+**SUPERSEDED 2026-09-24: `--sage-deep` is now `#657160`, 4.92:1 on `--paper` and 4.66 on `--paper-raise`, and the footer fine print uses `--sage-light` (5.65 on forest) because it sat at 2.6:1. On `.band-pink` eyebrows are forest. The history: `--sage-deep` was 4.34:1 on `--paper`, not 4.53.** The 4.53 figure in the palette notes is
 against pure white. On the actual page background it is under the 4.5 floor, so it is fine
 for the fine print and labels it is used for and wrong for a paragraph meant to be read.
 The faith note uses `--forest` at 11.34:1 for that reason.
