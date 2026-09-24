@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 174
+V = 175
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2656,9 +2656,9 @@ def build_pages():
       ("How much grooming do they need?",
        "Plan on brushing a few times a week and a professional groom every six to eight weeks. Ask your groomer whether they are comfortable with doodle coats, because it is a different clip. Puppy coats often change texture between six and twelve months, so grooming needs go up for a while during that change."),
       ("How long do they live?",
-       "Small doodles commonly live twelve to fifteen years, and smaller dogs generally live longer than large ones. Good care, healthy weight and regular vet visits matter more than size."),
+       "<a href=\"bernedoodle-lifespan-temperament.html\">Small doodles commonly live twelve to fifteen years</a>, and smaller dogs generally live longer than large ones. Good care, healthy weight and regular vet visits matter more than size."),
       ("What is their temperament like?",
-       "The Cavalier side tends to bring a calm, affectionate, lap-loving nature. The Bernedoodle side brings playfulness and clever, trainable energy. Every puppy is an individual, which is why we socialize them early and match carefully rather than first come first served."),
+       "The Cavalier side tends to bring a <a href=\"bernedoodle-lifespan-temperament.html\">calm, affectionate, lap-loving nature</a>. The Bernedoodle side brings playfulness and clever, trainable energy. Every puppy is an individual, which is why we socialize them early and match carefully rather than first come first served."),
       ("Are they good with children and other dogs?",
        "Ours are raised around both from day one, with our own kids and our own dogs. We still ask families with very young children to supervise, mostly to protect the puppy."),
       ("Will one be happy in an apartment?",
@@ -2686,6 +2686,77 @@ def build_pages():
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
+    # ---- Bernedoodle lifespan and temperament --------------------------------------------
+    # Only facts the breed guide already publishes, reworded. No health conditions of any
+    # kind. "Children", not "our own kids" or "nieces and nephews", until Alex says which.
+    page("bernedoodle-lifespan-temperament.html",
+      f"Bernedoodle Lifespan and Temperament | {BRAND}",
+      "How long Munchkin Bernedoodles live and what they are like at home: the Cavalier "
+      "and Bernedoodle sides, children, other dogs, exercise and time alone.",
+      f"""<section><div class="wrap">
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Breed guide</p>
+      <h1>Bernedoodle lifespan and temperament</h1>
+    </div>
+    {img_tag(page_lead('joshua'), cls='framed hic-photo', alt='Joshua, a red and white parti Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    <div class="hic-copy">
+      <p class="lede">A healthy Munchkin Bernedoodle can be part of your family for well
+        over a decade, and it will spend that time wanting to be wherever you are. Here is
+        how long they tend to live and what they are like to share a home with.</p>
+      <ul class="facts">
+        <li><span class="k">Typical lifespan</span><span class="v">12 to 15 years</span></li>
+        <li><span class="k">Daily activity</span><span class="v">30 to 60 minutes</span></li>
+        <li><span class="k">Time alone</span><span class="v">Short stretches, not long days</span></li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section class="band-raise" id="lifespan"><div class="wrap">
+  <h2>How long they live</h2>
+  <p style="max-width:68ch">Small doodles like the Munchkin often reach twelve to fifteen
+    years. Their size works in their favor, because as a rule small dogs outlive big ones.
+    Past that, how long a dog lives comes down mostly to how it is looked after. Keeping
+    it at a healthy weight, feeding it well and keeping up with vet checkups do more for
+    a long life than anything written on its pedigree.</p>
+</div></section>
+
+<section id="temperament"><div class="wrap">
+  <h2>Where the personality comes from</h2>
+  <p style="max-width:68ch">The Cavalier King Charles Spaniel half is where the
+    gentleness comes from: a calm, cuddly dog that is happiest in a lap. The Bernedoodle
+    half adds a playful streak and a quick mind that takes well to training. Most
+    Munchkins land somewhere between the two, and each puppy is its own mix of them,
+    which is why we get to know every puppy before we suggest one to a family.</p>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <h2>With children and other dogs</h2>
+  <p style="max-width:68ch">Our puppies grow up around children and other dogs from their
+    first days, so a busy house is ordinary to them by the time they leave. We still ask
+    families with very young children to keep an eye on things, mostly for the puppy's
+    sake, because a small dog is easy for a toddler to hurt by accident. You can read
+    more about <a href="about.html">how we raise them</a>.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2>What they need day to day</h2>
+  <p style="max-width:68ch">Half an hour to an hour of activity a day covers most of what
+    they need, and it does not all have to be walking. Training games and puzzle toys
+    wear out a clever dog as well as a run does.</p>
+  <p style="max-width:68ch">What they handle badly is long hours on their own, because
+    this is a companion dog through and through. They would rather greet a visitor than
+    guard against one, so do not count on a watchdog. Give them company and a steady
+    routine, though, and their affection and willingness to learn make them a forgiving
+    choice for a first dog.</p>
+  <div class="section-cta">
+    <p>Ask us about the personality of the puppy you are considering.</p>
+    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  </div>
+</div></section>""",
+      og_image=f"img/puppies/{page_lead('joshua')}.jpg")
+
     # ---- Bernedoodle shedding ------------------------------------------------------------
     # Never a promise of a non-shedding or hypoallergenic coat. Nothing about these puppies'
     # coats beyond what the site already says. The general facts (Bernese and Cavalier
