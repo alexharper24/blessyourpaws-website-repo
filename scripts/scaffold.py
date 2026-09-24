@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 178
+V = 179
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2662,7 +2662,7 @@ def build_pages():
       ("What is their temperament like?",
        "The Cavalier side tends to bring a <a href=\"bernedoodle-lifespan-temperament.html\">calm, affectionate, lap-loving nature</a>. The Bernedoodle side brings playfulness and clever, trainable energy. Every puppy is an individual, which is why we socialize them early and match carefully rather than first come first served."),
       ("Are they good with children and other dogs?",
-       "Ours are raised around both from day one, with our own kids and our own dogs. We still ask families with very young children to supervise, mostly to protect the puppy."),
+       "Ours are raised around both from day one, with our nieces and nephews and our own dogs. We still ask families with very young children to supervise, mostly to protect the puppy."),
       ("Will one be happy in an apartment?",
        "Usually yes. At this size they fit most weight limits, and thirty to sixty minutes of activity a day plus company is enough. What they do not do well is long stretches alone; this is a breed that wants to be with people."),
       ("How much exercise do they need?",
@@ -2774,7 +2774,7 @@ def build_pages():
 
     # ---- Bernedoodle lifespan and temperament --------------------------------------------
     # Only facts the breed guide already publishes, reworded. No health conditions of any
-    # kind. "Children", not "our own kids" or "nieces and nephews", until Alex says which.
+    # kind. Raised around nieces and nephews (Alex, 2026-09-24), never "our own kids".
     page("bernedoodle-lifespan-temperament.html",
       f"Bernedoodle Lifespan and Temperament | {BRAND}",
       "How long Munchkin Bernedoodles live and what they are like at home: the Cavalier "
@@ -2811,7 +2811,7 @@ def build_pages():
 
 {hic_pair('With children and other dogs',
   img_tag(page_lead('havilah'), cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
-  '<p>Our puppies grow up around children and other dogs from their first days, so a busy house is ordinary to them by the time they leave. We still ask families with very young children to keep an eye on things, mostly for the puppy\'s sake, because a small dog is easy for a toddler to hurt by accident. You can read more about <a href="about.html">how we raise them</a>.</p>',
+  '<p>Our puppies grow up around our nieces and nephews and other dogs from their first days, so a busy house is ordinary to them by the time they leave. We still ask families with very young children to keep an eye on things, mostly for the puppy\'s sake, because a small dog is easy for a toddler to hurt by accident. You can read more about <a href="about.html">how we raise them</a>.</p>',
   band='band-raise', flip=True)}
 
 <section class="band-forest"><div class="wrap">
