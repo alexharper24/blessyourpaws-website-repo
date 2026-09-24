@@ -421,9 +421,14 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 /* forest on rose is 7.08:1. An adopted card has no price, so the badge sits alone and
    carries the row on its own. */
 .status-adopted{background:var(--rose)}
-.packet-row:has(> .status-adopted:only-child){justify-content:flex-start}
-.packet-link.is-adopted .packet{border-style:solid}
-.packet-link.is-adopted img{filter:saturate(.92)}
+/* Reserved: outlined, forest on white (11.85:1). Available already uses the sage fill and
+   Adopted the rose, so the outline is what keeps three states apart at a glance. */
+.status-reserved{background:#fff;box-shadow:inset 0 0 0 1.5px var(--forest)}
+/* A badge with no price beside it still sits on the right, where Available sits (Alex,
+   2026-09-24), so the status reads in the same place on every card. */
+.packet-row:has(> .status:only-child){justify-content:flex-end}
+.packet-link.is-adopted .packet,.packet-link.is-reserved .packet{border-style:solid}
+.packet-link.is-adopted img,.packet-link.is-reserved img{filter:saturate(.92)}
 a.packet-link{text-decoration:none}
 a.packet-link:hover .packet{border-color:var(--sage-deep)}
 

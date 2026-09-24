@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 183
+V = 184
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -139,14 +139,20 @@ MUNCHKINS = [
 # Puppies that are spoken for. ADOPTED means reserved by a family, NOT already gone: they
 # go home on the same date as their littermates. They stay on the site so the litter reads
 # as a whole rather than looking like one went missing, and they are never offered for sale.
-ADOPTED = {"tirzah", "shiloh"}
+ADOPTED = {"tirzah"}
+# Reserved: a family has put a deposit down and the puppy has not gone home yet (Alex,
+# 2026-09-24). Off the market like ADOPTED, but labeled Reserved, and the page keeps the
+# "Pay your balance" link for the family who reserved it. Move a slug from here to
+# ADOPTED when the adoption completes.
+RESERVED = {"shiloh"}
+SPOKEN_FOR = ADOPTED | RESERVED
 
 def n_word(n):
     return {1:"One",2:"Two",3:"Three",4:"Four",5:"Five",6:"Six",7:"Seven",8:"Eight",
             9:"Nine",10:"Ten",11:"Eleven",12:"Twelve"}.get(n, str(n))
 
 M_TOTAL     = len(MUNCHKINS)
-M_AVAILABLE = len([m for m in MUNCHKINS if m[0] not in ADOPTED])
+M_AVAILABLE = len([m for m in MUNCHKINS if m[0] not in SPOKEN_FOR])
 # "Available now" is the first thing read on three pages and the one label that would be
 # actively false the day the litter sells out. Conditional, so it cannot outlive the fact.
 AVAIL_EYEBROW = "Available now" if M_AVAILABLE else "This litter"
@@ -666,9 +672,14 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
 /* forest on rose is 7.08:1. An adopted card has no price, so the badge sits alone and
    carries the row on its own. */
 .status-adopted{background:var(--rose)}
-.packet-row:has(> .status-adopted:only-child){justify-content:flex-start}
-.packet-link.is-adopted .packet{border-style:solid}
-.packet-link.is-adopted img{filter:saturate(.92)}
+/* Reserved: outlined, forest on white (11.85:1). Available already uses the sage fill and
+   Adopted the rose, so the outline is what keeps three states apart at a glance. */
+.status-reserved{background:#fff;box-shadow:inset 0 0 0 1.5px var(--forest)}
+/* A badge with no price beside it still sits on the right, where Available sits (Alex,
+   2026-09-24), so the status reads in the same place on every card. */
+.packet-row:has(> .status:only-child){justify-content:flex-end}
+.packet-link.is-adopted .packet,.packet-link.is-reserved .packet{border-style:solid}
+.packet-link.is-adopted img,.packet-link.is-reserved img{filter:saturate(.92)}
 a.packet-link{text-decoration:none}
 a.packet-link:hover .packet{border-color:var(--sage-deep)}
 
@@ -2303,10 +2314,12 @@ def card(slug, name, sex, colour, price, breed, first=False):
     # an adopted puppy shows no price: she is not for sale, and a price beside "Adopted!"
     # invites the question of whether she still is
     adopted = slug in ADOPTED
-    left = "" if adopted else f'<span class="price">${price:,}</span>'
+    reserved = slug in RESERVED
+    left = "" if (adopted or reserved) else f'<span class="price">${price:,}</span>'
     badge = ('<span class="status status-adopted">Adopted!</span>' if adopted
+             else '<span class="status status-reserved">Reserved</span>' if reserved
              else '<span class="status">Available</span>')
-    return f"""<a class="packet-link{' is-adopted' if adopted else ''}" href="puppy-{slug}.html" data-warm-sizes="{PUPPY_HERO_SIZES}"><article class="packet">
+    return f"""<a class="packet-link{' is-adopted' if adopted else ' is-reserved' if reserved else ''}" href="puppy-{slug}.html" data-warm-sizes="{PUPPY_HERO_SIZES}"><article class="packet">
   {img_tag(page_lead(slug), alt=f'{name}, a {colour.lower()} {breed} puppy', sizes=CARD_SIZES,
            lazy=not first, priority=first)}
   <div class="packet-body">
@@ -3748,7 +3761,7 @@ def build_pages():
     APPLY_PUPPY_OPTIONS = "\n".join(
         f'      <option value="{nm}" data-slug="puppy-{sl}">{nm} &middot; '
         f'{sx.lower()}, {cl.lower()}</option>'
-        for sl, nm, sx, cl, _ in list(MUNCHKINS) + D_LIST if sl not in ADOPTED)
+        for sl, nm, sx, cl, _ in list(MUNCHKINS) + D_LIST if sl not in SPOKEN_FOR)
 
     page("apply.html", f"Puppy Application | {BRAND}",
       f"A short application comes before a deposit. Tell us about your home and "
@@ -4188,6 +4201,22 @@ def build_pages():
               '<a href="puppies.html">See who is available</a> or '
               '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
               '</div>')
+        elif slug in RESERVED:
+            poss = "her" if sex == "Girl" else "his"
+            subj = "She" if sex == "Girl" else "He"
+            obj = "her" if sex == "Girl" else "him"
+            reserve_block = (
+              '<div class="reserve is-adopted">'
+              f'<h2 class="h3">{name} is reserved</h2>'
+              f'<p class="fine">A family has placed a deposit on {name}. {subj} is on the '
+              'site so you can see the whole litter, not because '
+              f'{subj.lower()} is available.</p>'
+              f'<p class="fine balance-note">Reserved {name}? '
+              '<a class="pay-link" href="https://buy.stripe.com/cNicN43Qd0Vk0N70T8ew800">Pay your balance</a>.</p>'
+              f'<p class="fine">Hoping for one like {obj}? '
+              '<a href="puppies.html">See who is available</a> or '
+              '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
+              '</div>')
         else:
             reserve_block = f'''<div class="reserve">
         <h2 class="h3">Reserve {name}</h2>
@@ -4245,6 +4274,7 @@ def build_pages():
         # the visible page stopped. Google reads this for rich results, so it is the one
         # that would have kept offering her for sale in search.
         adopted = slug in ADOPTED
+        reserved = slug in RESERVED
         # One source of truth for the crumb: the visible trail and the BreadcrumbList are
         # both built from this. While the breed page and the puppies page are the same URL
         # there is only one crumb, because two links to one destination is not a level.
@@ -4265,10 +4295,13 @@ def build_pages():
             "name": f"{name}, {breed} puppy", "image": f"{BASE}/img/puppies/{page_lead(slug)}.jpg",
             "description": (f"{name} is a {colour.lower()} {breed} puppy from our litter, "
                             f"already adopted." if adopted else
+                            f"{name} is a {colour.lower()} {breed} puppy from our litter, "
+                            f"reserved by a family." if reserved else
                             f"{name} is a {colour.lower()} {breed} puppy, available now."),
             "offers": {"@type": "Offer", "priceCurrency": "USD", "price": str(price),
                        "seller": {"@id": f"{BASE}/#business"},
                        "availability": ("https://schema.org/SoldOut" if adopted
+                                        else "https://schema.org/Reserved" if reserved
                                         else "https://schema.org/InStock")}})
         page(f"puppy-{slug}.html", f"{name}, {breed} Puppy | {BRAND}",
           # an adopted puppy's description must not advertise a price or a deposit: that
@@ -4277,6 +4310,9 @@ def build_pages():
           (f"{name} is a {colour.lower()} {breed} puppy from our litter, already adopted, "
            f"and here so you can see the whole litter."
            if slug in ADOPTED else
+           f"{name} is a {colour.lower()} {breed} puppy from our litter, reserved by a family, "
+           f"and here so you can see the whole litter."
+           if slug in RESERVED else
            f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${DEPOSIT} deposit to reserve."),
           f"""<section><div class="wrap">
   <p class="eyebrow">{crumb_html}</p>
@@ -4293,10 +4329,10 @@ def build_pages():
       </div>
     </div>
     <div class="puppy-info">
-      <div class="name-row"><h1>{name}</h1>{'<span class="status status-adopted">Adopted!</span>' if slug in ADOPTED else f'<span class="price">${price:,}</span>'}</div>
+      <div class="name-row"><h1>{name}</h1>{'<span class="status status-adopted">Adopted!</span>' if slug in ADOPTED else '<span class="status status-reserved">Reserved</span>' if slug in RESERVED else f'<span class="price">${price:,}</span>'}</div>
       <p class="lede">{sex} &middot; {colour} &middot; {('<a href="what-is-a-munchkin-bernedoodle.html">' + breed + '</a>') if breed.startswith("Munchkin") else breed}</p>
       <ul class="facts">
-        <li><span class="k">Status</span><span class="v">{'Adopted!' if slug in ADOPTED else 'Available'}</span></li>
+        <li><span class="k">Status</span><span class="v">{'Adopted!' if slug in ADOPTED else 'Reserved' if slug in RESERVED else 'Available'}</span></li>
         <li><span class="k">Sex</span><span class="v">{sex}</span></li>
         <li><span class="k">Color</span><span class="v">{colour}</span></li>
         <li><span class="k">Born</span><span class="v">{born}</span></li>

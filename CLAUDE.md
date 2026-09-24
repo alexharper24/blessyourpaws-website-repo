@@ -251,6 +251,16 @@ her for sale. Add a slug to `ADOPTED` and all of this follows:
   results and link previews show, so it is the single easiest place for a spoken-for puppy
   to still look available, and it is the one furthest from anyone's eye while editing.
 
+**Reserved is a third state (Alex, 2026-09-24: "not adopted yet reserved").** `RESERVED`
+holds puppies with a deposit down that are not yet adopted, and `SPOKEN_FOR = ADOPTED |
+RESERVED` is what takes a puppy off the market (the available count and the application's
+puppy list). A reserved puppy shows an outlined "Reserved" badge, forest on white at
+11.85:1, because Available already uses the sage fill and Adopted the rose. Its page keeps
+the "Pay your balance" link for the family who reserved it, drops the apply and deposit
+buttons, and marks the Offer `schema.org/Reserved`. Move a slug from `RESERVED` to
+`ADOPTED` when the adoption completes. **Every badge sits on the right of its card**, with
+or without a price beside it (Alex, 2026-09-24).
+
 **Say "Adopted!", not "sold"** (Alex, 2026-08-23). One exception left standing on purpose:
 the purchase agreement says the puppy "is sold with the written health guarantee". That is
 contract language on a document already flagged for review, and this repo's rule is that
