@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 179
+V = 180
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -593,6 +593,13 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
   align-items:center}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:clamp(1.25rem,2vw,2rem)}
+/* The breed-guide hub. Five cards under auto-fit landed four and one at 1440 and five
+   across at 1920. Three to a row with the last row centered, two on a tablet, one on a
+   phone. */
+.hub-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(1.25rem,2vw,2rem)}
+.hub-cards>*{flex:0 1 calc((100% - 2 * clamp(1.25rem,2vw,2rem)) / 3);min-width:0}
+@media (max-width:900px){.hub-cards>*{flex-basis:calc((100% - clamp(1.25rem,2vw,2rem)) / 2)}}
+@media (max-width:600px){.hub-cards>*{flex-basis:100%}}
 .packet{position:relative;background:#fff;border:1.5px solid var(--forest);
   border-radius:4px;padding:11px;display:flex;flex-direction:column;height:100%}
 .packet::before{content:"";position:absolute;inset:5px;border:1px dashed var(--sage);
@@ -2207,7 +2214,10 @@ def parent_card(stem, name, role, breed, facts, note=""):
     if stem.endswith(".svg"):
         img = '<img src="img/placeholder/%s" alt="Photo of %s coming soon">' % (stem, name)
     else:
-        img = img_tag(stem, folder="dogs", alt="%s, our %s" % (name, breed))
+        # Measured 2026-09-24: two cards in .parent-grid render ~631px at 1440 and ~414px at
+        # 1100. The img_tag default (58vw) fetched a file a third larger than needed.
+        img = img_tag(stem, folder="dogs", alt="%s, our %s" % (name, breed),
+                      sizes="(max-width:900px) 94vw, 44vw")
     note_html = '<p class="fine" style="margin:.6rem 0 0">%s</p>' % note if note else ""
     return ('<article class="packet parent">' + img +
       '<div class="packet-body">'
@@ -2709,6 +2719,42 @@ def build_pages():
                 f'  <div class="hic-copy">{copy}</div>\n'
                 '</div></section>')
 
+    # The breed-guide cluster. The hub links every spoke with cards, and every spoke links
+    # its siblings, per the lifecycle's rule that each piece links to its money page and to
+    # the rest of its cluster. Add a new guide page here and both follow.
+    GUIDE_SPOKES = [
+      ("munchkin-bernedoodle-size.html", "Full grown size", page_lead("jordan"),
+       "Jordan, a blue merle parti Munchkin Bernedoodle puppy",
+       "How big they get, the parent breeds' sizes, and when they stop growing."),
+      ("bernedoodle-colors.html", "Colors and patterns", page_lead("havilah"),
+       "Havilah, a blue merle phantom Munchkin Bernedoodle puppy",
+       "Merle, phantom, parti, red and tri color, and the genetics behind them."),
+      ("bernedoodle-shedding.html", "Shedding and allergies", page_lead("eden"),
+       "Eden, a red with white Munchkin Bernedoodle puppy",
+       "What the research says about shedding, allergies and grooming."),
+      ("bernedoodle-lifespan-temperament.html", "Lifespan and temperament", page_lead("joshua"),
+       "Joshua, a red and white parti Munchkin Bernedoodle puppy",
+       "How long they live and what they are like to share a home with."),
+      ("munchkin-bernedoodle-price.html", "Price and cost", page_lead("jericho"),
+       "Jericho, a blue merle parti Munchkin Bernedoodle puppy",
+       "The adoption fee, the deposit, and what comes home with your puppy."),
+    ]
+    def sibling_links(current):
+        links = [('what-is-a-munchkin-bernedoodle.html', 'What is a Munchkin Bernedoodle?')] + \
+                [(h, t) for h, t, *_ in GUIDE_SPOKES]
+        items = " &middot; ".join(f'<a href="{h}">{t}</a>' for h, t in links if h != current)
+        return ('<section><div class="wrap center">\n'
+                '  <p class="eyebrow center">More from the breed guide</p>\n'
+                f'  <p class="center" style="max-width:70ch;margin:.5rem auto 0">{items}</p>\n'
+                '</div></section>')
+    def guide_cards():
+        return "".join(
+          f'<a class="packet-link" href="{h}"><article class="packet">'
+          + img_tag(stem, alt=alt, sizes="(max-width:600px) 94vw, (max-width:900px) 46vw, 30vw")
+          + f'<div class="packet-body"><p class="packet-name">{t}</p><p class="fine">{blurb}</p></div>'
+          '</article></a>'
+          for h, t, stem, alt, blurb in GUIDE_SPOKES)
+
     # ---- Munchkin Bernedoodle price ------------------------------------------------------
     # Every figure from the constants, every term in the site's published wording, shown as
     # a table. Whether tax applies to the cash price is NOT stated, because the site does
@@ -2760,14 +2806,24 @@ def build_pages():
   <div class="tri one"><div><h3>Every puppy goes home with</h3><ul class="checklist">
 {kit_items}
   </ul></div></div>
-  <p class="center" style="max-width:56ch;margin:2rem auto 0">Delivery is not included. If
-    you would like your puppy brought to you, you arrange it and pay for it directly with
-    our <a href="process.html#delivery">delivery partner</a>.</p>
+</div></section>
+
+<section class="band-raise" id="delivery-cost"><div class="wrap">
+  <p class="eyebrow center">If you are not local</p>
+  <h2 class="center">Getting your puppy home</h2>
+  <p class="center" style="max-width:62ch;margin:.5rem auto 0">Collecting your puppy from us
+    costs nothing beyond the adoption fee. If you are too far away, {FF_NAME}, a pet transportation company in {FF_TOWN}, can bring your puppy to
+    you. You book and pay them directly, and they will quote you for your address on
+    <a href="{FF_QUOTE_URL}" target="_blank" rel="noopener">their scheduling page</a>.
+    More about how it works is on our <a href="process.html#delivery">delivery
+    section</a>.</p>
 </div></section>
 
 {hic_pair('What to budget for afterward',
   img_tag(page_lead('caleb'), cls='framed hic-photo', alt='Caleb, a red and white parti Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
-  '<p>The adoption fee is the largest single cost, but it is not the last one. Plan for food, vaccinations and routine vet care, and professional grooming every six to eight weeks, since a doodle coat needs it. Our page on <a href="bernedoodle-shedding.html#grooming">shedding and grooming</a> explains why.</p><p>Costs vary by area, so ask a local vet and groomer for their prices before your puppy comes home.</p>')}
+  '<p>The adoption fee is the largest single cost, but it is not the last one. Plan for food, vaccinations and routine vet care, and professional grooming every six to eight weeks, since a doodle coat needs it. Our page on <a href="bernedoodle-shedding.html#grooming">shedding and grooming</a> explains why.</p><p>Vaccinations come as a series. The American Animal Hospital Association recommends starting puppy core vaccines at 6 to 8 weeks, repeating them every 2 to 4 weeks until a puppy is older than 16 weeks, and giving a booster within a year. A puppy going home at eight weeks still has several of those visits ahead of it.</p><p>Costs vary by area, so ask a local vet and groomer for their prices before your puppy comes home.</p>')}
+
+{sibling_links('munchkin-bernedoodle-price.html')}
 
 {closing_band('Every puppy is listed with their current status.', ('puppies.html', 'See available puppies'), ('apply.html', 'Start an application'))}""",
       og_image=f"img/puppies/{page_lead('jericho')}.jpg")
@@ -2801,18 +2857,31 @@ def build_pages():
 
 {hic_pair('How long they live',
   img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, the Mini Multi Gen Bernedoodle who is the mother of our litter', sizes=PHOTO_WIDE),
-  '<p>Small doodles like the Munchkin often reach twelve to fifteen years. Their size works in their favor, because as a rule small dogs outlive big ones. Past that, how long a dog lives comes down mostly to how it is looked after. Keeping it at a healthy weight, feeding it well and keeping up with vet checkups do more for a long life than anything written on its pedigree.</p>',
+  '<p>There is little research on Munchkin Bernedoodles as a group, so the best guides are the parent breeds and the dog\'s size. Small doodles like the Munchkin often reach twelve to fifteen years. A UK study of more than 580,000 dogs put the median lifespan across all dogs at 12.5 years, and found that small breeds with longer noses lived longest, at a median of about 13.3 years.</p><p>How a dog is looked after matters as much as its breed. A North American study of more than 50,000 middle-aged dogs across 12 breeds found that overweight dogs had a shorter median lifespan than dogs at a healthy weight in every breed it looked at. Feeding well, keeping your dog lean and keeping up with vet checkups are the parts most in your control.</p>',
   band='band-raise', flip=True, sid='lifespan')}
+
+<section><div class="wrap">
+  <p class="eyebrow center">The parent breeds</p>
+  <h2 class="center">How long each side of the cross lives</h2>
+  <p class="lede center" style="max-width:56ch;margin:.5rem auto 2rem">The American Kennel
+    Club's life expectancy for the three breeds behind a Munchkin Bernedoodle.</p>
+  <div class="tri">
+    <div><h3>Cavalier King Charles Spaniel</h3><p>12 to 15 years.</p></div>
+    <div><h3>Poodle</h3><p>10 to 18 years, the same range for all three Poodle sizes.</p></div>
+    <div><h3>Bernese Mountain Dog</h3><p>7 to 10 years. The largest of the three breeds,
+      and the shortest lived.</p></div>
+  </div>
+</div></section>
 
 {hic_pair('Where the personality comes from',
   img_tag('cavalier-sire-01', folder='dogs', cls='framed hic-photo', alt='Bip Finch, the ruby Cavalier King Charles Spaniel who is the father of our litter', sizes=PHOTO_WIDE),
-  '<p>The Cavalier King Charles Spaniel half is where the gentleness comes from: a calm, cuddly dog that is happiest in a lap. The Bernedoodle half adds a playful streak and a quick mind that takes well to training.</p><p>Most Munchkins land somewhere between the two, and each puppy is its own mix of them, which is why we get to know every puppy before we suggest one to a family.</p>',
-  sid='temperament')}
+  '<p>The Cavalier King Charles Spaniel half is where the gentleness comes from: a calm, cuddly dog that is happiest in a lap. The Bernedoodle half adds a playful streak and a quick mind that takes well to training.</p><p>The official breed standards describe the three parent breeds in much the same terms. The Cavalier is friendly and non-aggressive, with no tendency toward nervousness or shyness. The Poodle is very active and intelligent. The Bernese is self-confident, alert and good-natured.</p><p>Most Munchkins land somewhere between them, and each puppy is its own mix, which is why we get to know every puppy before we suggest one to a family.</p>',
+  band='band-raise', sid='temperament')}
 
 {hic_pair('With children and other dogs',
   img_tag(page_lead('havilah'), cls='framed hic-photo', alt='Havilah, a blue merle phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
   '<p>Our puppies grow up around our nieces and nephews and other dogs from their first days, so a busy house is ordinary to them by the time they leave. We still ask families with very young children to keep an eye on things, mostly for the puppy\'s sake, because a small dog is easy for a toddler to hurt by accident. You can read more about <a href="about.html">how we raise them</a>.</p>',
-  band='band-raise', flip=True)}
+  flip=True)}
 
 <section class="band-forest"><div class="wrap">
   <p class="eyebrow center">Day to day</p>
@@ -2829,6 +2898,8 @@ def build_pages():
       dog.</p></div>
   </div>
 </div></section>
+
+{sibling_links('bernedoodle-lifespan-temperament.html')}
 
 {closing_band('Ask us about the personality of the puppy you are considering.', ('puppies.html', 'See available puppies'), ('about.html', 'How we raise them'))}""",
       og_image=f"img/puppies/{page_lead('joshua')}.jpg")
@@ -2873,9 +2944,29 @@ def build_pages():
     a rule of thumb, the curlier the coat, the less of it ends up on your floor.</p>
 </div></section>
 
+<section id="genetics"><div class="wrap">
+  <p class="eyebrow center">The genetics</p>
+  <h2 class="center">What decides a doodle coat</h2>
+  <p class="lede center" style="max-width:60ch;margin:.5rem auto 2rem">Researchers have
+    found that a few genes explain most of the coat types seen in dogs, and each puppy
+    inherits its own copies of them from both parents.</p>
+  <div class="tri">
+    <div><h3>Length</h3><p>One gene, FGF5, largely decides whether a coat grows long or
+      stays short.</p></div>
+    <div><h3>Curl</h3><p>A second, KRT71, is behind the curl of the Poodle coat.</p></div>
+    <div><h3>Furnishings</h3><p>A third, RSPO2, produces furnishings, the longer eyebrows
+      and beard that give a doodle its teddy bear face.</p></div>
+  </div>
+  <p class="center" style="max-width:64ch;margin:2rem auto 0">Furnishings matter for
+    shedding too. A study of more than 4,200 dogs found that furnished dogs tend to shed
+    less, that a separate gene, MC5R, also reduces shedding, and that dogs carrying both
+    shed the least. A doodle that does not inherit furnishings grows what geneticists call
+    an improper coat, with short hair on the head, face and legs.</p>
+</div></section>
+
 {hic_pair('What hypoallergenic actually means',
   img_tag(page_lead('shiloh'), cls='framed hic-photo', alt='Shiloh, a blue merle phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
-  '<p>There is no such thing as an allergy-free dog. The proteins people react to come from a dog\'s skin and saliva as well as its hair, so every dog carries them. A coat that sheds less can leave less of that behind on floors and furniture, which is why some people with mild allergies do better with a doodle, but it is not a guarantee.</p><p>If anyone in your home has allergies, spend real time with a Bernedoodle before you commit, and ask to meet ours on <a href="contact.html">a visit</a>.</p>',
+  '<p>There is no such thing as an allergy-free dog. The American College of Allergy, Asthma and Immunology is plain about it: no breed is non-allergenic, the proteins people react to are found in a dog\'s saliva and dander, and the length of its fur makes no difference.</p><p>Researchers have tested the idea directly. A 2012 study measured the main dog allergen in coat samples and in homes. Dogs sold as hypoallergenic, Poodles and Labradoodles among them, carried more of it in their coats than the comparison breeds, while the levels in their homes were no lower. The authors found no evidence for calling any breed hypoallergenic.</p><p>So if anyone in your home has allergies, the only reliable test is real time with a dog before you commit. Ask to meet ours on <a href="contact.html">a visit</a>.</p>',
   band='band-forest', sid='hypoallergenic')}
 
 {hic_pair('Reading a puppy\'s coat',
@@ -2896,6 +2987,8 @@ def build_pages():
     <li>Extra brushing while the puppy coat changes over to the adult one</li>
   </ul></div></div>
 </div></section>
+
+{sibling_links('bernedoodle-shedding.html')}
 
 {closing_band('Ask us about the coat on the puppy you are considering.', ('puppies.html', 'See available puppies'), ('contact.html', 'Arrange a visit'))}""",
       og_image=f"img/puppies/{page_lead('eden')}.jpg")
@@ -2947,15 +3040,38 @@ def build_pages():
   <div class="parent-grid">{M_PARENTS}</div>
 </div></section>
 
+<section><div class="wrap">
+  <p class="eyebrow center">The parent breeds</p>
+  <h2 class="center">Three breeds of very different sizes</h2>
+  <p class="lede center" style="max-width:58ch;margin:.5rem auto 2rem">A Munchkin
+    Bernedoodle's size draws on the Cavalier, the Poodle and the Bernese Mountain Dog.
+    These are the American Kennel Club's figures for each.</p>
+  <div class="tri">
+    <div><h3>Cavalier King Charles Spaniel</h3><p>12 to 13 inches at the shoulder and 13
+      to 18 lbs.</p></div>
+    <div><h3>Poodle</h3><p>Three sizes: Toy at 10 inches or under, Miniature over 10 and
+      up to 15 inches, and Standard over 15 inches.</p></div>
+    <div><h3>Bernese Mountain Dog</h3><p>23 to 27.5 inches at the shoulder, and 70 to 115
+      lbs.</p></div>
+  </div>
+</div></section>
+
 {hic_pair('Why littermates grow to different sizes',
   img_tag('litter-01', cls='framed hic-photo keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE),
   '<p>Puppies from the same litter do not all finish at one weight. Each one inherits its own mix from both sides of the cross, so a sister can mature near the bottom of the range while her brother lands near the top. That is why we give a range for the litter instead of a number for each puppy, and why we will tell you what we are seeing in the one you have your eye on.</p>',
-  flip=True)}
+  band='band-raise', flip=True)}
+
+{hic_pair('When they stop growing',
+  img_tag(lead('tirzah'), cls='framed hic-photo', alt='Tirzah, a black phantom Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
+  '<p>Small-breed dogs usually reach their adult size between 6 and 12 months of age, and the fastest growth is over by about 6 to 8 months, according to VCA Animal Hospitals. A Munchkin Bernedoodle falls in that small-breed group.</p><p>Weigh your puppy every few weeks and ask your vet whether it is on track. A steady curve matters more than hitting a particular number on a particular day.</p><p>If you want to track height too, measure the way the breed standards do: at the withers, the highest point of the shoulders, with your dog standing square on a level floor.</p>',
+  sid='growth')}
 
 {hic_pair('How small a Munchkin really is',
   img_tag(page_lead('eden'), cls='framed hic-photo', alt='Eden, a red with white Munchkin Bernedoodle puppy', sizes=PHOTO_WIDE),
   '<p>In practice, "Munchkin" means a dog you can pick up and carry. Across the cross, most adults weigh between 10 and 25 lbs and stand about 12 to 15 inches at the shoulder. A standard Bernedoodle can weigh three times that, at 70 lbs or more, which is the difference between a lap dog and a dog that fills the back seat.</p>',
   band='band-forest')}
+
+{sibling_links('munchkin-bernedoodle-size.html')}
 
 {closing_band('Ask us what we are seeing in the puppy you are interested in.', ('puppies.html', 'See available puppies'), ('contact.html', 'Ask us a question'))}""",
       og_image=f"img/puppies/{page_lead('jordan')}.jpg")
@@ -2970,22 +3086,33 @@ def build_pages():
        "Merle is a pattern rather than a color. Patches of full color sit over a lighter, "
        "diluted version of the same color, so the coat looks marbled. On a blue merle the "
        "patches are black and the diluted areas read as gray or silver-blue, and no two "
-       "merle coats are marked the same way."),
+       "merle coats are marked the same way. Merle is incompletely dominant, so one copy "
+       "is usually enough for the pattern to show. Puppies that inherit merle from both "
+       "parents, called double merles, may have hearing, eye and skeletal defects, which "
+       "is why careful breeders do not pair two merle dogs."),
       ("phantom", "Phantom",
        "A phantom coat is one main color with lighter markings in set places: above the "
        "eyes, on the muzzle, the chest and the legs, and under the tail. The markings are "
        "usually tan. A phantom can also be merle, which gives the marbled coat the same "
-       "points."),
+       "points. They fall where the rust sits on a Bernese Mountain Dog or the tan on a "
+       "black and tan Cavalier. Two genes work together to place them: MC1R, which "
+       "switches between black and red pigment, and ASIP, which controls where each "
+       "appears."),
       ("parti", "Parti",
        "A parti coat is mostly white with large patches of color. The patches can be any "
        "color the dog carries, including merle, so a blue merle parti is a white coat with "
-       "marbled blue patches."),
+       "marbled blue patches. Geneticists call this piebald or random white spotting. How "
+       "much white a dog shows varies a great deal, and the markings are often uneven from "
+       "one side to the other."),
       ("red", "Red",
        "Red runs from a light, warm red to a deep mahogany, and it can be solid or paired "
-       "with white. Our sire is a ruby Cavalier, which is the Cavalier name for solid red."),
+       "with white. Our sire is a ruby Cavalier, which is the Cavalier name for solid red. "
+       "Whether a dog makes red or black pigment is controlled largely by the MC1R gene."),
       ("tri", "Tri color",
        "Tri color is the classic Bernese look: a dark base with white on the face, chest "
-       "and paws and tan or rust points on the eyebrows, cheeks and legs."),
+       "and paws and tan or rust points on the eyebrows, cheeks and legs. The Bernese breed "
+       "standard asks for a jet black base with rust over each eye, on the cheeks, the "
+       "chest, all four legs and under the tail, and a white blaze and muzzle band."),
     ]
     def color_cards(word):
         hits = [m for m in MUNCHKINS if word in m[3].lower().split()]
@@ -3038,6 +3165,8 @@ def build_pages():
   <div class="parent-grid">{M_PARENTS}</div>
 </div></section>
 
+{sibling_links('bernedoodle-colors.html')}
+
 {closing_band('See every puppy in the litter, with their colors.', ('puppies.html', 'See available puppies'), ('waitlist.html', 'Join the waitlist'))}""",
       og_image="img/puppies/litter-01.jpg")
 
@@ -3082,16 +3211,16 @@ def build_pages():
 <section><div class="wrap">
   <h2 class="center">The three breeds behind the cross</h2>
   <div class="grid-3" style="margin-top:2rem">
-    <article class="packet">{img_tag('troy-01', folder='dogs', alt='A Mini Multi Gen Bernedoodle')}
+    <article class="packet">{img_tag('troy-01', folder='dogs', alt='A Mini Multi Gen Bernedoodle', sizes='(max-width:600px) 94vw, (max-width:960px) 46vw, 31vw')}
       <div class="packet-body"><p class="packet-name">Bernese and Poodle</p>
         <p class="fine">The Bernedoodle side. From the Bernese come the merle and
           parti coats and an easygoing sweetness. From the Poodle come brains and
           the wavy, often lower-shedding coat.</p></div></article>
-    <article class="packet">{img_tag('cavalier-sire-01', folder='dogs', alt='A ruby Cavalier King Charles Spaniel')}
+    <article class="packet">{img_tag('cavalier-sire-01', folder='dogs', alt='A ruby Cavalier King Charles Spaniel', sizes='(max-width:600px) 94vw, (max-width:960px) 46vw, 31vw')}
       <div class="packet-body"><p class="packet-name">Cavalier King Charles</p>
         <p class="fine">The small frame, and the calm, cuddly, devoted nature the
           breed is famous for. This is the side that makes them lap dogs.</p></div></article>
-    <article class="packet">{img_tag('jordan-01', alt='Jordan, a Munchkin Bernedoodle puppy')}
+    <article class="packet">{img_tag('jordan-01', alt='Jordan, a Munchkin Bernedoodle puppy', sizes='(max-width:600px) 94vw, (max-width:960px) 46vw, 31vw')}
       <div class="packet-body"><p class="packet-name">The result</p>
         <p class="fine">A small, sturdy, affectionate companion with doodle looks and
           a Cavalier heart. Usually 10 to 25 lbs full grown.</p></div></article>
@@ -3113,6 +3242,12 @@ def build_pages():
     <p>For shedding, allergies and grooming in more depth, read our
       <a href="bernedoodle-shedding.html">honest answer to whether Bernedoodles shed</a>.</p>
   </div>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <p class="eyebrow center">Explore the breed</p>
+  <h2 class="center">Everything else to know before you choose</h2>
+  <div class="hub-cards" style="margin-top:2rem">{guide_cards()}</div>
 </div></section>
 
 <section style="margin-bottom:0"><div class="wrap">

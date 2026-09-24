@@ -363,6 +363,13 @@ section.band-tight{padding-top:clamp(1.5rem,2.5vw,2.25rem);
   align-items:center}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:clamp(1.25rem,2vw,2rem)}
+/* The breed-guide hub. Five cards under auto-fit landed four and one at 1440 and five
+   across at 1920. Three to a row with the last row centered, two on a tablet, one on a
+   phone. */
+.hub-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(1.25rem,2vw,2rem)}
+.hub-cards>*{flex:0 1 calc((100% - 2 * clamp(1.25rem,2vw,2rem)) / 3);min-width:0}
+@media (max-width:900px){.hub-cards>*{flex-basis:calc((100% - clamp(1.25rem,2vw,2rem)) / 2)}}
+@media (max-width:600px){.hub-cards>*{flex-basis:100%}}
 .packet{position:relative;background:#fff;border:1.5px solid var(--forest);
   border-radius:4px;padding:11px;display:flex;flex-direction:column;height:100%}
 .packet::before{content:"";position:absolute;inset:5px;border:1px dashed var(--sage);
