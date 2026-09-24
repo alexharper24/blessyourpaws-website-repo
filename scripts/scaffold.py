@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 173
+V = 174
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -2686,6 +2686,74 @@ def build_pages():
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
+    # ---- Bernedoodle shedding ------------------------------------------------------------
+    # Never a promise of a non-shedding or hypoallergenic coat. Nothing about these puppies'
+    # coats beyond what the site already says. The general facts (Bernese and Cavalier
+    # shed, allergens in skin and saliva, low-shed coats need brushing) are about breeds and
+    # dogs in general, not about this litter.
+    page("bernedoodle-shedding.html",
+      f"Do Bernedoodles Shed? Are They Hypoallergenic? | {BRAND}",
+      "An honest answer on Bernedoodle shedding and allergies: why Munchkin Bernedoodle "
+      "coats vary, what hypoallergenic means, and how much grooming to plan.",
+      f"""<section><div class="wrap">
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Breed guide</p>
+      <h1>Do Munchkin Bernedoodles shed?</h1>
+    </div>
+    {img_tag(page_lead('eden'), cls='framed hic-photo', alt='Eden, a red with white Munchkin Bernedoodle puppy', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    <div class="hic-copy">
+      <p class="lede">Most Munchkin Bernedoodles shed lightly, some shed more, and no
+        Bernedoodle is truly hypoallergenic. Where a dog falls depends on the coat that
+        individual puppy grows, which is why we describe each puppy's coat to you instead
+        of promising one.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <h2>Why one litter can grow different coats</h2>
+  <p style="max-width:68ch">A Munchkin Bernedoodle draws on three breeds. The Poodle brings
+    the wavy to curly coat that tends to hold on to its hair. The Bernese Mountain Dog and
+    the Cavalier King Charles Spaniel both shed, the Bernese heavily. Every puppy inherits
+    its own blend of the three, so two littermates can finish with noticeably different
+    coats. As a rule of thumb, the curlier the coat, the less of it ends up on your
+    floor.</p>
+</div></section>
+
+<section id="hypoallergenic"><div class="wrap">
+  <h2>What hypoallergenic actually means</h2>
+  <p style="max-width:68ch">There is no such thing as an allergy-free dog. The proteins
+    people react to come from a dog's skin and saliva as well as its hair, so every dog
+    carries them. A coat that sheds less can leave less of that behind on floors and
+    furniture, which is why some people with mild allergies do better with a doodle,
+    but it is not a guarantee. If anyone in your home has allergies, spend real time with
+    a Bernedoodle before you commit, and ask to meet ours on
+    <a href="contact.html">a visit</a>.</p>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <h2>Reading a puppy's coat</h2>
+  <p style="max-width:68ch">The coat you see at eight weeks is a preview rather than the
+    final coat. The adult coat comes in over the first year, and its texture often
+    changes partway through. We can tell you whether a puppy's coat is looking wavy,
+    curly or straighter, and we will, but nobody can promise how it finishes.</p>
+</div></section>
+
+<section id="grooming"><div class="wrap">
+  <h2>Less shedding means more grooming</h2>
+  <p style="max-width:68ch">A coat that holds its hair needs brushing, because the loose
+    hair stays in the coat instead of landing on the couch, and it mats if it is left.
+    Budget for brushing it through several times a week and for a groomer roughly every
+    six to eight weeks, ideally one who knows doodle coats. Expect a stretch of extra
+    brushing while the puppy coat changes over to the adult one.</p>
+  <div class="section-cta">
+    <p>Ask us about the coat on the puppy you are considering.</p>
+    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  </div>
+</div></section>""",
+      og_image=f"img/puppies/{page_lead('eden')}.jpg")
+
     # ---- Munchkin Bernedoodle size --------------------------------------------------------
     # Only published size facts. M_SIZE is a projection from the parents, not an observed
     # figure (no grown-litter data, Alex 2026-08-28), and the page says so. No growth-by-age
@@ -2893,6 +2961,8 @@ def build_pages():
     <p>Color is a separate question from coat type, and our
       <a href="bernedoodle-colors.html">guide to Bernedoodle colors</a> covers merle,
       phantom, parti, red and tri color.</p>
+    <p>For shedding, allergies and grooming in more depth, read our
+      <a href="bernedoodle-shedding.html">honest answer to whether Bernedoodles shed</a>.</p>
   </div>
 </div></section>
 
@@ -3229,7 +3299,7 @@ def build_pages():
       book and pay them directly. <a href="#delivery">See delivery options</a>.</p>
     <p><strong>Will my puppy shed?</strong> It varies by puppy, even in one litter. We
       never promise a non-shedding coat.
-      <a href="what-is-a-munchkin-bernedoodle.html">More on coats</a>.</p>
+      <a href="bernedoodle-shedding.html">More on shedding and allergies</a>.</p>
   </div>
 </div></section>""")
 
