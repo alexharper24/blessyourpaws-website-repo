@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 172
+V = 173
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -218,7 +218,8 @@ FALLBACK_WAITLIST = _fallback(FORM_WAITLIST,
 # it stops the range reading as a specification.
 SIZE_NOTE = ("Expected adult size is our best estimate from the parents, Troy at "
              "22 lbs and Bip Finch at 19 lbs. It is not a promise about an "
-             "individual puppy.")
+             "individual puppy. <a href=\"munchkin-bernedoodle-size.html\">How we "
+             "arrived at it</a>.")
 
 M_KIT = ["Vaccination and health record", "Examination by our vet", "Microchipped",
          "Signed health guarantee", "Small bag of the food they know", "Collar and leash",
@@ -2685,6 +2686,68 @@ def build_pages():
     faq_html = "\n".join(
       f'  <details><summary>{q}</summary><div class="ans"><p>{a}</p></div></details>'
       for q, a in faq)
+    # ---- Munchkin Bernedoodle size --------------------------------------------------------
+    # Only published size facts. M_SIZE is a projection from the parents, not an observed
+    # figure (no grown-litter data, Alex 2026-08-28), and the page says so. No growth-by-age
+    # chart: none was supplied and inventing one is exactly what this repo forbids.
+    page("munchkin-bernedoodle-size.html",
+      f"Munchkin Bernedoodle Full Grown Size | {BRAND}",
+      f"How big a Munchkin Bernedoodle gets full grown: our litter's expected {M_SIZE} "
+      "adult size, the parents' weights, and why littermates vary.",
+      f"""<section><div class="wrap">
+  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Breed guide</p>
+      <h1>Munchkin Bernedoodle full grown size</h1>
+    </div>
+    {img_tag('troy-01', folder='dogs', cls='framed hic-photo', alt='Troy, the 22 lb Mini Multi Gen Bernedoodle who is the mother of our litter', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    <div class="hic-copy">
+      <p class="lede">Our current litter is expected to be {M_SIZE} full grown. That is
+        an estimate from the parents' weights rather than a measurement of grown puppies,
+        and the rest of this page shows where it comes from.</p>
+      <ul class="facts">
+        <li><span class="k">Expected adult weight</span><span class="v">{M_SIZE}</span></li>
+        <li><span class="k">Mom, Troy</span><span class="v">22 lbs</span></li>
+        <li><span class="k">Dad, Bip Finch</span><span class="v">19 lbs</span></li>
+        <li><span class="k">Typical for the cross</span><span class="v">10 to 25 lbs</span></li>
+        <li><span class="k">Typical height</span><span class="v">About 12 to 15 inches at the shoulder</span></li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <h2>Start with the parents</h2>
+  <p style="max-width:68ch">The best guide to how big a puppy will grow is the size of the
+    dogs it came from. <a href="parents.html">Troy</a> weighs 22 lbs and Bip Finch weighs
+    19 lbs, so we expect most of the litter to mature somewhere near them. We set the top
+    of our range above Troy's own weight on purpose. A puppy can outgrow both parents,
+    and we would rather you plan for a slightly bigger dog than be surprised by one.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Why littermates grow to different sizes</h2>
+  <p style="max-width:68ch">Puppies from the same litter do not all finish at one weight.
+    Each one inherits its own mix from both sides of the cross, so a sister can mature
+    near the bottom of the range while her brother lands near the top. That is why we
+    give a range for the litter instead of a number for each puppy, and why we will tell
+    you what we are seeing in the one you have your eye on.</p>
+</div></section>
+
+<section class="band-raise"><div class="wrap">
+  <h2>How small a Munchkin really is</h2>
+  <p style="max-width:68ch">In practice, "Munchkin" means a dog you can pick up and carry.
+    Across the cross, most adults weigh between 10 and 25 lbs and stand about 12 to 15
+    inches at the shoulder. A standard Bernedoodle can weigh three times that, at 70 lbs
+    or more, which is the difference between a lap dog and a dog that fills the back
+    seat.</p>
+  <div class="section-cta">
+    <p>Ask us what we are seeing in the puppy you are interested in.</p>
+    <a class="btn btn-primary" href="puppies.html">See available puppies</a>
+  </div>
+</div></section>""",
+      og_image="img/dogs/troy-01.jpg")
+
     # ---- Bernedoodle colors -------------------------------------------------------------
     # Every example comes from a puppy's RECORDED colour in MUNCHKINS, matched by word, so
     # nothing here is read off a photograph and the examples vanish when the litter
@@ -2792,6 +2855,9 @@ def build_pages():
         panel is on the <a href="parents.html">parents</a> page so you can read it for
         yourself rather than take our word for it, and Bip Finch's will go up the same way
         once we have a legible copy of it.</p>
+      <p>For what that means for this litter, see
+        <a href="munchkin-bernedoodle-size.html">how big a Munchkin Bernedoodle gets full
+        grown</a>.</p>
     </div>
   </div>
 </div></section>
