@@ -144,7 +144,7 @@ ADOPTED = {"tirzah"}
 # 2026-09-24). Off the market like ADOPTED, but labeled Reserved, and the page keeps the
 # "Pay your balance" link for the family who reserved it. Move a slug from here to
 # ADOPTED when the adoption completes.
-RESERVED = {"shiloh"}
+RESERVED = set()
 SPOKEN_FOR = ADOPTED | RESERVED
 
 def n_word(n):
