@@ -237,7 +237,7 @@ takes `priority=True`, which sets `fetchpriority` and `decoding=sync` and suppre
 
 ## Adopted puppies stay on the site
 
-`ADOPTED = {"tirzah"}` in `scripts/scaffold.py`. **ADOPTED means spoken for, NOT gone.**
+`ADOPTED = {"tirzah", "shiloh"}` in `scripts/scaffold.py`. **ADOPTED means adopted, gone home or not** (Shiloh went home 2026-09-28, paid in full), so the copy says neither.
 An adopted puppy is still with Hope and goes home on the same date as her littermates, so
 no copy may say she is home or with her family. She keeps her card and her page so the
 litter reads as a whole rather than looking like puppies went missing, but nothing offers

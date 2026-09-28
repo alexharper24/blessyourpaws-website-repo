@@ -136,10 +136,11 @@ MUNCHKINS = [
     ("jericho", "Jericho", "Boy",  "Blue merle parti",    ""),
     ("tirzah",  "Tirzah",  "Girl", "Black phantom",       ""),
 ]
-# Puppies that are spoken for. ADOPTED means reserved by a family, NOT already gone: they
-# go home on the same date as their littermates. They stay on the site so the litter reads
-# as a whole rather than looking like one went missing, and they are never offered for sale.
-ADOPTED = {"tirzah"}
+# Puppies that are spoken for. ADOPTED means adopted by a family, whether or not the puppy
+# has gone home yet, so no copy may say either way (Shiloh went home 2026-09-28, Tirzah goes
+# with her littermates). They stay on the site so the litter reads as a whole rather than
+# looking like one went missing, and they are never offered for sale.
+ADOPTED = {"tirzah", "shiloh"}
 # Reserved: a family has put a deposit down and the puppy has not gone home yet (Alex,
 # 2026-09-24). Off the market like ADOPTED, but labeled Reserved, and the page keeps the
 # "Pay your balance" link for the family who reserved it. Move a slug from here to
