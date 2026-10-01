@@ -17,6 +17,9 @@ worker/
 node_modules/
 source-files/
 source-photos/
+# the editor spec and, once built, the editor itself. The editor is its own Worker.
+docs/
+admin/
 CLAUDE.md
 README.md
 wrangler.jsonc
