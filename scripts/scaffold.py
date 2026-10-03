@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 184
+V = 185
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1540,6 +1540,22 @@ JS = """// Bless Your Paws Puppies - v2
     }
   });
 
+  // ---- analytics events. window.gtag exists only on the live hostname (GA_SNIPPET), so
+  // previews and local builds send nothing. generate_lead and contact are marked as key
+  // events in GA4, which is how a form sent or a tap to call or text Hope is counted.
+  function track(name, params){
+    if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var h = a.getAttribute('href');
+    var method = h.indexOf('tel:') === 0 ? 'call' : h.indexOf('sms:') === 0 ? 'text'
+      : h.indexOf('mailto:') === 0 ? 'email' : null;
+    if (method) track('contact', { method: method });
+    else if (h.indexOf('buy.stripe.com') !== -1) track('deposit_click', { link_text: a.textContent.trim().slice(0, 60) });
+  });
+
   // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
   document.querySelectorAll('form[data-guard]').forEach(function(f){
     var msg = f.querySelector('.guard-msg');
@@ -1600,6 +1616,8 @@ JS = """// Bless Your Paws Puppies - v2
         body: new FormData(f),
         headers: { Accept: 'application/json' }
       }).then(function(r){
+        // Counted only once Formspree accepts it, so a failed send is never a lead.
+        if (r.ok) track('generate_lead', { form_name: f.getAttribute('data-form') || 'form' });
         if (r.ok) done(f.hasAttribute('data-applied')
           ? 'Thank you. That came through, and Hope will be in touch soon. You can put a deposit down now if you are ready.'
           : 'Thank you. That came through, and Hope will be in touch soon.', true);
@@ -3723,7 +3741,7 @@ def build_pages():
         and we will get right back to you.</p>
       <div class="formcard">
         <h2 style="margin-top:0">Send an inquiry</h2>
-        <form data-guard action="{FORM_INQUIRY}" method="POST">
+        <form data-guard data-form="inquiry" action="{FORM_INQUIRY}" method="POST">
         <input type="hidden" name="_subject" value="New puppy inquiry from your website">
         {hp.format(i="c")}<div class="field"><label for="name">Your name</label><input id="name" name="name" required></div>
         <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
@@ -3774,7 +3792,7 @@ def build_pages():
     who a puppy would be going home to, and it puts the terms in front of you so nothing
     about them is a surprise later.</p>
 
-  <form data-guard data-applied action="{FORM_APPLY}" method="POST">
+  <form data-guard data-applied data-form="application" action="{FORM_APPLY}" method="POST">
   <input type="hidden" name="_subject" value="New puppy application from your website">
   {hp.format(i="a")}
   <div class="field"><label for="aname">Your name</label>
@@ -3866,7 +3884,7 @@ def build_pages():
   </div>
   <div class="formcard">
     <h2 style="margin-top:0">Add your name</h2>
-    <form data-guard action="{FORM_WAITLIST}" method="POST">
+    <form data-guard data-form="waitlist" action="{FORM_WAITLIST}" method="POST">
     <input type="hidden" name="_subject" value="New waitlist signup from your website">
     {hp.format(i="w")}<div class="field"><label for="wname">Your name</label><input id="wname" name="name" required></div>
     <div class="field"><label for="wemail">Email</label><input id="wemail" name="email" type="email" required></div>

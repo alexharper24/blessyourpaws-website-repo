@@ -156,6 +156,22 @@
     }
   });
 
+  // ---- analytics events. window.gtag exists only on the live hostname (GA_SNIPPET), so
+  // previews and local builds send nothing. generate_lead and contact are marked as key
+  // events in GA4, which is how a form sent or a tap to call or text Hope is counted.
+  function track(name, params){
+    if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var h = a.getAttribute('href');
+    var method = h.indexOf('tel:') === 0 ? 'call' : h.indexOf('sms:') === 0 ? 'text'
+      : h.indexOf('mailto:') === 0 ? 'email' : null;
+    if (method) track('contact', { method: method });
+    else if (h.indexOf('buy.stripe.com') !== -1) track('deposit_click', { link_text: a.textContent.trim().slice(0, 60) });
+  });
+
   // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
   document.querySelectorAll('form[data-guard]').forEach(function(f){
     var msg = f.querySelector('.guard-msg');
@@ -216,6 +232,8 @@
         body: new FormData(f),
         headers: { Accept: 'application/json' }
       }).then(function(r){
+        // Counted only once Formspree accepts it, so a failed send is never a lead.
+        if (r.ok) track('generate_lead', { form_name: f.getAttribute('data-form') || 'form' });
         if (r.ok) done(f.hasAttribute('data-applied')
           ? 'Thank you. That came through, and Hope will be in touch soon. You can put a deposit down now if you are ready.'
           : 'Thank you. That came through, and Hope will be in touch soon.', true);
