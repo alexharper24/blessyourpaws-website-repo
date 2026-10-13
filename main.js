@@ -168,8 +168,12 @@
     var h = a.getAttribute('href');
     var method = h.indexOf('tel:') === 0 ? 'call' : h.indexOf('sms:') === 0 ? 'text'
       : h.indexOf('mailto:') === 0 ? 'email' : null;
-    if (method) track('contact', { method: method });
+    // where the tap happened, so the report can tell the chat panel from the footer
+    var where = a.closest('.chat-panel') ? 'chat' : a.closest('.site-foot') ? 'footer'
+      : a.closest('.site-head, .nav') ? 'header' : 'page';
+    if (method) track('contact', { method: method, link_location: where });
     else if (h.indexOf('buy.stripe.com') !== -1) track('deposit_click', { link_text: a.textContent.trim().slice(0, 60) });
+    else if (where === 'chat') track('chat_link', { destination: h });
   });
 
   // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
@@ -324,6 +328,7 @@
   fab.addEventListener('click', function(){
     var open = !panel.classList.contains('open');
     panel.classList.toggle('open', open);
+    if (open) track('chat_open', {});
     fab.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
   document.addEventListener('keydown', function(e){

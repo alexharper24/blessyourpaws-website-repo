@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 187
+V = 188
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -1569,8 +1569,12 @@ JS = """// Bless Your Paws Puppies - v2
     var h = a.getAttribute('href');
     var method = h.indexOf('tel:') === 0 ? 'call' : h.indexOf('sms:') === 0 ? 'text'
       : h.indexOf('mailto:') === 0 ? 'email' : null;
-    if (method) track('contact', { method: method });
+    // where the tap happened, so the report can tell the chat panel from the footer
+    var where = a.closest('.chat-panel') ? 'chat' : a.closest('.site-foot') ? 'footer'
+      : a.closest('.site-head, .nav') ? 'header' : 'page';
+    if (method) track('contact', { method: method, link_location: where });
     else if (h.indexOf('buy.stripe.com') !== -1) track('deposit_click', { link_text: a.textContent.trim().slice(0, 60) });
+    else if (where === 'chat') track('chat_link', { destination: h });
   });
 
   // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
@@ -1725,6 +1729,7 @@ JS = """// Bless Your Paws Puppies - v2
   fab.addEventListener('click', function(){
     var open = !panel.classList.contains('open');
     panel.classList.toggle('open', open);
+    if (open) track('chat_open', {});
     fab.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
   document.addEventListener('keydown', function(e){
@@ -3924,6 +3929,16 @@ def build_pages():
     {hp.format(i="w")}<div class="field"><label for="wname">Your name</label><input id="wname" name="name" required></div>
     <div class="field"><label for="wemail">Email</label><input id="wemail" name="email" type="email" required></div>
     <div class="field"><label for="wphone">Phone (optional)</label><input id="wphone" name="phone"></div>
+    <div class="field"><label for="wstreet">Street address</label>
+      <input id="wstreet" name="address_street" autocomplete="street-address" required></div>
+    <div class="field-row">
+      <div class="field"><label for="wcity">City</label>
+        <input id="wcity" name="address_city" autocomplete="address-level2" required></div>
+      <div class="field"><label for="wstate">State</label>
+        <input id="wstate" name="address_state" autocomplete="address-level1" required></div>
+      <div class="field"><label for="wzip">ZIP</label>
+        <input id="wzip" name="address_zip" autocomplete="postal-code" inputmode="numeric" required></div>
+    </div>
     <div class="field"><label for="wline">Which puppies are you hoping for?</label>
       <select id="wline" name="line">
         <option>Munchkin Bernedoodles</option>
@@ -4140,9 +4155,9 @@ def build_pages():
   <p>Only what you type into a form, or tell us when you call, text or email.</p>
   <ul>
     <li><strong>Inquiry form:</strong> your name, email, phone number and your message.</li>
-    <li><strong>Waitlist form:</strong> your name, email, phone number, which puppies you
+    <li><strong>Waitlist form:</strong> your name, email, phone number, mailing address, which puppies you
       are hoping for, and roughly when.</li>
-    <li><strong>Application:</strong> the above, plus your mailing address, which puppy you are interested in,
+    <li><strong>Application:</strong> the above, plus which puppy you are interested in,
       who is at home including whether there are children and their ages, any other pets,
       the kind of home the puppy would live in, whether you have raised a puppy before,
       and whether you can collect in person.</li>
