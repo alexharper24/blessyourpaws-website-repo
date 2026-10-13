@@ -4281,7 +4281,7 @@ def build_pages():
               'site so you can see the whole litter, not because '
               f'{subj.lower()} is available.</p>'
               f'<p class="fine balance-note">Reserved {name}? '
-              '<a class="pay-link" href="https://buy.stripe.com/cNicN43Qd0Vk0N70T8ew800">Pay your balance</a>.</p>'
+              '<a class="pay-link" href="https://buy.stripe.com/7sY3cudqNbzY67r59oew805">Pay your balance</a>.</p>'
               f'<p class="fine">Hoping for one like {obj}? '
               '<a href="puppies.html">See who is available</a> or '
               '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
@@ -4300,7 +4300,7 @@ def build_pages():
           <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/8x2eVc86tfQegM5eJYew804">Full payment &middot; ${M_PRICE_TAXED:,.2f}</a>
         </div>
         <p class="fine balance-note">Already reserved {name}?
-          <a class="pay-link" href="https://buy.stripe.com/cNicN43Qd0Vk0N70T8ew800">Pay your balance</a>.</p>
+          <a class="pay-link" href="https://buy.stripe.com/7sY3cudqNbzY67r59oew805">Pay your balance</a>.</p>
         <p class="guard-msg">Online payments are almost ready. To reserve {name}
           today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
         <p class="fine talk-first">Prefer to talk first? <a href="contact.html">Start an
