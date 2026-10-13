@@ -227,9 +227,17 @@
         }
         else if (btn){ btn.disabled = false; btn.textContent = said; }
       }
+      // Formspree stamps submissions in UTC, so the email and dashboard carry Indiana time
+      // too (Alex, 2026-10-12). Read from the visitor's clock, converted to Eastern.
+      var data = new FormData(f);
+      try {
+        data.append('Submitted (Indiana time)', new Date().toLocaleString('en-US', {
+          timeZone: 'America/Indiana/Indianapolis', month: 'long', day: 'numeric',
+          year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }));
+      } catch (err) {}
       fetch(f.action, {
         method: 'POST',
-        body: new FormData(f),
+        body: data,
         headers: { Accept: 'application/json' }
       }).then(function(r){
         // Counted only once Formspree accepts it, so a failed send is never a lead.

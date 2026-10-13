@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 185
+V = 186
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -147,6 +147,19 @@ ADOPTED = {"tirzah", "shiloh", "jericho"}
 # ADOPTED when the adoption completes.
 RESERVED = set()
 SPOKEN_FOR = ADOPTED | RESERVED
+
+# The home page shows four puppies, and only available ones while any are left (Alex,
+# 2026-10-12, after Jericho was adopted and stayed on the home page). HOME_ORDER is the
+# preferred order, kept from the hand-picked four; the rest of the litter follows in its own
+# order. Spoken-for puppies only fill the row once fewer than four are available.
+HOME_ORDER = ["eden", "havilah", "jericho", "jordan"]
+
+def home_munchkins(n):
+    by_slug = {m[0]: m for m in MUNCHKINS}
+    order = HOME_ORDER + [m[0] for m in MUNCHKINS if m[0] not in HOME_ORDER]
+    avail = [by_slug[s] for s in order if s in by_slug and s not in SPOKEN_FOR]
+    rest = [by_slug[s] for s in order if s in by_slug and s in SPOKEN_FOR]
+    return (avail + rest)[:n]
 
 def n_word(n):
     return {1:"One",2:"Two",3:"Three",4:"Four",5:"Five",6:"Six",7:"Seven",8:"Eight",
@@ -1611,9 +1624,17 @@ JS = """// Bless Your Paws Puppies - v2
         }
         else if (btn){ btn.disabled = false; btn.textContent = said; }
       }
+      // Formspree stamps submissions in UTC, so the email and dashboard carry Indiana time
+      // too (Alex, 2026-10-12). Read from the visitor's clock, converted to Eastern.
+      var data = new FormData(f);
+      try {
+        data.append('Submitted (Indiana time)', new Date().toLocaleString('en-US', {
+          timeZone: 'America/Indiana/Indianapolis', month: 'long', day: 'numeric',
+          year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }));
+      } catch (err) {}
       fetch(f.action, {
         method: 'POST',
-        body: new FormData(f),
+        body: data,
         headers: { Accept: 'application/json' }
       }).then(function(r){
         // Counted only once Formspree accepts it, so a failed send is never a lead.
@@ -2546,6 +2567,9 @@ def build_pages():
         "logo": BASE + "/img/brand/logo-horizontal-forest.png",
         "url": BASE + "/", "image": BASE + "/img/og-card.png"})
 
+    HOME_CARDS = "\n".join(
+        [card(*m[:4], M_PRICE, "Munchkin Bernedoodle") for m in home_munchkins(3 if SHOW_DOBERMANS else 4)]
+        + ([card(*DOBERMANS[0][:4], D_PRICE, "Doberman Pinscher")] if SHOW_DOBERMANS else []))
     page("index.html", f"{BREEDS_SHORT} Breeder in Indiana | {BRAND}",
       f"Family-raised {BREEDS_PHRASE} puppies from two sisters in northern Indiana. Raised in the home, around nieces and nephews, with early socialization.",
       f"""<section class="hero">
@@ -2573,10 +2597,7 @@ def build_pages():
   <h2>Puppies looking for their families</h2>
   <p class="lede">{'Munchkin Bernedoodles and Doberman Pinschers, raised underfoot in our home.' if SHOW_DOBERMANS else 'Munchkin Bernedoodles, raised underfoot in our home.'} A ${DEPOSIT} deposit holds your puppy.</p>
   <div class="pgrid" style="margin-top:2rem">
-{card(*MUNCHKINS[1][:4], M_PRICE, "Munchkin Bernedoodle")}
-{card(*MUNCHKINS[2][:4], M_PRICE, "Munchkin Bernedoodle")}
-{card(*MUNCHKINS[6][:4], M_PRICE, "Munchkin Bernedoodle")}
-{card(*DOBERMANS[0][:4], D_PRICE, "Doberman Pinscher") if SHOW_DOBERMANS else card(*MUNCHKINS[3][:4], M_PRICE, "Munchkin Bernedoodle")}
+{HOME_CARDS}
   </div>
   <div class="section-cta">
     <p>{'Every available puppy, both litters, in one place.' if SHOW_DOBERMANS else 'Every available puppy in one place.'}</p>
