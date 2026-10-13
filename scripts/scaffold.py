@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 186
+V = 187
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -951,6 +951,10 @@ form ~ .fine,form ~ p{max-width:36rem}
   padding:clamp(1.25rem,2vw,1.75rem)}
 .formcard form{max-width:none;gap:.9rem}
 .formcard .field{display:flex;flex-direction:column;gap:.3rem}
+/* city, state and ZIP share a row on the application (address added 2026-10-12), and stack on a phone */
+.field-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:.75rem}
+.field-row>.field{min-width:0}
+@media (max-width:520px){.field-row{grid-template-columns:minmax(0,1fr)}}
 .formcard .facts{margin-bottom:.75rem}
 /* a column that stacks a card above a photo needs its own rhythm */
 .grid-2>div>.formcard+.framed,.grid-2>div>.formcard+picture,
@@ -3822,6 +3826,16 @@ def build_pages():
     <input id="aemail" name="email" type="email" required></div>
   <div class="field"><label for="aphone">Phone</label>
     <input id="aphone" name="phone" required></div>
+  <div class="field"><label for="astreet">Street address</label>
+    <input id="astreet" name="address_street" autocomplete="street-address" required></div>
+  <div class="field-row">
+    <div class="field"><label for="acity">City</label>
+      <input id="acity" name="address_city" autocomplete="address-level2" required></div>
+    <div class="field"><label for="astate">State</label>
+      <input id="astate" name="address_state" autocomplete="address-level1" required></div>
+    <div class="field"><label for="azip">ZIP</label>
+      <input id="azip" name="address_zip" autocomplete="postal-code" inputmode="numeric" required></div>
+  </div>
   <div class="field"><label for="apup">Which puppy are you interested in?</label>
     <select id="apup" name="puppy">
       <option value="">Still deciding</option>
@@ -4128,7 +4142,7 @@ def build_pages():
     <li><strong>Inquiry form:</strong> your name, email, phone number and your message.</li>
     <li><strong>Waitlist form:</strong> your name, email, phone number, which puppies you
       are hoping for, and roughly when.</li>
-    <li><strong>Application:</strong> the above, plus which puppy you are interested in,
+    <li><strong>Application:</strong> the above, plus your mailing address, which puppy you are interested in,
       who is at home including whether there are children and their ages, any other pets,
       the kind of home the puppy would live in, whether you have raised a puppy before,
       and whether you can collect in person.</li>

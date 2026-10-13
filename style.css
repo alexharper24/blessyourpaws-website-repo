@@ -686,6 +686,10 @@ form ~ .fine,form ~ p{max-width:36rem}
   padding:clamp(1.25rem,2vw,1.75rem)}
 .formcard form{max-width:none;gap:.9rem}
 .formcard .field{display:flex;flex-direction:column;gap:.3rem}
+/* city, state and ZIP share a row on the application (address added 2026-10-12), and stack on a phone */
+.field-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:.75rem}
+.field-row>.field{min-width:0}
+@media (max-width:520px){.field-row{grid-template-columns:minmax(0,1fr)}}
 .formcard .facts{margin-bottom:.75rem}
 /* a column that stacks a card above a photo needs its own rhythm */
 .grid-2>div>.formcard+.framed,.grid-2>div>.formcard+picture,
