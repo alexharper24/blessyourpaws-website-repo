@@ -551,6 +551,15 @@ Needs Hope and Joy:
 
 ## Hosting: Workers static assets, not Pages (decided 2026-08-25)
 
+**Moved 2026-10-16 to its own Cloudflare account, "Bless Your Paws Puppies"**
+(`fed7bd3e491a8d6dbae0f421eeb62768`), pinned as `account_id` in `wrangler.jsonc`. The domain
+registration, the zone, the www/http redirect rule, info@ forwarding to Hope and the
+`blessyourpaws` Worker all live there now, and Workers Builds deploys from that account.
+Nothing for this site remains in Alex's main account except the old Worker, which has no
+domains and no build connection. The full record is `docs/account-move.md`. The editor's
+Zero Trust sign-in goes in this account too, so it never shares a login page with another
+project.
+
 The site is served by a **Worker** (`blessyourpaws`), the same shape as
 `roanoke-baptist`, because an admin surface behind auth is coming and that decision is
 expensive to reverse once a domain points at the old one.
