@@ -3,7 +3,7 @@ doc: account-move
 written: 2026-10-15
 objective: "Move Bless Your Paws, the domain, the site Worker and the info@ forwarding, out of Alex's main Cloudflare account into an account of its own, before the owner editor is built"
 why: "Alex, 2026-10-01: every project gets its own authentication and the projects stay separate. Cloudflare brands one sign-in page per account, and the editor needs its own"
-status: "DONE 2026-10-16. Everything runs in the Bless Your Paws Puppies account, and Workers Builds there deployed 6e1396e successfully. Left only A2 (Zero Trust, for the editor) and A5 (auto-renew decision)"
+status: "DONE 2026-10-16. Everything runs in the Bless Your Paws Puppies account, and Workers Builds there deployed 6e1396e successfully. Left only A5 (auto-renew decision)"
 from_account: "8deb46801616202e202899dc565f65d5 (Alex24harper@gmail.com's Account)"
 to_account: "fed7bd3e491a8d6dbae0f421eeb62768 (Bless Your Paws Puppies), created by Alex 2026-10-15. New zone nameservers chloe.ns.cloudflare.com and ian.ns.cloudflare.com"
 inventory_checked: 2026-10-15
@@ -22,7 +22,7 @@ inventory:
   nothing_else: "No D1, R2, secrets or Access application yet. They arrive with the editor, in the new account"
 alex_steps:
   - {id: A1, status: done 2026-10-15, evidence: "account listed by the dashboard API and wrangler whoami", item: "Create the account from the Accounts page and name it (suggested Bless Your Paws Puppies). Account creation is yours to click"}
-  - {id: A2, status: "open, not needed for the move, needed before the editor", item: "Turn on Zero Trust Free in the new account with team name blessyourpaws, and add a payment method if it asks, since I cannot enter card details"}
+  - {id: A2, status: done 2026-10-16, evidence: "Alex activated Zero Trust Free (card on file); Claude renamed the random team silent-mud-cef9 to blessyourpaws, auth domain blessyourpaws.cloudflareaccess.com confirmed by API. No Access application or login design yet, both arrive with the editor", item: "Turn on Zero Trust Free in the new account with team name blessyourpaws, and add a payment method if it asks, since I cannot enter card details"}
   - {id: A3, status: done 2026-10-16, evidence: "Alex connected the repo; trigger main, no build command, npx wrangler deploy, root /; first build of 6e1396e succeeded", item: "Approve GitHub for the new account when Workers Builds is connected, and leave the Cloudflare GitHub app on All repositories (the Teapup move narrowed it to one repo by accident)"}
   - {id: A4, status: open, item: "Get Hope ready to click one verification email from Cloudflare on the day prep starts"}
   - {id: A5, status: open, item: "Decide whether to turn on auto-renew for the domain in the new account. It is off today and the domain expires August 24, 2029"}
