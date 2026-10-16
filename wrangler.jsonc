@@ -1,6 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "blessyourpaws",
+  // Pinned 2026-10-15 for the move to the Bless Your Paws Puppies account (docs/account-move.md).
+  // Without it wrangler deploys to whichever account the login picks, which is how a Worker
+  // lands in the wrong account.
+  "account_id": "fed7bd3e491a8d6dbae0f421eeb62768",
   "main": "worker/index.js",
   "compatibility_date": "2026-08-25",
   "observability": { "enabled": true },
