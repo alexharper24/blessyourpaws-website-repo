@@ -116,6 +116,13 @@ D2 goes, the Worker also checks the `people` table, identity fails closed, and t
 | History | See every publish and who made it |
 | People | Alex invites and removes people. Hope and Joy don't see this screen |
 
+**Send health guarantee (added 2026-10-15).** Each puppy carries a "Send health guarantee"
+button once it is reserved or adopted, with the same copy, text and email actions the hidden
+`guarantee-links.html` page has today. The editor holds the link only. It never records who
+signed or when, because that is buyer data and this spec keeps buyer data out of the editor;
+the signed copies stay in Hope's email. A per-puppy "signed" tick would change that rule and
+is Alex's call when this phase starts. Once the editor ships, `guarantee-links.html` retires.
+
 Marking a puppy adopted or reserved does exactly what the generator does today. The price comes
 off the card, the badge changes, the deposit buttons go, the puppy leaves the application's list
 and the available count, and the search description drops the price.

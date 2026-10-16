@@ -164,7 +164,8 @@
   }
   document.addEventListener('click', function(e){
     var a = e.target.closest && e.target.closest('a[href]');
-    if (!a) return;
+    // Hope's own link page texts and emails families; those taps are not visitor contacts
+    if (!a || a.closest('[data-notrack]')) return;
     var h = a.getAttribute('href');
     var method = h.indexOf('tel:') === 0 ? 'call' : h.indexOf('sms:') === 0 ? 'text'
       : h.indexOf('mailto:') === 0 ? 'email' : null;
@@ -309,7 +310,7 @@
   // ---- let's chat launcher, on every page
   /* a page that already carries the inquiry form does not need a launcher for it,
      and on a phone the fixed button lands squarely on top of a form field. */
-  if (!document.querySelector('form[data-guard]')) {
+  if (!document.querySelector('form[data-guard], form[data-sign]')) {
   var fab = document.createElement('button');
   fab.className = 'chat-fab';
   fab.setAttribute('aria-expanded','false');

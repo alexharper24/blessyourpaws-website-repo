@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 188
+V = 190
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -262,6 +262,87 @@ M_KIT = ["Vaccination and health record", "Examination by our vet", "Microchippe
 D_KIT = ["AKC registration", "One year genetic health guarantee",
          "Vaccination and health record", "Vet exam and report", "Microchipped",
          "Tail docked", "Dew claws removed", "Small bag of food", "A toy", "A blanket"]
+
+# ---- the health guarantee, stated ONCE (2026-10-15).
+# health-guarantee.html, the signing page (sign.html) and the PDF a family downloads all
+# render from these blocks, so the copy a family signs can never drift from the copy the
+# site shows. This is Hope's own guarantee (README, 2026-08-27). Wording is legal text:
+# change it only on Hope's say-so, and never paraphrase it.
+# Each block is (kind, runs), kind "p", "h" or "li", and each run is (bold, text).
+GUARANTEE = [
+    ("p", [(0, "We raise every puppy on a strict vaccination and deworming schedule, in a "
+              "clean home, and we hand over a confident, well socialized puppy who has been "
+              "loved since the day they were born.")]),
+    ("h", [(0, "What is covered")]),
+    ("li", [(1, "Viral disease, seven days."),
+            (0, " Your puppy is guaranteed against viral disease for seven days after going home.")]),
+    ("li", [(1, "Major genetic defects, one year."),
+            (0, " For one year from the purchase date, your puppy is guaranteed against major "
+                "genetic defects affecting the heart, lungs, liver, kidneys and the like.")]),
+    ("h", [(0, "What you need to do")]),
+    ("li", [(1, "A vet exam within 72 hours. This one is a condition."),
+            (0, " Your puppy must be examined by a veterinarian within 72 hours of going home or "
+                "the guarantee is not valid. If the vet finds something abnormal, and it is not "
+                "something we told you about before the sale, contact us straight away and send "
+                "us copies of the vet\u2019s report.")]),
+    ("li", [(1, "Documentation before a claim."),
+            (0, " If a vet concludes your puppy has a serious genetic illness, tell us and send "
+                "the paperwork from the vet. We review it and then talk to you about the outcome.")]),
+    ("li", [(1, "In the event of death within seven days"),
+            (0, ", a necropsy is required, arranged and paid for by the owner, and the findings "
+                "sent to us before any exchange or reimbursement.")]),
+    ("h", [(0, "How a claim is settled")]),
+    ("p", [(0, "Once we have the veterinarian\u2019s documentation and have reviewed it, you can "
+               "bring the puppy back in exchange for another puppy of equal or lesser value, or "
+               "we reimburse you in part or in whole at our discretion. "),
+           (1, "Credit never exceeds the purchase price of your puppy.")]),
+    ("h", [(0, "What is not covered")]),
+    ("li", [(0, "Hypoglycemia, coccidia, giardia, colds and upper respiratory infections, and "
+                "other minor illness.")]),
+    ("li", [(1, "Veterinary bills are yours."),
+            (0, " We care about these puppies long after they leave, but we cannot take on "
+                "medical expenses, death, allergies, training difficulties or behavior problems "
+                "once a puppy is in your home.")]),
+    ("p", [(0, "Anything we already know about, including cosmetic issues or any surgery before "
+               "go-home, is written on your copy and told to you before you commit. You sign to "
+               "say you were made aware of it.")]),
+]
+# The buyer's statement above the signature on the signing page and on the PDF. New text
+# written for remote signing on 2026-10-15, modeled on the purchase agreement's own
+# acknowledgement. Hope confirms it with the rest before families sign.
+GUARANTEE_AGREE = ("I have read this health guarantee and I agree to its terms, including the "
+                   "veterinarian exam within 72 hours of going home.")
+
+def _esc(t):
+    return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+def guarantee_html():
+    out, in_list = [], False
+    for kind, runs in GUARANTEE:
+        inner = "".join(("<strong>%s</strong>" if b else "%s") % _esc(t) for b, t in runs)
+        if kind == "li" and not in_list:
+            out.append("  <ul>"); in_list = True
+        if kind != "li" and in_list:
+            out.append("  </ul>"); in_list = False
+        out.append({"p": "  <p>%s</p>", "h": '  <h2 class="h3">%s</h2>',
+                    "li": "    <li>%s</li>"}[kind] % inner)
+    if in_list:
+        out.append("  </ul>")
+    return "\n".join(out)
+
+def guarantee_plain():
+    lines = []
+    for kind, runs in GUARANTEE:
+        t = "".join(t for _, t in runs)
+        lines.append({"p": "%s", "h": "\n%s", "li": "- %s"}[kind] % t)
+    return "\n".join(lines) + "\n\n" + GUARANTEE_AGREE
+
+GUARANTEE_HTML = guarantee_html()
+
+# Signed guarantees go to the inquiry form, so they land in the same inbox, under the
+# subject "Signed health guarantee: <puppy>, <name>". A dedicated Formspree form can replace
+# this later without touching anything else.
+FORM_GUARANTEE = FORM_INQUIRY
 
 CSS = """/* Bless Your Paws Puppies - v2
    Character: a pressed-flower garden album. Blush paper, forest ink, sage stems,
@@ -1565,7 +1646,8 @@ JS = """// Bless Your Paws Puppies - v2
   }
   document.addEventListener('click', function(e){
     var a = e.target.closest && e.target.closest('a[href]');
-    if (!a) return;
+    // Hope's own link page texts and emails families; those taps are not visitor contacts
+    if (!a || a.closest('[data-notrack]')) return;
     var h = a.getAttribute('href');
     var method = h.indexOf('tel:') === 0 ? 'call' : h.indexOf('sms:') === 0 ? 'text'
       : h.indexOf('mailto:') === 0 ? 'email' : null;
@@ -1710,7 +1792,7 @@ JS = """// Bless Your Paws Puppies - v2
   // ---- let's chat launcher, on every page
   /* a page that already carries the inquiry form does not need a launcher for it,
      and on a phone the fixed button lands squarely on top of a form field. */
-  if (!document.querySelector('form[data-guard]')) {
+  if (!document.querySelector('form[data-guard], form[data-sign]')) {
   var fab = document.createElement('button');
   fab.className = 'chat-fab';
   fab.setAttribute('aria-expanded','false');
@@ -1915,6 +1997,318 @@ JS = (JS.replace("__WHO__", "Hope raises the Munchkin Bernedoodles and Joy raise
         .replace("__JOY_HREF__", JOY_PHONE_HREF)
         .replace("__JOY_PHONE__", JOY_PHONE_DISPLAY)
         .replace("__EMAIL__", EMAIL))
+
+# sign.js: the signing page, Hope's link page and the PDF. A plain string for the same
+# reason as JS and CSS, and kept out of main.js so ordinary pages never load it. The PDF
+# library (vendor/jspdf.umd.min.js, jsPDF 2.5.1, MIT) is self-hosted and fetched only when
+# someone asks for a PDF.
+SIGN_JS = r"""// Bless Your Paws Puppies - health guarantee signing and PDF
+(function(){
+  var dataEl = document.getElementById('gdata');
+  if (!dataEl) return;
+  var G = JSON.parse(dataEl.textContent);
+  function track(name, params){
+    if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+  }
+  function nowIndiana(){
+    try {
+      return new Date().toLocaleString('en-US', { timeZone: 'America/Indiana/Indianapolis',
+        month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+        timeZoneName: 'short' });
+    } catch (e) { return new Date().toString(); }
+  }
+
+  // ---- the PDF, built in the browser so nothing is stored anywhere but the family's device
+  var libPromise = null;
+  function loadLib(){
+    if (libPromise) return libPromise;
+    libPromise = new Promise(function(res, rej){
+      var sc = document.createElement('script');
+      sc.src = G.jspdf;
+      sc.onload = function(){ res(window.jspdf.jsPDF); };
+      sc.onerror = function(){ libPromise = null; rej(new Error('pdf library')); };
+      document.head.appendChild(sc);
+    });
+    return libPromise;
+  }
+  function loadLogo(){
+    return new Promise(function(res){
+      var im = new Image();
+      im.onload = function(){
+        var w = 700, h = Math.round(im.naturalHeight * w / im.naturalWidth);
+        var c = document.createElement('canvas'); c.width = w; c.height = h;
+        var x = c.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);
+        x.drawImage(im, 0, 0, w, h);
+        res({ src: c.toDataURL('image/jpeg', 0.9), w: w, h: h });
+      };
+      im.onerror = function(){ res(null); };
+      im.src = G.logo;
+    });
+  }
+  // the PDF's built-in fonts are Latin-1, so curly quotes go straight
+  function latin(t){ return String(t || '').replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"'); }
+
+  function makePdf(info){
+    return Promise.all([loadLib(), loadLogo()]).then(function(r){
+      var JsPDF = r[0], logo = r[1];
+      var doc = new JsPDF({ unit: 'pt', format: 'letter' });
+      var W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+      var M = 56, y = M;
+      doc.setTextColor(34, 61, 44); doc.setDrawColor(34, 61, 44);
+      function room(h){ if (y + h > H - M){ doc.addPage(); y = M + 10; } }
+      function rich(runs, x0, width, size, lh){
+        doc.setFontSize(size);
+        var words = [];
+        runs.forEach(function(run){
+          latin(run[1]).split(/(\s+)/).forEach(function(w){ if (w) words.push([run[0], w]); });
+        });
+        // Lay the words out into lines first, then draw each line as whole strings of one
+        // weight. Drawing word by word dropped spaces ("Yourpuppy") in the text layer.
+        function measure(bold, t){ doc.setFont('helvetica', bold ? 'bold' : 'normal'); return doc.getTextWidth(t); }
+        var lines = [[]], used = 0;
+        words.forEach(function(w){
+          var line = lines[lines.length - 1];
+          if (/^\s+$/.test(w[1])){ if (line.length) { line.push([w[0], ' ']); used += measure(w[0], ' '); } return; }
+          var tw = measure(w[0], w[1]);
+          if (used + tw > width && line.length){
+            while (line.length && line[line.length - 1][1] === ' ') line.pop();
+            line = []; lines.push(line); used = 0;
+          }
+          line.push(w); used += tw;
+        });
+        lines.forEach(function(line){
+          room(lh);
+          var x = x0, seg = '', bold = null;
+          function flush(){
+            if (!seg) return;
+            doc.setFont('helvetica', bold ? 'bold' : 'normal');
+            doc.text(seg, x, y); x += doc.getTextWidth(seg); seg = '';
+          }
+          line.forEach(function(w){
+            if (w[0] !== bold){ flush(); bold = w[0]; }
+            seg += w[1];
+          });
+          flush();
+          y += lh;
+        });
+      }
+      if (logo){
+        var lw = 190, lh = lw * logo.h / logo.w;
+        doc.addImage(logo.src, 'JPEG', (W - lw) / 2, y, lw, lh); y += lh + 18;
+      }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
+      var pup = info && info.puppy;
+      doc.text(pup ? 'Health guarantee for ' + pup.name : 'Health guarantee', W / 2, y, { align: 'center' });
+      y += 16;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+      doc.text(latin(G.contact), W / 2, y, { align: 'center' });
+      y += 26;
+
+      G.blocks.forEach(function(b){
+        if (b[0] === 'h'){
+          y += 6; room(40);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+          doc.text(latin(b[1][0][1]), M, y); y += 16;
+        } else if (b[0] === 'li'){
+          room(14); doc.circle(M + 4, y - 3.2, 1.6, 'F');
+          rich(b[1], M + 14, W - 2 * M - 14, 10, 13.5); y += 3;
+        } else {
+          rich(b[1], M, W - 2 * M, 10, 13.5); y += 6;
+        }
+      });
+
+      // ---- the signature block. Blank lines on a print copy, the family's entries on theirs.
+      y += 8; room(250);
+      doc.setLineWidth(0.6); doc.line(M, y, W - M, y); y += 22;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+      doc.text('Signed', M, y); y += 18;
+      rich([[0, G.agree]], M, W - 2 * M, 10, 13.5); y += 8;
+      function row(label, value){
+        room(24);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+        doc.text(label, M, y);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+        if (value){
+          var lines = doc.splitTextToSize(latin(value), W - 2 * M - 150);
+          doc.text(lines, M + 150, y); y += 15 * lines.length + 5;
+        } else {
+          doc.setLineWidth(0.4); doc.line(M + 150, y + 2, W - M, y + 2); y += 24;
+        }
+      }
+      var addr = info ? [info.street, [info.city, info.state].filter(Boolean).join(', ') + ' ' + (info.zip || '')].join('\n') : '';
+      row('Puppy', pup ? pup.name + ' (' + pup.sex.toLowerCase() + ', ' + pup.color.toLowerCase() + ')' : '');
+      row('Buyer name', info ? info.name : '');
+      row('Address', addr);
+      if (!info) row('', '');
+      row('Phone', info ? info.phone : '');
+      row('Email', info ? info.email : '');
+      row('Told to me before purchase', info ? (info.disclosed || 'Nothing entered') : '');
+      if (!info) row('', '');
+      y += 10; room(60);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+      doc.text('Buyer signature', M, y);
+      if (info){
+        doc.setFont('times', 'italic'); doc.setFontSize(20);
+        doc.text(latin(info.signature), M + 150, y);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+        y += 14;
+        doc.text('Signed electronically on ' + latin(info.when), M + 150, y);
+        y += 26;
+      } else {
+        doc.setLineWidth(0.4); doc.line(M + 150, y + 2, W - M - 140, y + 2);
+        doc.text('Date', W - M - 128, y); doc.line(W - M - 100, y + 2, W - M, y + 2);
+        y += 34;
+      }
+      room(30);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+      doc.text('Breeder signature', M, y);
+      doc.setLineWidth(0.4); doc.line(M + 150, y + 2, W - M - 140, y + 2);
+      doc.text('Date', W - M - 128, y); doc.line(W - M - 100, y + 2, W - M, y + 2);
+
+      // a footer on every page, so the signature page is plainly part of the same document
+      var total = doc.getNumberOfPages();
+      for (var pg = 1; pg <= total; pg++){
+        doc.setPage(pg);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text('Bless Your Paws Puppies health guarantee' + (pup ? ' for ' + pup.name : '')
+          + ', page ' + pg + ' of ' + total, W / 2, H - 30, { align: 'center' });
+      }
+
+      var name = 'Bless Your Paws health guarantee'
+        + (pup ? ' - ' + pup.name : ' - blank')
+        + (info && info.name ? ' - ' + info.name : '') + '.pdf';
+      doc.save(name.replace(/[\\/:*?"<>|]/g, ''));
+    });
+  }
+  function pdfButton(btn, getInfo){
+    btn.addEventListener('click', function(){
+      var said = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Preparing the PDF...';
+      makePdf(getInfo()).then(function(){
+        btn.disabled = false; btn.textContent = said;
+      }).catch(function(){
+        btn.disabled = false;
+        btn.textContent = 'That did not work. Please try again.';
+        setTimeout(function(){ btn.textContent = said; }, 3000);
+      });
+    });
+  }
+  document.querySelectorAll('[data-blank-pdf]').forEach(function(b){
+    pdfButton(b, function(){ return null; });
+  });
+
+  // ---- the signing page
+  var form = document.querySelector('form[data-sign]');
+  if (form){
+    var sel = form.querySelector('#gpup');
+    var want = '';
+    try { want = (new URLSearchParams(location.search).get('puppy') || '').toLowerCase(); } catch (e) {}
+    if (want && G.puppies[want]) sel.value = want;
+    var title = document.getElementById('gtitle');
+    function showPup(){
+      var slug = sel.value;
+      document.querySelectorAll('[data-pupcard]').forEach(function(c){
+        c.hidden = c.getAttribute('data-pupcard') !== slug;
+        // the cards start hidden and lazy, so only the one shown downloads, and it eagerly
+        var im = c.querySelector('img');
+        if (!c.hidden && im) im.loading = 'eager';
+      });
+      title.textContent = G.puppies[slug] ? 'Health guarantee for ' + G.puppies[slug].name
+        : 'Sign your health guarantee';
+    }
+    sel.addEventListener('change', showPup);
+    showPup();
+
+    var msg = form.querySelector('.guard-msg');
+    var signed = null;
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn = form.querySelector('button[type=submit]');
+      var said = btn.textContent;
+      var fd = new FormData(form);
+      var slug = sel.value, pup = G.puppies[slug];
+      var when = nowIndiana();
+      fd.set('puppy', pup ? pup.name : slug);
+      fd.append('Signed (Indiana time)', when);
+      fd.append('_subject', 'Signed health guarantee: ' + (pup ? pup.name : '') + ', ' + fd.get('name'));
+      fd.append('guarantee_text', G.plain);
+      btn.disabled = true; btn.textContent = 'Signing...';
+      msg.classList.remove('show', 'is-error');
+      fetch(form.action, { method: 'POST', body: fd, headers: { Accept: 'application/json' } })
+        .then(function(r){
+          if (!r.ok) throw new Error('send');
+          track('guarantee_signed', { puppy: slug });
+          signed = { puppy: pup, name: fd.get('name'), email: fd.get('email'),
+            phone: fd.get('phone'), street: fd.get('address_street'),
+            city: fd.get('address_city'), state: fd.get('address_state'),
+            zip: fd.get('address_zip'), disclosed: (fd.get('disclosed') || '').trim(),
+            signature: fd.get('signature'), when: when };
+          form.hidden = true;
+          var done = document.getElementById('gdone');
+          done.hidden = false;
+          done.focus();
+          done.scrollIntoView({ block: 'start' });
+        })
+        .catch(function(){
+          btn.disabled = false; btn.textContent = said;
+          msg.textContent = 'That did not go through. Please try again, or call or text Hope at '
+            + G.phone + '.';
+          msg.classList.add('show', 'is-error');
+        });
+    });
+    pdfButton(document.getElementById('gdownload'), function(){ return signed; });
+  }
+
+  // ---- Hope's link page: copy a family's link
+  document.querySelectorAll('[data-copy]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var text = b.getAttribute('data-copy'), said = b.textContent;
+      function ok(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = said; }, 1800); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'absolute';
+        ta.style.left = '-9999px'; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); ok(); } catch (e) {}
+        ta.remove();
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      else fallback();
+    });
+  });
+})();
+"""
+
+CSS += """
+/* ---------- health guarantee: signing page and Hope's link page (2026-10-15) ---------- */
+.gterms{border:1px solid var(--sage-light);border-radius:4px;background:var(--paper-raise);
+  padding:1.1rem 1.3rem;margin:1.25rem 0 1.75rem}
+.gterms>:first-child{margin-top:0}
+.gterms>:last-child{margin-bottom:0}
+.sign-pup{display:flex;gap:1rem;align-items:center;margin:0 0 1.1rem}
+.sign-pup[hidden]{display:none}
+.sign-pup img{width:96px;height:96px;object-fit:cover;border-radius:4px;flex:none}
+.sig-input{font-family:var(--serif);font-style:italic;font-size:1.35rem}
+.sign-done{background:var(--pink-pale);border-radius:4px;padding:1.2rem 1.3rem;margin:1.5rem 0}
+.sign-done[hidden]{display:none}
+.sign-done>:first-child{margin-top:0}
+.linklike{background:none;border:0;padding:0;font:inherit;color:var(--forest);
+  text-decoration:underline;cursor:pointer}
+.glinks{display:grid;gap:.8rem;margin:1.5rem 0}
+.glink{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:.6rem 1rem;
+  align-items:center;border:1px solid var(--sage-light);border-radius:4px;padding:.75rem;
+  background:var(--paper-raise)}
+.glink img{width:72px;height:72px;object-fit:cover;border-radius:4px}
+.glink-body{min-width:0;display:flex;flex-direction:column;gap:.1rem}
+.glink-url{font-size:.82rem;color:var(--sage-deep);overflow-wrap:anywhere}
+.glink-actions{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end}
+.glink-actions .btn{flex:1 1 auto;justify-content:center}
+@media (max-width:700px){
+  .glink{grid-template-columns:72px minmax(0,1fr)}
+  .glink-actions{grid-column:1/-1;justify-content:stretch;flex-wrap:nowrap}
+  .glink-actions .btn{flex:1 1 0;padding-inline:.4rem;font-size:.92rem;min-width:0}
+}
+"""
 
 SPRIG = ('<svg class="sprig" width="72" height="25" viewBox="0 0 40 14" aria-hidden="true">'
  '<g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">'
@@ -4026,6 +4420,139 @@ def build_pages():
   </div>
 </div></section>""")
 
+    # ---- remote signing (2026-10-15). Both pages are noindex and left out of the sitemap
+    # and the nav: families reach sign.html only from the link Hope sends them, and only
+    # Hope uses guarantee-links.html. Neither stores anything; the signed copy is the
+    # Formspree email in Hope's inbox and the PDF the family downloads.
+    _noindex = '<meta name="robots" content="noindex, nofollow">\n'
+    _sign_js = f'<script src="sign.js?v={V}" defer></script>\n'
+    _pups = list(MUNCHKINS) + list(D_LIST)
+    def _status(slug):
+        return ("Adopted" if slug in ADOPTED else "Reserved" if slug in RESERVED
+                else "Available")
+    _gdata = json.dumps({
+        "blocks": GUARANTEE, "agree": GUARANTEE_AGREE, "plain": guarantee_plain(),
+        "puppies": {p[0]: {"name": p[1], "sex": p[2], "color": p[3]} for p in _pups},
+        "jspdf": f"vendor/jspdf.umd.min.js?v={V}",
+        "logo": "img/brand/logo-horizontal-forest.png" + asset_v("img/brand/logo-horizontal-forest.png"),
+        "contact": f"{EMAIL}   |   {PHONE_DISPLAY}   |   blessyourpawspuppies.com",
+        "phone": PHONE_DISPLAY,
+    }, ensure_ascii=False).replace("</", "<\\/")
+    _gdata_tag = f'<script type="application/json" id="gdata">{_gdata}</script>'
+    _pup_cards = "\n".join(
+        f'  <figure class="sign-pup" data-pupcard="{p[0]}" hidden>'
+        f'{img_tag(lead(p[0]), alt=p[1] + ", " + p[3].lower() + " puppy", sizes="96px")}'
+        f'<figcaption><strong>{p[1]}</strong><br><span class="fine">{p[2]}, {p[3].lower()}</span>'
+        f'</figcaption></figure>' for p in _pups)
+    _pup_opts = "\n".join(f'      <option value="{p[0]}">{p[1]}</option>' for p in _pups)
+
+    page("sign.html", "Sign Your Health Guarantee | Bless Your Paws Puppies",
+      "Read and sign the Bless Your Paws health guarantee for your puppy, then download a "
+      "signed copy for your records.",
+      f"""<section><div class="wrap prose">
+  <p class="eyebrow">Health guarantee</p>
+  <h1 id="gtitle">Sign your health guarantee</h1>
+{_pup_cards}
+  <p class="lede">Please read the guarantee below, then fill in your details and sign at the
+    bottom. Once you sign, you can download a copy for your records, and Hope receives one
+    at the same time.</p>
+  <div class="gterms">
+{GUARANTEE_HTML}
+  </div>
+
+  <form data-sign action="{FORM_GUARANTEE}" method="POST">
+  {hp.format(i="g")}
+  <h2 class="h3">Your details</h2>
+  <div class="field"><label for="gpup">Your puppy</label>
+    <select id="gpup" name="puppy" required>
+      <option value="">Choose your puppy</option>
+{_pup_opts}
+    </select></div>
+  <div class="field"><label for="gname">Your full name</label>
+    <input id="gname" name="name" autocomplete="name" required></div>
+  <div class="field"><label for="gemail">Email</label>
+    <input id="gemail" name="email" type="email" autocomplete="email" required></div>
+  <div class="field"><label for="gphone">Phone</label>
+    <input id="gphone" name="phone" type="tel" autocomplete="tel" required></div>
+  <div class="field"><label for="gstreet">Street address</label>
+    <input id="gstreet" name="address_street" autocomplete="street-address" required></div>
+  <div class="field-row">
+    <div class="field"><label for="gcity">City</label>
+      <input id="gcity" name="address_city" autocomplete="address-level2" required></div>
+    <div class="field"><label for="gstate">State</label>
+      <input id="gstate" name="address_state" autocomplete="address-level1" required></div>
+    <div class="field"><label for="gzip">ZIP</label>
+      <input id="gzip" name="address_zip" autocomplete="postal-code" inputmode="numeric" required></div>
+  </div>
+  <div class="field"><label for="gknown">Anything we told you about your puppy before you
+    committed</label>
+    <textarea id="gknown" name="disclosed" rows="2"
+      placeholder="For example a cosmetic issue or a surgery before go-home. Leave blank if there was nothing."></textarea></div>
+
+  <fieldset class="acks">
+    <legend>Sign the guarantee</legend>
+    <label class="ack"><input type="checkbox" name="agree" value="yes" required>
+      <span>{_esc(GUARANTEE_AGREE)}</span></label>
+    <div class="field" style="margin:.8rem 0 0"><label for="gsig">Type your full name as your signature</label>
+      <input id="gsig" class="sig-input" name="signature" autocomplete="name" required></div>
+    <p class="fine" style="margin:.5rem 0 0">Typing your name here signs the guarantee, the same
+      as signing it on paper.</p>
+  </fieldset>
+
+  <button class="btn btn-primary" type="submit">Sign the guarantee</button>
+  <p class="guard-msg" role="status"></p>
+  </form>
+
+  <div id="gdone" class="sign-done" hidden tabindex="-1">
+    <h2 class="h3">Thank you, your guarantee is signed</h2>
+    <p>Hope has your signed copy. Download one for your own records and keep it with your
+      puppy&rsquo;s vet papers.</p>
+    <button class="btn btn-primary" id="gdownload" type="button">Download your signed copy (PDF)</button>
+  </div>
+
+  <p class="fine">Would you rather sign on paper?
+    <button type="button" class="linklike" data-blank-pdf>Download a blank copy to print</button>,
+    sign it, and text Hope a photo at {PHONE_DISPLAY}.</p>
+</div></section>
+{_gdata_tag}""", extra_head=_noindex + _sign_js)
+
+    import urllib.parse as _up
+    def _glink(p):
+        url = f"{BASE}/sign?puppy={p[0]}"
+        msg = (f"Here is the health guarantee for {p[1]}. Please read it and sign it on this "
+               f"page, and you can download a signed copy for your records: {url}")
+        sms = "sms:?&amp;body=" + _up.quote(msg)
+        mail = ("mailto:?subject=" + _up.quote(f"Health guarantee for {p[1]}")
+                + "&amp;body=" + _up.quote(msg))
+        return f"""  <div class="glink">
+    {img_tag(lead(p[0]), alt="", sizes="72px")}
+    <div class="glink-body"><strong>{p[1]}</strong>
+      <span class="fine">{p[2]}, {p[3].lower()}, {_status(p[0]).lower()}</span>
+      <span class="glink-url">{url.split("//", 1)[1]}</span></div>
+    <div class="glink-actions">
+      <button class="btn btn-primary" type="button" data-copy="{url}">Copy link</button>
+      <a class="btn btn-ghost" href="{sms}">Text it</a>
+      <a class="btn btn-ghost" href="{mail}">Email it</a>
+    </div>
+  </div>"""
+
+    page("guarantee-links.html", "Send a Health Guarantee | Bless Your Paws Puppies",
+      "Signing links for the Bless Your Paws health guarantee, one for each puppy.",
+      f"""<section><div class="wrap">
+  <p class="eyebrow">For Hope and Joy</p>
+  <h1>Send a health guarantee</h1>
+  <p class="lede" style="max-width:70ch">Find the puppy, then text or email the link to the
+    family. They read the guarantee, sign it on their phone, and you get an email with
+    everything they entered. Bookmark this page, because nothing on the site links to it.</p>
+  <div class="glinks" data-notrack>
+{chr(10).join(_glink(p) for p in _pups)}
+  </div>
+  <p style="max-width:70ch">For a family who would rather sign on paper, print a blank copy
+    and have them text you a photo of it signed.</p>
+  <div class="btn-row"><button class="btn btn-ghost" type="button" data-blank-pdf>Download a blank copy</button></div>
+</div></section>
+{_gdata_tag}""", extra_head=_noindex + _sign_js)
+
     page("health-guarantee.html", "Health Guarantee | Bless Your Paws Puppies",
       "Our written health guarantee: seven days on viral disease, one year on major "
       "genetic defects, and the 72-hour vet exam that keeps it valid.",
@@ -4035,51 +4562,7 @@ def build_pages():
   <p>Every puppy goes home with this guarantee in writing, signed by both of us. What
     follows is the whole of it in plain order. The signed copy is the guarantee; this page
     is a summary&nbsp;of&nbsp;it.</p>
-  <p>We raise every puppy on a strict vaccination and deworming schedule, in a clean home,
-    and we hand over a confident, well socialized puppy who has been loved since the day
-    they were born.</p>
-
-  <h2 class="h3">What is covered</h2>
-  <ul>
-    <li><strong>Viral disease, seven days.</strong> Your puppy is guaranteed against viral
-      disease for seven days after going home.</li>
-    <li><strong>Major genetic defects, one year.</strong> For one year from the purchase
-      date, your puppy is guaranteed against major genetic defects affecting the heart,
-      lungs, liver, kidneys and the like.</li>
-  </ul>
-
-  <h2 class="h3">What you need to do</h2>
-  <ul>
-    <li><strong>A vet exam within 72 hours. This one is a condition.</strong> Your puppy
-      must be examined by a veterinarian within 72 hours of going home or the guarantee is
-      not valid. If the vet finds something abnormal, and it is not something we told you
-      about before the sale, contact us straight away and send us copies of the vet&rsquo;s
-      report.</li>
-    <li><strong>Documentation before a claim.</strong> If a vet concludes your puppy has a
-      serious genetic illness, tell us and send the paperwork from the vet. We review it
-      and then talk to you about the outcome.</li>
-    <li><strong>In the event of death within seven days</strong>, a necropsy is required,
-      arranged and paid for by the owner, and the findings sent to us before any exchange
-      or reimbursement.</li>
-  </ul>
-
-  <h2 class="h3">How a claim is settled</h2>
-  <p>Once we have the veterinarian&rsquo;s documentation and have reviewed it, you can
-    bring the puppy back in exchange for another puppy of equal or lesser value, or we
-    reimburse you in part or in whole at our discretion. <strong>Credit never exceeds the
-    purchase price of your puppy.</strong></p>
-
-  <h2 class="h3">What is not covered</h2>
-  <ul>
-    <li>Hypoglycemia, coccidia, giardia, colds and upper respiratory infections, and other
-      minor illness.</li>
-    <li><strong>Veterinary bills are yours.</strong> We care about these puppies long after
-      they leave, but we cannot take on medical expenses, death, allergies, training
-      difficulties or behavior problems once a puppy is in your home.</li>
-  </ul>
-  <p>Anything we already know about, including cosmetic issues or any surgery before
-    go-home, is written on your copy and told to you before you commit. You sign to say you
-    were made aware of it.</p>
+{GUARANTEE_HTML}
 
   <p class="fine">Ask us anything about this before you reserve. We would rather explain it
     twice than surprise anyone once.</p>
@@ -4467,6 +4950,7 @@ def build_assets():
     open("style.css", "w", encoding="utf-8").write(
         CSS.replace("__KEEP_WIDE_AR__", KEEP_WIDE_AR))
     open("main.js", "w", encoding="utf-8").write(prettify_links(JS))
+    open("sign.js", "w", encoding="utf-8").write(SIGN_JS)
     os.makedirs("img/placeholder", exist_ok=True)
 
     def ph(fname, label, sub="Photo coming soon"):
@@ -4520,7 +5004,7 @@ def build_meta():
     # the list covered "-preview.html" and "-options.html", so floral-applied.html was
     # submitted for indexing for as long as it existed. A page that was never generated
     # cannot be in the list, which is a rule that does not need maintaining.
-    skip = ("404.html",)
+    skip = ("404.html", "sign.html", "guarantee-links.html")
     pages = [p for p in sorted(GENERATED) if p not in skip]
     urls = "\n".join(f"  <url><loc>{BASE}/{pretty_path(p)}</loc></url>" for p in pages)
     open("sitemap.xml", "w", encoding="utf-8").write(

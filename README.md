@@ -17,6 +17,20 @@ copy** (Alex, 2026-08-26).
 
 ## Still to do after launch
 
+- [ ] **Remote signing of the health guarantee, built 2026-10-15, not yet handed to Hope.**
+      `sign.html?puppy=<slug>` lets a family read the guarantee, sign it with a typed name
+      and download a signed PDF, and the signed details reach Hope through the inquiry
+      form under the subject "Signed health guarantee: <puppy>, <name>". Hope sends the
+      links from `guarantee-links.html`. Both pages are noindex, out of the sitemap and
+      linked from nothing. The guarantee wording comes from `GUARANTEE` in the generator,
+      which also renders `health-guarantee.html`, so the two cannot drift. Before Hope
+      uses it: (1) Hope confirms the site wording matches her paper guarantee, because her
+      original document is not in this repo, (2) Hope confirms the new agreement sentence
+      above the signature and the "anything we told you about" field, (3) someone
+      qualified reviews the guarantee, per the item further down, and (4) a real test
+      signing lands in Hope's inbox. The public page still calls itself a summary of the
+      signed copy, which stops being true once families sign this exact wording.
+
 - [x] `.section-cta p` contrast fixed 2026-09-16: was `--sage-deep` on `--paper-raise` at
       4.11:1, under the 4.5 it needs at .95rem. Now `--forest-soft` at 7.85:1, site-wide.
 - [ ] **`www` -> apex redirect rule** on the zone. Low urgency, not zero: www serves the
