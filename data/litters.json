@@ -10,6 +10,9 @@
     "parents_phrase": "Troy, our Mini Multi Gen Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire",
     "parents_short": "a Mini Multi Gen Bernedoodle mom and an AKC Cavalier dad",
     "photo": "litter-01",
-    "status": "current"
+    "status": "current",
+    "price": 2060,
+    "cash_price": 2000,
+    "deposit": 500
   }
 ]

@@ -24,7 +24,10 @@ in the Bless Your Paws Puppies Cloudflare account, behind Cloudflare Access.
 - **No deletes.** Photos can be hidden from a puppy's page, reviews can be hidden, litters move to
   past litters. Undo on the Publish screen puts one record back to the site's version.
 - **Identity fails closed.** With no Access audience configured, every request is refused.
-- **Prices, the deposit, Stripe links, the Dobermans and legal pages stay in `scripts/scaffold.py`.**
+- **Each litter carries its own `price`, `cash_price` and `deposit` (since 2026-10-17).** The sales tax
+  rate, the Dobermans and legal pages stay in `scripts/scaffold.py`.
+- **Before and after any SQL file against the live database, run `node live-check.mjs`** (or
+  `--disk`). It exports the live D1 and compares it with the files. SQL files go in `migrations/`.
 
 ## Commands
 

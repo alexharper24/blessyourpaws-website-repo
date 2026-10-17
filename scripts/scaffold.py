@@ -98,7 +98,6 @@ def _fallback(endpoint, text):
 #
 # Do NOT enable ACH or bank debit on the Stripe link that charges M_PRICE. The reasoning
 # above holds only while every payment through it is a card.
-M_PRICE_CASH  = 2000
 IN_TAX_RATE   = 0.07         # Indiana sales tax, as stated in Hope's own agreement
 IN_TAX_PCT    = f"{IN_TAX_RATE:.0%}"   # derived, so the rate is stated once
 AREA = "northern Indiana"   # visible copy. Precise towns stay in areaServed schema.
@@ -203,10 +202,7 @@ def dob(html):
     """Emit this markup only while the Doberman line is on."""
     return html if SHOW_DOBERMANS else ""
 
-M_PRICE, D_PRICE, DEPOSIT = 2060, 2200, 500   # M_PRICE is the card/list price
-CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
-# Sales tax applies to the cash price too, on top of it (Alex, 2026-09-24).
-M_PRICE_CASH_TAXED = round(M_PRICE_CASH * (1 + IN_TAX_RATE), 2)
+D_PRICE = 2200
 
 # ---- delivery partner. Hope and Joy already work with them (Alex, 2026-09-16).
 # Verified from furryfreightdelivery.com. NOT furryfreight.com, which is an unrelated
@@ -239,15 +235,32 @@ FF_LOGO  = "img/brand/furry-freight-logo.png"
 # this URL. Used in the homepage LocalBusiness sameAs.
 GBP_CID = "4658031195710535829"
 GBP_URL = f"https://www.google.com/maps?cid={GBP_CID}"   # the partner's own file, 420x331
-# What the Full payment link actually charges: the list price with tax inside it,
-# because a Stripe Payment Link cannot add a tax rate itself.
-M_PRICE_TAXED = round(M_PRICE * (1 + IN_TAX_RATE), 2)
 # The newest current litter supplies the single-litter facts the hand-written pages quote.
 # A current litter is SHOWN once it has a published puppy, so a litter started in the editor
 # before any puppy has a photo does not put "0 puppies" or an empty grid on the site.
 SHOWN_LITTERS = [l for l in CURRENT_LITTERS
                  if any(PUP[m[0]]["litter"] == l["slug"] for m in MUNCHKINS)]
 M_LITTER = (SHOWN_LITTERS or CURRENT_LITTERS or LITTERS)[-1]
+
+# Prices belong to the litter and the owner sets them in the editor (2026-10-17). price is
+# the card/list price, cash_price applies only when the whole amount is paid in cash, and
+# deposit holds a puppy. A puppy page quotes its own litter; the hand-written pages quote
+# the newest shown litter, M_LITTER.
+def litter_money(lt):
+    price, cash = lt["price"], lt["cash_price"]
+    return {
+        "price": price, "cash": cash, "deposit": lt["deposit"],
+        # Sales tax applies to the cash price too, on top of it (Alex, 2026-09-24).
+        "taxed": round(price * (1 + IN_TAX_RATE), 2),
+        "cash_taxed": round(cash * (1 + IN_TAX_RATE), 2),
+    }
+
+_M = litter_money(M_LITTER)
+M_PRICE, M_PRICE_CASH, DEPOSIT = _M["price"], _M["cash"], _M["deposit"]
+CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
+M_PRICE_CASH_TAXED = _M["cash_taxed"]
+# What a full payment charges: the list price with tax.
+M_PRICE_TAXED = _M["taxed"]
 M_BORN, M_HOME = _fmt_date(M_LITTER["born"]), _fmt_date(M_LITTER["home"])
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
@@ -4795,6 +4808,8 @@ def build_pages():
     def puppy_page(slug, name, sex, colour, note, price, breed, born, home, kit,
                    parents_html, extra_facts):
         him = "him" if sex == "Boy" else "her"
+        mon = litter_money(LITTER[PUP[slug]["litter"]]) if slug in PUP else _M
+        p_deposit, p_cash, p_taxed = mon["deposit"], mon["cash"], mon["taxed"]
         # Hope raises the Munchkin Bernedoodles, Joy the Dobermans. A buyer asking
         # about one of Joy's puppies was being told to call Hope.
         is_munchkin = breed.startswith('Munchkin')
@@ -4839,15 +4854,15 @@ def build_pages():
         else:
             reserve_block = f'''<div class="reserve">
         <h2 class="h3">Reserve {name}</h2>
-        <p class="terms">A ${DEPOSIT} deposit holds {him}. ${M_PRICE:,} plus sales tax,
-          or ${M_PRICE_CASH:,} plus sales tax paid entirely in cash.
+        <p class="terms">A ${p_deposit} deposit holds {him}. ${price:,} plus sales tax,
+          or ${p_cash:,} plus sales tax paid entirely in cash.
           <a href="munchkin-bernedoodle-price.html">What the price covers</a>.</p>
         <div class="apply-gate">
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
         <div class="pay-row" hidden>
-          <a class="btn btn-primary pay-link" href="https://buy.stripe.com/4gM14meuRfQecvPfO2ew802">Deposit &middot; ${DEPOSIT}</a>
-          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/8x2eVc86tfQegM5eJYew804">Full payment &middot; ${M_PRICE_TAXED:,.2f}</a>
+          <a class="btn btn-primary pay-link" href="https://buy.stripe.com/4gM14meuRfQecvPfO2ew802">Deposit &middot; ${p_deposit}</a>
+          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/8x2eVc86tfQegM5eJYew804">Full payment &middot; ${p_taxed:,.2f}</a>
         </div>
         <p class="fine balance-note">Already reserved {name}?
           <a class="pay-link" href="https://buy.stripe.com/7sY3cudqNbzY67r59oew805">Pay your balance</a>.</p>
@@ -4934,7 +4949,7 @@ def build_pages():
            f"{name} is a {colour.lower()} {breed} puppy from our litter, reserved by a family, "
            f"and here so you can see the whole litter."
            if slug in RESERVED else
-           f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${DEPOSIT} deposit to reserve."),
+           f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${p_deposit} deposit to reserve."),
           f"""<section><div class="wrap">
   <p class="eyebrow">{crumb_html}</p>
   <div class="puppy-top">
@@ -5012,7 +5027,7 @@ def build_pages():
         lt = LITTER[PUP[s]["litter"]]
         lt_facts = ('        <li><span class="k">Expected adult size</span>'
                     f'<span class="v">{lt["size"]}</span></li>')
-        puppy_page(s, n, x, c, note, M_PRICE, "Munchkin Bernedoodle", _fmt_date(lt["born"]),
+        puppy_page(s, n, x, c, note, lt["price"], "Munchkin Bernedoodle", _fmt_date(lt["born"]),
                    _fmt_date(lt["home"]), M_KIT, litter_parents(lt), lt_facts)
     for s, n, x, c, note in D_LIST:
         puppy_page(s, n, x, c, note, D_PRICE, "Doberman Pinscher", D_BORN, D_HOME,
