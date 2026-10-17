@@ -9,6 +9,7 @@ live_url: "https://blessyourpawspuppies.com"
 open:
   # G2 Build, still owed by a live site
   # G4 Launch
+  - {id: joy-payment-email, gate: G5, blocked_on: alex, item: "Joy's email address, to verify in Email Routing and add to NOTIFY_TO and allowed_destination_addresses in wrangler.jsonc so she gets payment emails too"}
   - {id: g4-bing, gate: G4, blocked_on: alex, item: "Bing Webmaster Tools not set up. Google Search Console is verified with the sitemap submitted"}
   # G5 Grow
   - {id: g5-gbp-photos, gate: G5, blocked_on: client, item: "The profile carries ONE photo, owner-posted 29 days ago. Everything else about the profile is right, so photos are the whole remaining gap. Hope and Joy already have the puppy sets used on the site"}
@@ -20,13 +21,13 @@ open:
   - {id: g5-growth-data, gate: G5, blocked_on: client, item: "The size page has no growth-by-age section because no real figures exist. When this litter is weighed at intervals, or grows up, those numbers are what searchers want and what replaces the parents-based projection"}
   - {id: g5-agreement-cash, gate: G5, blocked_on: alex, item: "The purchase agreement page contradicts itself: its summary says the $2,000 price applies where the balance is paid in cash, its terms say the deposit and balance must both be cash. Legal copy, so not edited"}
   - {id: owner-editor, gate: G5, blocked_on: alex, item: "BUILT AND DEPLOYED 2026-10-16 at admin.blessyourpawspuppies.com (spec docs/owner-editor-spec.md, log docs/editor-build.md, guide docs/editor-guide.md). Waiting on Alex: GITHUB_TOKEN secret, one sign-in and test publish, then invite Hope and Joy. From the first publish the database owns data/puppies, litters, adults and reviews"}
-  - {id: checkout-build, gate: G5, blocked_on: alex, item: "LIVE 2026-10-17 (commit 81a1496): puppy pages pay through /api/checkout on live keys, payments mark puppies reserved or adopted and email Hope, prices edited on the litter in the editor. Left: Alex deactivates the three old Payment Links; Joy's address for payment emails. Record in docs/checkout-build.md"}
   - {id: remote-signing, gate: G5, blocked_on: client, item: "Remote health guarantee signing built 2026-10-15 (sign.html, guarantee-links.html, PDF via self-hosted jsPDF). Waiting on Hope to confirm the site wording matches her paper guarantee, the new agreement sentence and the disclosure field, then a real test signing. The public guarantee page still describes itself as a summary of the signed copy"}
   - {id: g5-monthly, gate: G5, blocked_on: alex, item: "Monthly Search Console and profile check not running, and no content cluster in progress"}
   - {id: g5-ai-check, gate: G5, blocked_on: alex, item: "AI visibility check never run. Ask the buying questions in ChatGPT, Perplexity and Gemini and record who gets named"}
   # Breeder-specific, from the lifecycle business-type table
   - {id: breeder-puppy-301, gate: G5, blocked_on: claude, item: "Retire the litter when every puppy is adopted: 301 each puppy-<slug> to /puppies in _redirects, remove the eight pages and their sitemap entries, and leave the photographs in the gallery. Not due until the last puppy is spoken for, and the per-puppy Adopted state already works. The colors page needs no edit at retirement, since its examples come from MUNCHKINS"}
 closed:
+  - {id: checkout-build, closed: 2026-10-17, evidence: "Live from commit 81a1496: puppy pages pay through /api/checkout on live keys, payments mark puppies reserved or adopted and email Hope, prices are on the litter in the editor, the three Payment Links are deactivated. Joy's payment emails wait on her address. Record in docs/checkout-build.md"}
   - {id: account-move, closed: 2026-10-16, evidence: "domain, zone, redirect, info@ forwarding and the Worker run in the Bless Your Paws Puppies account; test email delivered; Workers Builds there deployed 6e1396e. Record in docs/account-move.md"}
   - {id: g5-key-events, closed: 2026-10-15, evidence: "contact and generate_lead marked as key events in GA4 Admin, Events, once each had been received (contact from Alex's test tap, generate_lead from a real form send). Custom dimensions form_name, method, link_location, destination and link_text registered 2026-10-12"}
   - {id: g2-pages, closed: 2026-09-23, evidence: "Breed guide, available puppies and parents all exist as their own pages, which is the breeder money-page set"}
