@@ -3,7 +3,8 @@
 //
 //     node admin/local-export.mjs <out-dir>
 //
-// Reads the wrangler dev database (the byp-editor launch entry's --persist-to), runs the same
+// Reads the wrangler dev database (the byp-editor launch entry's --persist-to; the editor must be
+// running, because photos are fetched from its local R2), runs the same
 // exportAll the Worker publishes with, and writes data/*.json plus every uploaded photo under
 // uploads/. Point it at a scratch copy of the repo, never this one: the files it writes are what
 // the next publish would replace, and a copy lets the real build and site-checks run on them.
@@ -25,8 +26,11 @@ for (const [path, text] of Object.entries(await exportAll(db))) {
   writeFileSync(join(out, path), text);
   console.log('wrote', path);
 }
-for (const u of sqlite.prepare('SELECT repo_path, data FROM uploads').all()) {
+// Photos live in the local R2, so they come through the running byp-editor's preview route.
+for (const u of sqlite.prepare('SELECT repo_path FROM uploads').all()) {
+  const res = await fetch(`http://localhost:8792/${u.repo_path}`);
+  if (!res.ok) { console.log('MISSING', u.repo_path, res.status); continue; }
   mkdirSync(dirname(join(out, u.repo_path)), { recursive: true });
-  writeFileSync(join(out, u.repo_path), Buffer.from(u.data));
+  writeFileSync(join(out, u.repo_path), Buffer.from(await res.arrayBuffer()));
   console.log('wrote', u.repo_path);
 }

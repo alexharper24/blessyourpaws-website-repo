@@ -36,18 +36,17 @@ CREATE TABLE IF NOT EXISTS records (
   PRIMARY KEY (file, key)
 );
 
--- A photograph uploaded in the editor, held here until a publish commits it to the repo.
--- The bytes live in this table rather than in R2 (decided 2026-10-16): the browser resizes
--- every photo to at most 2000px before it is sent, so each is well under D1's 2 MB row
--- limit, and it keeps the editor to one storage service with nothing more to subscribe to.
+-- A photograph uploaded in the editor, kept in R2 (bucket blessyourpaws-photos) under `key`
+-- until a publish commits it to the repo. This row is its record. (The first build held the
+-- bytes in a `data` column here; Alex approved R2 the same day, 2026-10-16, before any photo
+-- was uploaded, and the column was dropped.)
 CREATE TABLE IF NOT EXISTS uploads (
-  key         TEXT PRIMARY KEY,           -- pending/<folder>/<stem>.jpg
+  key         TEXT PRIMARY KEY,           -- R2 key, pending/<folder>/<stem>.jpg
   repo_path   TEXT NOT NULL UNIQUE,       -- uploads/<folder>/<stem>.<ext>
   stem        TEXT NOT NULL UNIQUE,       -- what data/*.json names, e.g. eden-22
   owner_file  TEXT NOT NULL,
   owner_key   TEXT NOT NULL,
   bytes       INTEGER NOT NULL,
-  data        BLOB NOT NULL,
   committed   INTEGER NOT NULL DEFAULT 0,
   created_at  TEXT NOT NULL,
   created_by  TEXT NOT NULL

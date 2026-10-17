@@ -112,17 +112,17 @@
   const val = (f, n) => f.elements[n].value;
 
   // ---- photos ------------------------------------------------------------------------------
-  /** Phone photos are 4 to 8 MB. Resize to 2000px JPEG in the browser, smaller if needed. */
+  /** Phone photos are 4 to 8 MB. Resize to 2400px JPEG in the browser; the site uses 2000 at most. */
   async function shrink(file) {
     const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    for (const [max, q] of [[2000, 0.86], [2000, 0.78], [1600, 0.78], [1400, 0.72]]) {
+    for (const [max, q] of [[2400, 0.88], [2000, 0.82], [1600, 0.78]]) {
       const s = Math.min(1, max / Math.max(bmp.width, bmp.height));
       const c = document.createElement('canvas');
       c.width = Math.round(bmp.width * s);
       c.height = Math.round(bmp.height * s);
       c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
       const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', q));
-      if (blob && blob.size < 1800 * 1024) return blob;
+      if (blob && blob.size < 11 * 1024 * 1024) return blob;
     }
     throw new Error('That photo is too large to send. Try another one.');
   }

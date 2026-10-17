@@ -26,6 +26,10 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "blessyourpaws", "database_id": "c5b7075d-e7ef-4c75-8cc6-60769532f38a" }
   ],
+  // Uploaded photos until a publish commits them. R2 approved by Alex 2026-10-16.
+  "r2_buckets": [
+    { "binding": "FILES", "bucket_name": "blessyourpaws-photos" }
+  ],
   "vars": {
     "SITE_URL": "https://blessyourpawspuppies.com",
     "GITHUB_REPO": "alexharper24/blessyourpaws-website-repo",

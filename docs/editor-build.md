@@ -8,6 +8,8 @@ rules:
   - "No buyer data, no deletes, no price or Stripe editing, legal text stays in the generator"
   - "Alex enters secrets himself (the GitHub token). Claude never prints or types one"
 tasks:
+  - {id: t4-r2, phase: P4, status: done 2026-10-16, evidence: "Alex said yes to R2; $0 subscription activated on the card on file; bucket blessyourpaws-photos bound as FILES; uploads.data column dropped from the live D1 (0 rows); local upload round-trip byte-identical", item: "Photos in R2 instead of D1"}
+  - {id: t5-hope, phase: P5, status: done 2026-10-16, evidence: "hpwtwin1@gmail.com in the live people table (not admin) and the Access policy; Hope has not been told", item: "Invite Hope"}
   - {id: t0-shown, phase: P0, status: done 2026-10-16, evidence: "a litter with no published puppy is not shown, so a new litter never puts 0 puppies or an empty grid on the site; gate unchanged", item: "Hide a current litter until it has a published puppy"}
   - {id: t0-extra, phase: P0, status: done 2026-10-16, evidence: "between-litters test: puppies and home pages say the litter has found families and point to the waitlist; site-checks clean", item: "A puppy with no photo waits; the site reads sensibly with no current litter"}
   - {id: t0-read, phase: P0, status: done 2026-10-16, evidence: "mapped", item: "Map every hardcoded puppy, litter, parent, review and photo-order value in scaffold.py"}

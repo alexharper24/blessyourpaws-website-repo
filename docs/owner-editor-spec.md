@@ -24,7 +24,7 @@ closed:
   - {id: shared-sign-in, closed: 2026-10-01, evidence: "Alex: every project gets its own authentication and the projects stay separate, so one sign-in page shared across projects is ruled out"}
 deviations:
   - "Records are stored as their own JSON in one records table rather than a column per field, which keeps key order through saves (2026-10-16)"
-  - "Photos are held in D1 until published, not R2, because R2 needs a paid subscription Alex has not approved; the browser resizes so each fits D1's 2 MB row"
+  - "Photos were first held in D1; Alex approved R2 the same day and they now go to R2 (blessyourpaws-photos), as the spec planned"
   - "Guide pages keep calling page_lead(), so they follow the owner's chosen cover; no copies under img/guides/ because the editor never deletes an image"
   - "A litter retires when the owner moves it to past litters, which the editor allows only once every puppy is adopted, rather than automatically"
 excluded:

@@ -1,8 +1,8 @@
 // Photographs, from a phone into the repository.
 //
 // The browser resizes before it sends (public/admin.js), so what arrives is a JPEG of at
-// most 2000px. It is held in the uploads table (D1, not R2; see schema.sql) and copied into
-// the repository by the next publish, in the
+// most 2400px. It is held in R2 (FILES) and copied into the repository by the next publish,
+// in the
 // same commit as the data that names it, so the site can never ship a page pointing at a
 // photo nobody committed.
 //
@@ -14,8 +14,7 @@
 import { audit, db, getRecord, NOW } from './store.js';
 import { HttpError, json } from './http.js';
 
-// D1 caps a row at 2 MB. The browser targets well under this, retrying at lower quality.
-const MAX_BYTES = 1900 * 1024;
+const MAX_BYTES = 12 * 1024 * 1024;
 const FOLDER = { puppies: 'puppies', adults: 'dogs' };
 
 function stemPrefix(file, rec) {
@@ -52,10 +51,11 @@ export async function handleUpload(request, env, url, who) {
   const stem = await nextStem(env, file, rec.doc);
   const repoPath = `uploads/${FOLDER[file]}/${stem}.jpg`;
   const r2Key = `pending/${FOLDER[file]}/${stem}.jpg`;
+  await env.FILES.put(r2Key, bytes, { httpMetadata: { contentType: 'image/jpeg' } });
   await db(env).run(
-    `INSERT INTO uploads (key, repo_path, stem, owner_file, owner_key, bytes, data, committed, created_at, created_by)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
-    [r2Key, repoPath, stem, file, key, bytes.byteLength, bytes, NOW(), who.email]);
+    `INSERT INTO uploads (key, repo_path, stem, owner_file, owner_key, bytes, committed, created_at, created_by)
+     VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`,
+    [r2Key, repoPath, stem, file, key, bytes.byteLength, NOW(), who.email]);
   await audit(env, { file, key, action: 'upload', detail: stem, actor: who.email });
   return json({ stem, preview: `/uploads/${FOLDER[file]}/${stem}.jpg` });
 }
@@ -64,11 +64,9 @@ export async function handleUpload(request, env, url, who) {
 export async function handlePreview(env, url) {
   const p = url.pathname.replace(/^\/uploads\//, '');
   if (!/^(puppies|dogs)\/[a-z0-9-]+\.jpg$/.test(p)) throw new HttpError(400, 'Not a photo path.');
-  const rows = await db(env).all('SELECT data FROM uploads WHERE key = ?', [`pending/${p}`]);
-  if (!rows.length) throw new HttpError(404, 'That photo is not here any more.');
-  // D1 hands a BLOB back as an array of byte values
-  const d = rows[0].data;
-  return new Response(d instanceof ArrayBuffer ? d : new Uint8Array(d), {
+  const obj = await env.FILES.get(`pending/${p}`);
+  if (!obj) throw new HttpError(404, 'That photo is not here any more.');
+  return new Response(obj.body, {
     headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'private, max-age=86400' },
   });
 }

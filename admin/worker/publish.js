@@ -100,10 +100,9 @@ async function plan(env) {
     if (paths.get(path) !== await gitBlobSha(bytes)) changed.push({ path, bytes, binary: false });
   }
   for (const u of photos) {
-    const [row] = await db(env).all('SELECT data FROM uploads WHERE key = ?', [u.key]);
-    if (!row || !row.data) { missing.push(u.stem); continue; }
-    const bytes = row.data instanceof ArrayBuffer ? row.data : new Uint8Array(row.data).buffer;
-    changed.push({ path: u.repo_path, bytes, binary: true, key: u.key });
+    const obj = await env.FILES.get(u.key);
+    if (!obj) { missing.push(u.stem); continue; }
+    changed.push({ path: u.repo_path, bytes: await obj.arrayBuffer(), binary: true, key: u.key });
   }
   return { files, parent, treeSha, paths, changed, missing };
 }
