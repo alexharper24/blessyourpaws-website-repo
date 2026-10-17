@@ -20,6 +20,7 @@ tasks:
   - {id: t1-fork, phase: P1, status: open, item: "Fork teapup admin/ and trim to one business and the BYP tables"}
   - {id: t1-roundtrip, phase: P1, status: open, item: "roundtrip.mjs passes: seed from files, export, byte-identical"}
   - {id: t2-screens, phase: P2, status: open, item: "Puppies, Litters, Parents, Reviews, Publish, History, People screens"}
+  - {id: t3-build-command, phase: P3, status: "set 2026-10-16", evidence: "Workers Builds trigger build_command bash scripts/ci-build.sh, PATCH 200", item: "Workers Builds runs ci-build.sh before deploy"}
   - {id: t3-publish, phase: P3, status: open, item: "Publish commits data + uploads as one commit; ci-build.sh as the Workers Builds build command"}
   - {id: t4-access, phase: P4, status: open, item: "D1, R2, editor Worker, Access app and branded login in the Bless Your Paws account"}
   - {id: t5-verify, phase: P5, status: open, item: "End-to-end test publish; handover guide"}
