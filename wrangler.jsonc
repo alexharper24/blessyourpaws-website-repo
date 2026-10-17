@@ -48,7 +48,22 @@
     // Only these paths cost a Worker invocation. Every page, the stylesheet, the images
     // and the PDFs are served straight from the edge.
     "run_worker_first": ["/admin", "/admin/*", "/api/*"]
-  }
+  },
 
-  // No D1, R2 or Access vars yet. They arrive with the admin: see README Phase 2.
+  // Stripe Checkout per puppy (docs/checkout-build.md). The webhook hands a cleared payment
+  // to the editor Worker's Internal entrypoint, which owns the database and the GitHub token,
+  // so this Worker holds neither.
+  "services": [
+    { "binding": "EDITOR", "service": "blessyourpaws-admin", "entrypoint": "Internal" }
+  ],
+  // Payment emails. Only addresses verified in the zone's Email Routing can be sent to, and
+  // only those listed here. Add Joy to both lists when Alex has her address.
+  "send_email": [
+    { "name": "MAIL", "allowed_destination_addresses": ["hpwtwin1@gmail.com"] }
+  ],
+  "vars": {
+    "NOTIFY_TO": "hpwtwin1@gmail.com"
+  }
+  // Secrets, entered by Alex and never in this file: STRIPE_KEY (restricted, Checkout
+  // Sessions write only) and STRIPE_WEBHOOK_SECRET. Both are TEST-mode values until cutover.
 }

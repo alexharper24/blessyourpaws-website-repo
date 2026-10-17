@@ -37,7 +37,10 @@
     // The Zero Trust team, renamed to blessyourpaws on 2026-10-16. ACCESS_AUD is the audience of
     // the "Bless Your Paws editor" Access application, created 2026-10-16. Without both, nobody gets in.
     "ACCESS_TEAM_DOMAIN": "blessyourpaws",
-    "ACCESS_AUD": "826ecf5d2d1b1037d619b1b344176311ff2670d88b92a5b3988389967f2a1e48"
+    "ACCESS_AUD": "826ecf5d2d1b1037d619b1b344176311ff2670d88b92a5b3988389967f2a1e48",
+    // "on" lets a TEST-mode Stripe payment change a puppy and commit, for a deliberate
+    // end-to-end run. Anything else and a test payment only reports what it would do.
+    "STRIPE_TEST_WRITES": "off"
   }
   // Secret, entered by Alex and never in this file:  wrangler secret put GITHUB_TOKEN
   // A fine-grained token for alexharper24/blessyourpaws-website-repo only, Contents read and write.

@@ -16,13 +16,15 @@
  * assets, not to responses a Worker generates.
  */
 import { checkout } from "./checkout.js";
+import { webhook } from "./webhook.js";
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     // Stripe Checkout per puppy (docs/checkout-build.md).
     if (url.pathname === "/api/checkout") return checkout(request, env);
+    if (url.pathname === "/api/stripe-webhook") return webhook(request, env, ctx);
 
     // Not built yet. A 404 rather than a placeholder page, so nothing suggests there is
     // something here to find.

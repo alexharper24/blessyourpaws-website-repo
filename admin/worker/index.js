@@ -16,6 +16,19 @@ import { handleApi } from './api.js';
 import { identify } from './identity.js';
 import { handleUpload, handlePreview } from './uploads.js';
 import { HttpError, json } from './http.js';
+import { WorkerEntrypoint } from 'cloudflare:workers';
+import { paymentCleared } from './payments.js';
+
+/**
+ * Reachable only through a service binding (the site Worker's EDITOR binding names this
+ * entrypoint). Not routed from any hostname, so Access does not apply and is not needed:
+ * the site Worker verifies Stripe's signature before it calls.
+ */
+export class Internal extends WorkerEntrypoint {
+  async paymentCleared(p) {
+    return paymentCleared(this.env, p);
+  }
+}
 
 function guarded(res) {
   const h = new Headers(res.headers);

@@ -25,7 +25,7 @@ function headers(env) {
   };
 }
 
-async function gh(env, path, init = {}) {
+export async function gh(env, path, init = {}) {
   const res = await fetch(`${API}/repos/${env.GITHUB_REPO}${path}`, { ...init, headers: headers(env) });
   if (!res.ok) {
     const body = await res.text();

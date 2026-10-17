@@ -459,7 +459,7 @@
   // ---- History and People ------------------------------------------------------------------
   const WORDS = { status: 'changed a status', save: 'edited', upload: 'uploaded a photo', 'add-puppy': 'added a puppy', 'add-litter': 'started a litter',
     'add-review': 'added a review', retire: 'moved a litter to past', unretire: 'made a litter current', hide: 'hid a review', show: 'showed a review',
-    move: 'reordered', undo: 'undid a change', publish: 'published', 'people-add': 'invited', 'people-remove': 'removed access for' };
+    move: 'reordered', undo: 'undid a change', publish: 'published', 'stripe-test': 'test payment, nothing changed, for', 'stripe-clash': 'took a payment for a puppy already spoken for:', 'stripe-repeat': 'took a second payment for', 'people-add': 'invited', 'people-remove': 'removed access for' };
   async function renderHistory(w) {
     const h = await api('/api/history');
     w.innerHTML = `<div class="head"><div><h1>History</h1></div></div>
