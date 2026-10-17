@@ -235,13 +235,27 @@ takes `priority=True`, which sets `fetchpriority` and `decoding=sync` and suppre
 `loading=lazy`. The check: the first image in the viewport wider than 200px must have
 `fetchpriority` and must not be lazy, on every page, at every width.
 
+## Puppies, litters, parents and reviews live in `data/`, and the editor owns them
+
+Since 2026-10-16 `scripts/scaffold.py` reads `data/puppies.json`, `data/litters.json`,
+`data/adults.json` and `data/reviews.json` instead of Python literals. Once the owner editor
+is live, **its database owns those four files**: every publish replaces each file whole, so a
+hand edit to one is undone by the next publish. Change them in the editor, or through a
+migration in `admin/migrations/` run against the live database, then bring the file into step.
+The Dobermans, prices, the deposit, the Stripe links and every legal page stay in the
+generator. A puppy with no photograph is not published until it has one, a litter whose
+`status` is `past` retires (its puppy pages 301 to `/puppies` through a generated block at the
+end of `_redirects`, and its photographs stay in the gallery), and `scripts/encode_uploads.py`
+builds the image sizes for anything the editor commits under `uploads/`. The gate for any
+change to how the generator reads its data is `python scripts/compare_build.py <baseline>`.
+
 ## Adopted puppies stay on the site
 
-`ADOPTED = {"tirzah", "shiloh", "jericho"}` in `scripts/scaffold.py`. **ADOPTED means adopted, gone home or not** (Shiloh went home 2026-09-28, paid in full), so the copy says neither.
+A puppy's `status` in `data/puppies.json` (`available`, `reserved` or `adopted`), from which `scaffold.py` derives `ADOPTED` and `RESERVED`. **Adopted means adopted, gone home or not** (Shiloh went home 2026-09-28, paid in full), so the copy says neither.
 An adopted puppy is still with Hope and goes home on the same date as her littermates, so
 no copy may say she is home or with her family. She keeps her card and her page so the
 litter reads as a whole rather than looking like puppies went missing, but nothing offers
-her for sale. Add a slug to `ADOPTED` and all of this follows:
+her for sale. Set her status to `adopted` and all of this follows:
 
 - no price on the card, and the badge replaces the price in the page's name row too
 - an "Adopted!" badge on rose, forest label, 7.08:1

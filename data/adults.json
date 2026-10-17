@@ -1,0 +1,89 @@
+[
+  {
+    "slug": "troy",
+    "name": "Troy",
+    "role": "Mom",
+    "breed": "Mini Multi Gen Bernedoodle",
+    "card_breed": "Mini Multi Gen Bernedoodle",
+    "photo": "troy-01",
+    "registered_name": "Agatha Troy",
+    "facts": [
+      [
+        "Weight",
+        "22 lbs"
+      ],
+      [
+        "Color",
+        "Blue merle parti"
+      ],
+      [
+        "Genetic testing",
+        "Clear on 29, one copy CDDY/IVDD"
+      ]
+    ],
+    "story": "Troy is the mother of our <a href=\"what-is-a-munchkin-bernedoodle.html\">Munchkin Bernedoodle</a> litter. At 22 lbs she is a small, easygoing girl with a blue merle parti coat, and she passes on both the size and the temperament we breed for.",
+    "health": [
+      [
+        "Weight:",
+        "22 lbs, blue merle parti."
+      ],
+      [
+        "Genetic testing:",
+        "Wisdom Panel, tested February 21, 2026. Clear on 29 conditions. One copy of the Chondrodystrophy (CDDY) and Intervertebral Disc Disease (IVDD) variant."
+      ],
+      [
+        "Eyes:",
+        "OFA eye examination, August 14, 2026: normal, free of observable inherited eye disease."
+      ]
+    ],
+    "records": [
+      [
+        "Wisdom Panel report (PDF)",
+        "records/troy-wisdom-panel-2026-02-21.pdf"
+      ],
+      [
+        "OFA eye certificate (PDF)",
+        "records/troy-ofa-eyes-2026-08-14.pdf"
+      ]
+    ]
+  },
+  {
+    "slug": "bip-finch",
+    "name": "Bip Finch",
+    "role": "Dad",
+    "breed": "Cavalier King Charles Spaniel",
+    "card_breed": "Cavalier King Charles Spaniel, AKC",
+    "photo": "cavalier-sire-01",
+    "registered_name": null,
+    "facts": [
+      [
+        "Weight",
+        "19 lbs"
+      ],
+      [
+        "Color",
+        "Ruby"
+      ],
+      [
+        "Genetic testing",
+        "Clear of Cavalier-specific conditions"
+      ]
+    ],
+    "story": "Bip Finch is an outside stud rather than one of our own dogs. We chose him carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, and the Cavalier side is where the lap-dog nature comes from.",
+    "health": [
+      [
+        "Registration:",
+        "AKC registered, TS65827904."
+      ],
+      [
+        "Weight:",
+        "19 lbs, ruby."
+      ],
+      [
+        "Genetic testing:",
+        "clear of Cavalier-specific conditions. We are gathering his full results to publish here the same way we publish Troy’s."
+      ]
+    ],
+    "records": []
+  }
+]

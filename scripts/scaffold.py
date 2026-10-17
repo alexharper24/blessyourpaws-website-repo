@@ -106,46 +106,62 @@ COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
 PRIMARY = {"malcolm": 2}
 
+# ---------------------------------------------------------------------------
+# Content the owner editor owns (2026-10-16). Puppies, litters, parents and reviews live
+# in data/*.json, which the editor's database writes on every publish, so CHANGE THEM IN
+# THE EDITOR, not here and not in the files: the next publish replaces each file whole.
+# The Dobermans (DOBERMANS, D_*) stay in this script, untouched, per the editor spec.
+def _data(name):
+    with open(f"data/{name}.json", encoding="utf-8") as fh:
+        return json.load(fh)
+
+LITTERS = _data("litters")
+PUPPIES = _data("puppies")
+ADULTS = {a["slug"]: a for a in _data("adults")}
+REVIEWS = [r for r in _data("reviews") if not r.get("hidden")]
+LITTER = {l["slug"]: l for l in LITTERS}
+# A past litter's pages retire (301 to /puppies, out of the sitemap). Its photographs
+# stay in the gallery. Nothing in the data is ever removed.
+CURRENT_LITTERS = [l for l in LITTERS if l["status"] == "current"]
+PAST_PUPPIES = [p for p in PUPPIES if LITTER[p["litter"]]["status"] != "current"]
+PUP = {p["slug"]: p for p in PUPPIES}
+RETIRED = {p["slug"] for p in PAST_PUPPIES}
+
 def lead(slug):
     """Gallery stem to use as the card and hero image for a puppy."""
+    if slug in PUP:
+        return PUP[slug]["photos"][0]
     return "%s-%02d" % (slug, PRIMARY.get(slug, 1))
-
-# The index each puppy's CURRENT photographs start at. The younger set keeps 1..PAGE_FROM-1
-# and stays on the cards, in the gallery, and on the pages that reference a specific early
-# photo. Tirzah is absent on purpose: no new folder was supplied, so her page is unchanged.
-PAGE_FROM = {"caleb": 8, "eden": 10, "havilah": 12, "jericho": 13,
-             "jordan": 9, "joshua": 9, "shiloh": 10}
 
 def page_lead(slug):
     """The photo a puppy's own page opens on, and the image it shares as.
 
-    Distinct from lead() because the two now differ. lead() stays on photo 01 so that
-    puppies.html and index.html keep the younger photograph on their cards, which is what
-    Alex asked for. The page itself shows only the current set, so its og:image and schema
-    image follow the cover of that set instead.
+    Distinct from lead() because the two can differ. lead() is the first photograph the
+    puppy has, which the cards on hand-written pages keep, and page_lead() is the cover the
+    owner picked for the current set on the puppy's own page.
     """
-    return "%s-%02d" % (slug, PAGE_FROM[slug]) if slug in PAGE_FROM else lead(slug)
+    if slug in PUP:
+        return (PUP[slug]["page_photos"] or PUP[slug]["photos"])[0]
+    return lead(slug)
 
-MUNCHKINS = [
-    ("joshua",  "Joshua",  "Boy",  "Red and white parti", ""),
-    ("eden",    "Eden",    "Girl", "Red with white",      ""),
-    ("havilah", "Havilah", "Girl", "Blue merle phantom",  ""),
-    ("jordan",  "Jordan",  "Boy",  "Blue merle parti",    "The biggest of the litter so far."),
-    ("caleb",   "Caleb",   "Boy",  "Red and white parti", ""),
-    ("shiloh",  "Shiloh",  "Boy",  "Blue merle phantom",  ""),
-    ("jericho", "Jericho", "Boy",  "Blue merle parti",    ""),
-    ("tirzah",  "Tirzah",  "Girl", "Black phantom",       ""),
-]
+def _fmt_date(iso):
+    y, m, d = (int(x) for x in iso.split("-"))
+    return ["January", "February", "March", "April", "May", "June", "July", "August",
+            "September", "October", "November", "December"][m - 1] + f" {d}, {y}"
+
+# Every puppy of every current litter, in data order, as the tuples the templates use.
+# A puppy is published once it has a photograph: one added in the editor waits until then.
+MUNCHKINS = [(p["slug"], p["name"], p["sex"], p["color"], p["note"])
+             for p in PUPPIES if LITTER[p["litter"]]["status"] == "current" and p["photos"]]
 # Puppies that are spoken for. ADOPTED means adopted by a family, whether or not the puppy
 # has gone home yet, so no copy may say either way (Shiloh went home 2026-09-28, Tirzah goes
 # with her littermates). They stay on the site so the litter reads as a whole rather than
 # looking like one went missing, and they are never offered for sale.
-ADOPTED = {"tirzah", "shiloh", "jericho"}
+ADOPTED = {p["slug"] for p in PUPPIES if p["status"] == "adopted"}
 # Reserved: a family has put a deposit down and the puppy has not gone home yet (Alex,
 # 2026-09-24). Off the market like ADOPTED, but labeled Reserved, and the page keeps the
-# "Pay your balance" link for the family who reserved it. Move a slug from here to
-# ADOPTED when the adoption completes.
-RESERVED = set()
+# "Pay your balance" link for the family who reserved it.
+RESERVED = {p["slug"] for p in PUPPIES if p["status"] == "reserved"}
 SPOKEN_FOR = ADOPTED | RESERVED
 
 # The home page shows four puppies, and only available ones while any are left (Alex,
@@ -226,7 +242,9 @@ GBP_URL = f"https://www.google.com/maps?cid={GBP_CID}"   # the partner's own fil
 # What the Full payment link actually charges: the list price with tax inside it,
 # because a Stripe Payment Link cannot add a tax rate itself.
 M_PRICE_TAXED = round(M_PRICE * (1 + IN_TAX_RATE), 2)
-M_BORN, M_HOME = "July 22, 2026", "September 16, 2026"
+# The newest current litter supplies the single-litter facts the hand-written pages quote.
+M_LITTER = CURRENT_LITTERS[-1] if CURRENT_LITTERS else LITTERS[-1]
+M_BORN, M_HOME = _fmt_date(M_LITTER["born"]), _fmt_date(M_LITTER["home"])
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
 CHIP_DRAFT  = '<span class="chip chip-draft">Draft, confirm before launch</span>'
@@ -238,7 +256,16 @@ CHIP_PHOTO  = '<span class="chip chip-draft">Photo coming</span>'
 # less. The ceiling is what carries the risk: a "munchkin" that matures at 24 lbs is
 # the complaint, never one that matures small. Revisit once a litter has actually
 # grown up, at which point observed weights beat this inference.
-M_SIZE = "15 to 24 lbs"
+M_SIZE = M_LITTER["size"]
+
+def litter_puppies(litter):
+    return [m for m in MUNCHKINS if PUP[m[0]]["litter"] == litter["slug"]]
+
+def litter_intro(litter):
+    """'Eight puppies from Troy, our ...' for one litter, with the dam's name linked."""
+    dam = ADULTS[litter["dam"]]["name"]
+    phrase = litter["parents_phrase"].replace(dam, f'<a href="parents.html">{dam}</a>', 1)
+    return f"{n_word(len(litter_puppies(litter)))} puppies from {phrase}"
 FALLBACK_INQUIRY = _fallback(FORM_INQUIRY,
     "The form is almost ready. For now, call or text Hope at "
     f'<a href="{PHONE_HREF}">{PHONE_DISPLAY}</a> and we will get right back to you.')
@@ -2703,6 +2730,32 @@ def parent_card(stem, name, role, breed, facts, note=""):
       '<ul class="facts" style="margin-top:.6rem;margin-bottom:0">' + rows + '</ul>'
       + note_html + '</div></article>')
 
+def ent(t):
+    """Curly quotes as the entities the hand-written pages use, so text typed in the editor
+    renders the same bytes as text written here."""
+    return (t.replace("\u2019", "&rsquo;").replace("\u2018", "&lsquo;")
+             .replace("\u201c", "&ldquo;").replace("\u201d", "&rdquo;"))
+
+def adult_card(slug):
+    a = ADULTS[slug]
+    return parent_card(a["photo"], a["name"], a["role"], a["card_breed"],
+                       [(k, ent(v)) for k, v in a["facts"]])
+
+def litter_parents(litter):
+    """The two parent cards for one litter, dam first."""
+    return adult_card(litter["dam"]) + adult_card(litter["sire"])
+
+def adult_rows():
+    """The full parent rows on parents.html, every adult in data order."""
+    out = []
+    for k, a in enumerate(ADULTS.values()):
+        out.append(dog_row(a["photo"], a["name"], a["breed"],
+                           ent(a["registered_name"]) if a["registered_name"] else None,
+                           ent(a["story"]),
+                           [(h, ent(v)) for h, v in a["health"]],
+                           [(t, u) for t, u in a["records"]], first=(k == 0)))
+    return "".join(out)
+
 # measured against the real .pgrid tracks rather than guessed: 289px at 1440, 321 in the
 # gallery, so the old "45vw" was more than double the truth
 # measured, per column ratio, at 1440
@@ -2812,6 +2865,36 @@ def build_pages():
     global M_PARENTS, D_PARENTS
     m_cards = "\n".join(card(s, n, x, c, M_PRICE, "Munchkin Bernedoodle", first=(k == 0))
                         for k, (s, n, x, c, _) in enumerate(MUNCHKINS))
+    # One litter: the grid sits under the hero exactly as it always has. More than one:
+    # each litter gets its own heading and grid, newest first, and the hero describes the
+    # newest litter.
+    if len(CURRENT_LITTERS) <= 1:
+        litter_grids = f'  <div class="pgrid cols-4" style="margin-top:clamp(2.75rem,4.5vw,4rem)">{m_cards}</div>'
+    else:
+        blocks, k0 = [], 0
+        for lt in reversed(CURRENT_LITTERS):
+            pups = litter_puppies(lt)
+            cards_html = "\n".join(card(s, n, x, c, M_PRICE, "Munchkin Bernedoodle",
+                                         first=(k0 == 0 and k == 0))
+                                    for k, (s, n, x, c, _) in enumerate(pups))
+            k0 += 1
+            dam, sire = ADULTS[lt["dam"]]["name"], ADULTS[lt["sire"]]["name"]
+            blocks.append(f'''  <div class="section-head" style="margin-top:clamp(2.75rem,4.5vw,4rem)">
+    <div>
+      <h2 style="margin:0">{dam} and {sire}</h2>
+      <p class="fine" style="margin:.35rem 0 0">Born {_fmt_date(lt["born"])}. Can go home as soon as {_fmt_date(lt["home"])}.
+        Expected adult size {lt["size"]}.</p>
+    </div>
+  </div>
+  <div class="pgrid cols-4" style="margin-top:1.5rem">{cards_html}</div>''')
+        litter_grids = "\n".join(blocks)
+    # the parents block under the grid: this litter's two, or every parent of a current litter
+    _par = []
+    for lt in reversed(CURRENT_LITTERS or [M_LITTER]):
+        for a in (lt["dam"], lt["sire"]):
+            if a not in _par:
+                _par.append(a)
+    ALL_PARENTS = "".join(adult_card(a) for a in _par)
     d_cards = "\n".join(card(s, n, x, c, D_PRICE, "Doberman Pinscher") for s, n, x, c, _ in D_LIST)
     # built here rather than inline in the template: an f-string cannot hold a
     # conditional multi-line block without nesting quotes of the same kind
@@ -2826,19 +2909,7 @@ def build_pages():
   </div>
   <div class="pgrid cols-3" style="margin-top:1.5rem">{d_cards}</div>''')
 
-    M_PARENTS = (
-      parent_card("troy-01", "Troy", "Mom", "Mini Multi Gen Bernedoodle",
-                  [("Weight", "22 lbs"), ("Color", "Blue merle parti"),
-                   ("Genetic testing", "Clear on 29, one copy CDDY/IVDD")]) +
-      parent_card("cavalier-sire-01", "Bip Finch", "Dad",
-                  "Cavalier King Charles Spaniel, AKC",
-                  [("Weight", "19 lbs"), ("Color", "Ruby"),
-                   # RETRACTED 2026-09-23 (Hope via Alex): "clear" was wrong. Nearly all
-                   # Cavaliers carry CDDY, so he is clear of Cavalier-specific conditions
-                   # only. Alex 2026-09-23: say what he is clear of, leave CDDY unaddressed.
-                   # Never an unscoped "Clear". This card is on ten pages; change all three
-                   # Finch statements together.
-                   ("Genetic testing", "Clear of Cavalier-specific conditions")]))
+    M_PARENTS = litter_parents(M_LITTER)
     D_PARENTS = (
       parent_card("mira-01", "Mira", "Mom", "Doberman Pinscher",
                   [("Registered", "Kingdom's Miraculous Grace"),
@@ -2876,10 +2947,32 @@ def build_pages():
 
 {dob_litter_block}'''
         PUPPIES_TAIL = ""
+    elif not MUNCHKINS:
+        # Between litters. Nothing is for sale, so the page says what comes next rather
+        # than describing a litter that has gone home.
+        PUPPIES_TITLE = f"Munchkin Bernedoodles for Sale in Indiana | {BRAND}"
+        PUPPIES_DESC  = ("Munchkin Bernedoodle puppies from a family breeder in northern "
+                         "Indiana. Join the waitlist to hear about our next litter first.")
+        PUPPIES_INTRO = f'''  <div class="grid-2 narrow-left hic">
+    <div class="col-title hic-head">
+      <p class="eyebrow">Between litters</p>
+      <h1>Munchkin Bernedoodle puppies for sale</h1>
+    </div>
+    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
+    <div class="hic-copy">
+      <p class="lede">Every puppy from our last litter has found a family. Waitlist families
+        hear about the next litter first, in the order they joined.</p>
+      <div class="btn-row" style="margin-top:1rem">
+        <a class="btn btn-primary" href="waitlist.html">Join the waitlist</a>
+        <a class="btn btn-ghost" href="what-is-a-munchkin-bernedoodle.html">What is a Munchkin Bernedoodle?</a>
+      </div>
+    </div>
+  </div>'''
+        PUPPIES_TAIL = ""
     else:
         PUPPIES_TITLE = f"Munchkin Bernedoodles for Sale in Indiana | {BRAND}"
-        PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies for sale in Indiana, from a Mini "
-                         f"Multi Gen Bernedoodle mom and an AKC Cavalier dad. Born {M_BORN}. "
+        PUPPIES_DESC  = (f"Munchkin Bernedoodle puppies for sale in Indiana, from "
+                         f"{M_LITTER['parents_short']}. Born {M_BORN}. "
                          f"${M_PRICE:,}, ${DEPOSIT} deposit.")
         PUPPIES_INTRO = f'''  <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
@@ -2888,8 +2981,7 @@ def build_pages():
     </div>
     {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
     <div class="hic-copy">
-      <p class="lede">{n_word(M_TOTAL)} puppies from <a href="parents.html">Troy</a>, our Mini Multi Gen
-        Bernedoodle, and our AKC-registered Cavalier King Charles Spaniel sire. Born
+      <p class="lede">{litter_intro(M_LITTER)}. Born
         {M_BORN}. Each card below says whether that puppy is still available.</p>
       <ul class="facts">
         <li><span class="k">Adoption fee</span><span class="v">${M_PRICE:,}</span></li>
@@ -2907,14 +2999,14 @@ def build_pages():
       </div>
     </div>
   </div>
-  <div class="pgrid cols-4" style="margin-top:clamp(2.75rem,4.5vw,4rem)">{m_cards}</div>'''
+{litter_grids}'''
         PUPPIES_TAIL = f'''
 <section class="band-raise"><div class="wrap">
   <div class="section-head">
     <div><h2 style="margin:0">Meet their parents</h2></div>
     <a class="btn btn-primary" href="parents.html">Full health details</a>
   </div>
-  <div class="parent-grid">{M_PARENTS}</div>
+  <div class="parent-grid">{ALL_PARENTS}</div>
 </div></section>
 
 <section id="delivery-states"><div class="wrap">
@@ -2973,6 +3065,9 @@ def build_pages():
     HOME_CARDS = "\n".join(
         [card(*m[:4], M_PRICE, "Munchkin Bernedoodle") for m in home_munchkins(3 if SHOW_DOBERMANS else 4)]
         + ([card(*DOBERMANS[0][:4], D_PRICE, "Doberman Pinscher")] if SHOW_DOBERMANS else []))
+    HOME_GRID = (f'<div class="pgrid" style="margin-top:2rem">\n{HOME_CARDS}\n  </div>' if HOME_CARDS
+                 else '<p style="margin-top:1.5rem">Our last litter has all found families. '
+                      '<a href="waitlist.html">Join the waitlist</a> to hear about the next one first.</p>')
     page("index.html", f"{BREEDS_SHORT} Breeder in Indiana | {BRAND}",
       f"Family-raised {BREEDS_PHRASE} puppies from two sisters in northern Indiana. Raised in the home, around nieces and nephews, with early socialization.",
       f"""<section class="hero">
@@ -2999,9 +3094,7 @@ def build_pages():
   <p class="eyebrow">{AVAIL_EYEBROW}</p>
   <h2>Puppies looking for their families</h2>
   <p class="lede">{'Munchkin Bernedoodles and Doberman Pinschers, raised underfoot in our home.' if SHOW_DOBERMANS else 'Munchkin Bernedoodles, raised underfoot in our home.'} A ${DEPOSIT} deposit holds your puppy.</p>
-  <div class="pgrid" style="margin-top:2rem">
-{HOME_CARDS}
-  </div>
+  {HOME_GRID}
   <div class="section-cta">
     <p>{'Every available puppy, both litters, in one place.' if SHOW_DOBERMANS else 'Every available puppy in one place.'}</p>
     <a class="btn btn-primary" href="puppies.html">See all available puppies</a>
@@ -3830,40 +3923,7 @@ def build_pages():
 </div></section>""",
       extra_head=f'<script type="application/ld+json">{faq_ld}</script>\n')
 
-    M_DOGS = (
-      dog_row("troy-01", "Troy", "Mini Multi Gen Bernedoodle", "Agatha Troy",
-        "Troy is the mother of our <a href=\"what-is-a-munchkin-bernedoodle.html\">"
-        "Munchkin Bernedoodle</a> litter. At 22 lbs she is a "
-        "small, easygoing girl with a blue merle parti coat, and she passes on both the "
-        "size and the temperament we breed for.",
-        [("Weight:", "22 lbs, blue merle parti."),
-         ("Genetic testing:", "Wisdom Panel, tested February 21, 2026. "
-          "Clear on 29 conditions. One copy of the "
-          "Chondrodystrophy (CDDY) and Intervertebral Disc Disease (IVDD) variant."),
-         ("Eyes:", "OFA eye examination, August 14, 2026: normal, free "
-          "of observable inherited eye disease."),
-         ],
-        [("Wisdom Panel report (PDF)",
-          "records/troy-wisdom-panel-2026-02-21.pdf"),
-         ("OFA eye certificate (PDF)",
-          "records/troy-ofa-eyes-2026-08-14.pdf")], first=True) +
-      dog_row("cavalier-sire-01", "Bip Finch", "Cavalier King Charles Spaniel",
-        None,
-        "Bip Finch is an outside stud rather than one of our own dogs. We chose him "
-        "carefully for size and temperament: an AKC-registered ruby Cavalier at 19 lbs, "
-        "and the Cavalier side is where the lap-dog nature comes from.",
-        [("Registration:", "AKC registered, TS65827904."),
-         ("Weight:", "19 lbs, ruby."),
-         # "clear, including for CDDY/IVDD" was Hope's statement of 2026-08-26, made with
-         # no document, and RETRACTED 2026-09-23: nearly all Cavaliers carry CDDY, so he
-         # is clear of Cavalier-specific conditions only. Joy is photographing his results
-         # at his kennel. Alex, 2026-09-23: state plainly what he is clear of and do not
-         # address CDDY. "Cavalier-specific" is the precise scope: CDDY is common in
-         # Cavaliers but not specific to them, so the phrase is true and excludes it.
-         ("Genetic testing:", "clear of Cavalier-specific conditions. We are "
-          "gathering his full results to publish here the same way we publish "
-          "Troy&rsquo;s.")],
-        []))
+    M_DOGS = adult_rows()
     D_DOGS = (
       dog_row("mira-01", "Mira", "Doberman Pinscher", "Kingdom&rsquo;s Miraculous Grace",
         "Mira is an amazing girl. We love her sweet disposition, her love of guarding "
@@ -4349,9 +4409,9 @@ def build_pages():
 </div></section>""")
 
     items = []
-    for s, n, _, c, _ in MUNCHKINS:
-        for i in range(1, COUNTS[s] + 1):
-            items.append((f"{s}-{i:02d}", n, "munchkin", s))
+    for p in PUPPIES:
+        for stem in p["photos"]:
+            items.append((stem, p["name"], "munchkin", p["slug"]))
     for s, n, _, c, _ in D_LIST:
         for i in range(1, COUNTS[s] + 1):
             items.append((f"{s}-{i:02d}", n, "doberman", s))
@@ -4362,7 +4422,7 @@ def build_pages():
     GAL_SIZES = ("(max-width:573px) 94vw, (max-width:872px) 46vw, "
                  "(max-width:1170px) 30vw, (max-width:1468px) 23vw, "
                  "(max-width:1659px) 18vw, 296px")
-    gal = "\n".join(f'<a data-line="{line}" data-pup="{slug}" href="puppy-{slug}.html">'
+    gal = "\n".join(f'<a data-line="{line}" data-pup="{slug}" href="{"puppies.html" if slug not in PUP or slug in RETIRED else f"puppy-{slug}.html"}">'
                     f'{img_tag(stem, alt=name, sizes=GAL_SIZES, lazy=(k>0), priority=(k==0))}</a>'
                     for k, (stem, name, line, slug) in enumerate(items))
     pup_opts = "\n".join(f'        <option value="{sl}">{nm}</option>'
@@ -4394,6 +4454,13 @@ def build_pages():
   <div class="gal-grid">{gal}</div>
 </div></section>""")
 
+    # Reviews come from data/reviews.json, word for word as families send them.
+    REVIEW_HTML = "\n".join(
+      '      <blockquote class="lede" style="border-left:3px solid var(--sage);padding-left:1.25rem;margin:0 0 1.5rem">\n'
+      + (f'        <strong style="display:block;margin-bottom:.35rem">{ent(r["title"])}</strong>\n' if r["title"] else "")
+      + f'        &ldquo;{ent(r["quote"])}&rdquo;\n'
+      + f'        <span class="fine">{ent(r["attribution"])}</span></blockquote>'
+      for r in REVIEWS)
     page("reviews.html", "Reviews | Bless Your Paws Puppies",
       "What our puppy families say about Hope and Joy, posted word for word as they send "
       "them in. If you have one of our puppies, we would love to hear from you.",
@@ -4407,11 +4474,7 @@ def build_pages():
     </div>
     {img_tag(lead('tirzah'), cls='framed hic-photo', alt='Tirzah, a black phantom Munchkin Bernedoodle puppy', lazy=False, priority=True)}
     <div class="hic-copy">
-      <blockquote class="lede" style="border-left:3px solid var(--sage);padding-left:1.25rem;margin:0 0 1.5rem">
-        <strong style="display:block;margin-bottom:.35rem">So happy!</strong>
-        &ldquo;I&rsquo;m tickled pink on my purchase of my new puppy! Everyone has been
-        so nice! Can&rsquo;t wait to get her!!!!&rdquo;
-        <span class="fine">Brenda, who reserved Tirzah from this litter</span></blockquote>
+{REVIEW_HTML}
       <p>We are collecting reviews from our puppy families as they come, and we post
         them here word for word. If you have one of our puppies, we would love to hear
         from you.</p>
@@ -4796,26 +4859,28 @@ def build_pages():
         # younger set rather than replacing it, so the gallery still carries both while
         # this range starts at PAGE_FROM. cover.jpg was imported as the first file of that
         # run, so the natural order already opens on it and needs no separate map.
-        if slug in PAGE_FROM:
-            order = list(range(PAGE_FROM[slug], COUNTS[slug] + 1))
+        if slug in PUP:
+            order = list(PUP[slug]["page_photos"] or PUP[slug]["photos"])
         else:
             first = PRIMARY.get(slug, 1)
-            order = [first] + [i for i in range(1, COUNTS[slug] + 1) if i != first]
+            order = [f"{slug}-{i:02d}" for i in
+                     [first] + [i for i in range(1, COUNTS[slug] + 1) if i != first]]
         # the counter reads "1 / N" over the carousel, so N is how many photos the
         # carousel actually holds, not how many the puppy has in total now that the
         # gallery carries the younger ones as well
         cnt = len(order)
         slides = "\n".join(
-            "        " + img_tag(f"{slug}-{i:02d}", alt=f"{name}, photo {k+1}",
+            "        " + img_tag(i, alt=f"{name}, photo {k+1}",
                                  lazy=(k > 0), hidden=(k > 0), priority=(k == 0),
                                  sizes=PUPPY_HERO_SIZES)
             for k, i in enumerate(order))
         thumbs = "\n".join(
             f'        <button aria-current="{"true" if k==0 else "false"}" '
-            f'aria-label="Photo {k+1}"><img src="img/r/{slug}-{i:02d}-320.webp'
-            f'{asset_v(f"img/r/{slug}-{i:02d}-320.webp")}" alt="" '
+            f'aria-label="Photo {k+1}"><img src="img/r/{i}-320.webp'
+            f'{asset_v(f"img/r/{i}-320.webp")}" alt="" '
             f'loading="lazy"></button>' for k, i in enumerate(order))
-        sibs = MUNCHKINS if breed.startswith("Munchkin") else DOBERMANS
+        sibs = ([m for m in MUNCHKINS if PUP[m[0]]["litter"] == PUP[slug]["litter"]]
+                if breed.startswith("Munchkin") else DOBERMANS)
         sib = " &middot; ".join(f'<a href="puppy-{s}.html">{n}</a>'
                                for s, n, *_ in sibs if s != slug)
         # with one breed the litter page is puppies.html, so the crumb points there
@@ -4940,8 +5005,11 @@ def build_pages():
     d_facts = ('        <li><span class="k">Registration</span><span class="v">AKC</span></li>\n'
                '        <li><span class="k">Breeding rights</span><span class="v">$500 extra</span></li>')
     for s, n, x, c, note in MUNCHKINS:
-        puppy_page(s, n, x, c, note, M_PRICE, "Munchkin Bernedoodle", M_BORN, M_HOME,
-                   M_KIT, M_PARENTS, m_facts)
+        lt = LITTER[PUP[s]["litter"]]
+        lt_facts = ('        <li><span class="k">Expected adult size</span>'
+                    f'<span class="v">{lt["size"]}</span></li>')
+        puppy_page(s, n, x, c, note, M_PRICE, "Munchkin Bernedoodle", _fmt_date(lt["born"]),
+                   _fmt_date(lt["home"]), M_KIT, litter_parents(lt), lt_facts)
     for s, n, x, c, note in D_LIST:
         puppy_page(s, n, x, c, note, D_PRICE, "Doberman Pinscher", D_BORN, D_HOME,
                    D_KIT, D_PARENTS, d_facts)
@@ -4991,6 +5059,25 @@ def build_assets():
     og.paste(lr, ((1200 - lw)//2, (630 - lh)//2), lr)
     og.save("img/og-card.png", "PNG")
 
+REDIRECTS_MARK = "# ---- retired puppy pages, written by scaffold.py from data/ (do not edit below)"
+
+def build_retired():
+    """A past litter's puppy pages 301 to /puppies, and their files leave the site.
+
+    The only thing scaffold.py deletes, and only these: a puppy-<slug>.html whose puppy
+    belongs to a past litter. The URL outlives the page through _redirects, the photographs
+    stay in the gallery, and nothing in data/ is removed.
+    """
+    head = open("_redirects", encoding="utf-8").read().split(REDIRECTS_MARK)[0].rstrip("\n") + "\n"
+    lines = []
+    for slug in sorted(RETIRED):
+        lines += [f"/puppy-{slug}      /puppies  301", f"/puppy-{slug}.html /puppies  301"]
+        if os.path.exists(f"puppy-{slug}.html"):
+            os.remove(f"puppy-{slug}.html")
+    body = head + ("\n" + REDIRECTS_MARK + "\n" + "\n".join(lines) + "\n" if lines else "")
+    with open("_redirects", "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(body)
+
 def build_meta():
     open("robots.txt", "w", encoding="utf-8").write(
         ("# Draft mode: closed until launch. Flip DRAFT_MODE in this script; it\n"
@@ -5014,5 +5101,6 @@ def build_meta():
 if __name__ == "__main__":
     build_assets()
     build_pages()
+    build_retired()
     build_meta()
     print(f"scaffold v{V}: {len([p for p in os.listdir('.') if p.endswith('.html')])} pages")
