@@ -142,6 +142,22 @@ export async function updatePuppy(env, slug, body, actor) {
   }
   if ('color' in body) ch.color = text(body.color, 'Color', 60, { required: true });
   if ('note' in body) ch.note = text(body.note, 'Note', 200);
+  let clearPrice = false;
+  if ('price' in body || 'cash_price' in body) {
+    const blank = (v) => v === undefined || v === null || v === '';
+    if (blank(body.price) && blank(body.cash_price)) {
+      clearPrice = 'price' in cur.doc;
+    } else if (blank(body.price) || blank(body.cash_price)) {
+      throw new HttpError(400, 'Give this puppy both a price and a cash price, or leave both blank to use the litter\'s.');
+    } else {
+      const litter = await getRecord(env, 'litters', cur.doc.litter);
+      const m = money({ price: body.price, cash_price: body.cash_price }, { deposit: litter.doc.deposit });
+      if (m.price !== cur.doc.price || m.cash_price !== cur.doc.cash_price) {
+        ch.price = m.price; ch.cash_price = m.cash_price;
+        notes.push(`price ${m.price}, cash ${m.cash_price}`);
+      }
+    }
+  }
   if ('status' in body) {
     if (!STATUSES.includes(body.status)) throw new HttpError(400, 'That is not a status.');
     if (body.status !== cur.doc.status) notes.push(`status ${cur.doc.status} to ${body.status}`);
@@ -163,9 +179,11 @@ export async function updatePuppy(env, slug, body, actor) {
     ch.page_photos = page;
     notes.push('photos');
   }
-  if (!Object.keys(ch).length) return cur;
+  if (!Object.keys(ch).length && !clearPrice) return cur;
+  const doc = merge(cur.doc, ch);
+  if (clearPrice) { delete doc.price; delete doc.cash_price; notes.push('price back to the litter\'s'); }
   const detail = notes.length ? notes.join(', ') : Object.keys(ch).join(', ');
-  return save(env, 'puppies', slug, merge(cur.doc, ch), Number(body.version), actor,
+  return save(env, 'puppies', slug, doc, Number(body.version), actor,
     'status' in ch && ch.status !== cur.doc.status ? 'status' : 'save', detail);
 }
 
@@ -194,6 +212,15 @@ export async function updateLitter(env, slug, body, actor) {
   if ('size' in body) ch.size = text(body.size, 'Expected adult size', 40, { required: true });
   if ('parents_phrase' in body) ch.parents_phrase = text(body.parents_phrase, 'Parents sentence', 200, { required: true });
   if ('parents_short' in body) ch.parents_short = text(body.parents_short, 'Short parents line', 120, { required: true });
+  if ('photo' in body && body.photo !== cur.doc.photo) {
+    const owned = await db(env).all('SELECT stem FROM uploads WHERE owner_file = ? AND owner_key = ?', ['litters', slug]);
+    if (!owned.some((r) => r.stem === body.photo)) throw new HttpError(400, 'That photo does not belong to this litter.');
+    ch.photo = body.photo;
+    ch.photo_alt = text(body.photo_alt, 'Photo description', 140, { required: true });
+  } else if ('photo_alt' in body && (body.photo_alt || cur.doc.photo_alt)) {
+    const alt = text(body.photo_alt, 'Photo description', 140, { required: true });
+    if (alt !== cur.doc.photo_alt) ch.photo_alt = alt;
+  }
   if ('price' in body || 'cash_price' in body || 'deposit' in body) {
     const m = money(body, cur.doc);
     for (const k of Object.keys(m)) if (m[k] !== cur.doc[k]) ch[k] = m[k];

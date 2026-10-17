@@ -269,6 +269,15 @@ PAYMENT_LINKS = {
 def pay_href(slug, pay):
     return f"/api/checkout?puppy={slug}&amp;pay={pay}" if CHECKOUT_LIVE else PAYMENT_LINKS[pay]
 
+# A puppy may carry its own price and cash_price (both or neither, set in the editor),
+# which replace its litter's. The deposit is always the litter's.
+def puppy_money(slug):
+    p = PUP[slug]
+    lt = dict(LITTER[p["litter"]])
+    if "price" in p:
+        lt["price"], lt["cash_price"] = p["price"], p["cash_price"]
+    return litter_money(lt)
+
 _M = litter_money(M_LITTER)
 M_PRICE, M_PRICE_CASH, DEPOSIT = _M["price"], _M["cash"], _M["deposit"]
 CASH_DISCOUNT = M_PRICE - M_PRICE_CASH
@@ -309,10 +318,24 @@ FALLBACK_WAITLIST = _fallback(FORM_WAITLIST,
 # The basis for the estimate, shown beside it. Parent weights are the most reliable
 # predictor there is, so this is more use to a buyer than the range on its own, and
 # it stops the range reading as a specification.
-SIZE_NOTE = ("Expected adult size is our best estimate from the parents, Troy at "
-             "22 lbs and Bip Finch at 19 lbs. It is not a promise about an "
-             "individual puppy. <a href=\"munchkin-bernedoodle-size.html\">How we "
-             "arrived at it</a>.")
+# The parents and their weights come from the litter's dam and sire in data/adults.json
+# (the Weight fact on each parent's card, edited in the owner editor), so a litter with
+# other parents gets its own note. A parent with no Weight fact drops the figures rather
+# than inventing them.
+def _weight(slug):
+    return dict(ADULTS[slug]["facts"]).get("Weight", "").strip() if slug in ADULTS else ""
+
+def size_note(lt):
+    dam, sire = ADULTS.get(lt["dam"]), ADULTS.get(lt["sire"])
+    dw, sw = _weight(lt["dam"]), _weight(lt["sire"])
+    basis = (f"the parents, {dam['name']} at {dw} and {sire['name']} at {sw}"
+             if dam and sire and dw and sw else "the parents' weights")
+    return (f"Expected adult size is our best estimate from {basis}. It is not a promise "
+            "about an individual puppy. <a href=\"munchkin-bernedoodle-size.html\">How we "
+            "arrived at it</a>.")
+
+SIZE_NOTE = size_note(M_LITTER)
+LITTER_ALT = M_LITTER.get("photo_alt") or "Our Munchkin Bernedoodle litter asleep side by side"
 
 M_KIT = ["Vaccination and health record", "Examination by our vet", "Microchipped",
          "Signed health guarantee", "Small bag of the food they know", "Collar and leash",
@@ -2602,7 +2625,7 @@ def img_ar(path, fallback="1024/474"):
     except Exception:
         return fallback
 
-KEEP_WIDE_AR = img_ar("img/puppies/litter-01.jpg")
+KEEP_WIDE_AR = img_ar(f"img/puppies/{M_LITTER['photo']}.jpg")
 
 def srcset_for(stem):
     """The srcset string for one stem, or "" if it has no derivatives.
@@ -2836,7 +2859,7 @@ def warm_for(path):
                 # this stem in step with the hero in PUPPIES_INTRO: it was jericho-01
                 # until the litter photo took that slot, and warming the stale stem cost
                 # 52KB on every home-page visit while never warming the real hero.
-                "img": [[srcset_for("litter-01"), PHOTO_WIDE, "(min-width:901px)"]]
+                "img": [[srcset_for(M_LITTER["photo"]), PHOTO_WIDE, "(min-width:901px)"]]
                        + [c for c in cards if c[0]]}
     if path == "puppies.html":
         return {"doc": ["what-is-a-munchkin-bernedoodle", "contact"]}
@@ -2848,6 +2871,8 @@ def warm_for(path):
     return None
 
 def card(slug, name, sex, colour, price, breed, first=False):
+    if slug in PUP:
+        price = puppy_money(slug)["price"]
     # an adopted puppy shows no price: she is not for sale, and a price beside "Adopted!"
     # invites the question of whether she still is
     adopted = slug in ADOPTED
@@ -2999,7 +3024,7 @@ def build_pages():
       <p class="eyebrow">Between litters</p>
       <h1>Munchkin Bernedoodle puppies for sale</h1>
     </div>
-    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
+    {desktop_only_img(M_LITTER['photo'], cls='framed hic-photo hide-mobile keep-wide', alt=LITTER_ALT, sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">Every puppy from our last litter has found a family. Waitlist families
         hear about the next litter first, in the order they joined.</p>
@@ -3020,7 +3045,7 @@ def build_pages():
       <p class="eyebrow">{'Hope&rsquo;s litter' if SHOW_DOBERMANS else AVAIL_EYEBROW}</p>
       <h1>Munchkin Bernedoodle puppies for sale</h1>
     </div>
-    {desktop_only_img('litter-01', cls='framed hic-photo hide-mobile keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE)}
+    {desktop_only_img(M_LITTER['photo'], cls='framed hic-photo hide-mobile keep-wide', alt=LITTER_ALT, sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">{litter_intro(M_LITTER)}. Born
         {M_BORN}. Each card below says whether that puppy is still available.</p>
@@ -3754,7 +3779,7 @@ def build_pages():
 </div></section>
 
 {hic_pair('Why littermates grow to different sizes',
-  img_tag('litter-01', cls='framed hic-photo keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', sizes=PHOTO_WIDE),
+  img_tag(M_LITTER['photo'], cls='framed hic-photo keep-wide', alt=LITTER_ALT, sizes=PHOTO_WIDE),
   '<p>Puppies from the same litter do not all finish at one weight. Each one inherits its own mix from both sides of the cross, so a sister can mature near the bottom of the range while her brother lands near the top. That is why we give a range for the litter instead of a number for each puppy, and why we will tell you what we are seeing in the one you have your eye on.</p>',
   band='band-raise', flip=True)}
 
@@ -3833,7 +3858,7 @@ def build_pages():
       <p class="eyebrow">Breed guide</p>
       <h1>Munchkin Bernedoodle colors and patterns</h1>
     </div>
-    {img_tag('litter-01', cls='framed hic-photo keep-wide', alt='Our Munchkin Bernedoodle litter asleep side by side', lazy=False, priority=True, sizes=PHOTO_WIDE)}
+    {img_tag(M_LITTER['photo'], cls='framed hic-photo keep-wide', alt=LITTER_ALT, lazy=False, priority=True, sizes=PHOTO_WIDE)}
     <div class="hic-copy">
       <p class="lede">A Bernedoodle's coat is described by two things: its colors, and
         the pattern they are laid out in. Merle, phantom and parti are patterns. Red,
@@ -3865,7 +3890,7 @@ def build_pages():
 {sibling_links('bernedoodle-colors.html')}
 
 {closing_band('See every puppy in the litter, with their colors.', ('puppies.html', 'See available puppies'), ('waitlist.html', 'Join the waitlist'))}""",
-      og_image="img/puppies/litter-01.jpg")
+      og_image=f"img/puppies/{M_LITTER['photo']}.jpg")
 
     page("what-is-a-munchkin-bernedoodle.html", f"What Is a Munchkin Bernedoodle? | {BRAND}",
       "A plain-language guide to the Munchkin Bernedoodle: the cross, the size, the coat, and the temperament, from a family that breeds them.",
@@ -4848,7 +4873,9 @@ def build_pages():
     def puppy_page(slug, name, sex, colour, note, price, breed, born, home, kit,
                    parents_html, extra_facts):
         him = "him" if sex == "Boy" else "her"
-        mon = litter_money(LITTER[PUP[slug]["litter"]]) if slug in PUP else _M
+        mon = puppy_money(slug) if slug in PUP else _M
+        if slug in PUP:
+            price = mon["price"]
         p_deposit, p_cash, p_taxed = mon["deposit"], mon["cash"], mon["taxed"]
         # Hope raises the Munchkin Bernedoodles, Joy the Dobermans. A buyer asking
         # about one of Joy's puppies was being told to call Hope.
@@ -5015,7 +5042,7 @@ def build_pages():
         <li><span class="k">Can go home</span><span class="v">{home}</span></li>
 {extra_facts}
       </ul>
-      {f'<p class="fine">{SIZE_NOTE}</p>' if breed.startswith("Munchkin") else ''}
+      {f'<p class="fine">{size_note(LITTER[PUP[slug]["litter"]]) if slug in PUP else SIZE_NOTE}</p>' if breed.startswith("Munchkin") else ''}
       {f'<p><strong>{note}</strong></p>' if note else ''}
       {reserve_block}
     </div>
@@ -5147,7 +5174,7 @@ def build_prices():
     """
     pups = {}
     for slug, name, _sex, _color, _note in MUNCHKINS:
-        mon = litter_money(LITTER[PUP[slug]["litter"]])
+        mon = puppy_money(slug)
         price_c, dep_c = mon["price"] * 100, mon["deposit"] * 100
         tax_c = round(price_c * IN_TAX_RATE)
         assert price_c + tax_c == round(mon["taxed"] * 100), slug

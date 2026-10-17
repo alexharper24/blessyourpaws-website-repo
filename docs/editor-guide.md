@@ -47,6 +47,20 @@ Open the litter in **Litters**, change **Price**, **Cash price** or **Deposit**,
 publish. Use whole dollars before sales tax. Every puppy in the litter and the online payments
 change together.
 
+To price one puppy differently, open the puppy in **Puppies** and fill in both **Price for this
+puppy** and **Cash price for this puppy**, then save and publish. Clear both to go back to the
+litter's prices. The deposit is always the litter's.
+
+## To change the litter photo
+
+Open the litter in **Litters**, tap **Replace the photo**, describe the photo in a few words, tap
+**Save**, then publish. It shows at the top of the puppies page. The old photo is kept.
+
+## The size note
+
+The note under each puppy's expected size names the parents and their weights. It reads the
+**Weight** line on each parent's card in **Parents**, so update the weight there.
+
 ## When every puppy in a litter is adopted
 
 Open the litter in **Litters** and tap **Move to past litters**, then publish. Its puppy pages come

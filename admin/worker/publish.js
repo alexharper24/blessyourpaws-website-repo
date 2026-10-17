@@ -72,6 +72,7 @@ function stemsIn(files) {
   const out = [];
   for (const p of JSON.parse(files[FILES.puppies])) for (const s of p.photos) out.push(['puppies', s]);
   for (const a of JSON.parse(files[FILES.adults])) out.push(['dogs', a.photo]);
+  for (const l of JSON.parse(files[FILES.litters])) out.push(['puppies', l.photo]);
   return out;
 }
 

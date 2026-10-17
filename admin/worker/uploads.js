@@ -15,7 +15,7 @@ import { audit, db, getRecord, NOW } from './store.js';
 import { HttpError, json } from './http.js';
 
 const MAX_BYTES = 12 * 1024 * 1024;
-const FOLDER = { puppies: 'puppies', adults: 'dogs' };
+const FOLDER = { puppies: 'puppies', adults: 'dogs', litters: 'puppies' };
 
 function stemPrefix(file, rec) {
   if (file === 'puppies') return rec.slug;
@@ -40,7 +40,7 @@ export async function handleUpload(request, env, url, who) {
   if (request.method !== 'POST') throw new HttpError(405, 'Use POST to upload.');
   const file = url.searchParams.get('file');
   const key = url.searchParams.get('key') || '';
-  if (!FOLDER[file]) throw new HttpError(400, 'Photos attach to a puppy or a parent.');
+  if (!FOLDER[file]) throw new HttpError(400, 'Photos attach to a puppy, a parent or a litter.');
   const type = (request.headers.get('Content-Type') || '').split(';')[0].trim();
   if (type !== 'image/jpeg') throw new HttpError(415, 'The editor sends photos as JPEG. Reload and try again.');
   const bytes = await request.arrayBuffer();

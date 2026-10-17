@@ -224,6 +224,10 @@
       <div class="row2"><label class="f">Boy or girl<select name="sex">${['Boy', 'Girl'].map((x) => `<option${x === d.sex ? ' selected' : ''}>${x}</option>`).join('')}</select></label>
       <label class="f">Color<input name="color" required maxlength="60" value="${esc(d.color)}"></label></div>
       <label class="f">Short note<span class="hint">Optional. Shown in bold on the puppy's page.</span><input name="note" maxlength="200" value="${esc(d.note)}"></label>
+      <h3>Price</h3>
+      <p class="fine">Leave both blank to use the litter's prices (${usd(litterOf(p).doc.price)}, or ${usd(litterOf(p).doc.cash_price)} cash). Fill in both to price this puppy on its own. The deposit is always the litter's.</p>
+      <div class="row2"><label class="f">Price for this puppy<input name="price" type="number" inputmode="numeric" min="300" max="20000" step="1" placeholder="${esc(litterOf(p).doc.price ?? '')}" value="${esc(d.price ?? '')}"></label>
+      <label class="f">Cash price for this puppy<input name="cash_price" type="number" inputmode="numeric" min="300" max="20000" step="1" placeholder="${esc(litterOf(p).doc.cash_price ?? '')}" value="${esc(d.cash_price ?? '')}"></label></div>
       <h3>Photos</h3>
       <p class="fine">The first photo is the cover on the cards and the puppy's page. Hidden photos stay in the gallery but leave the puppy's page. Photos are never deleted.</p>
       <div class="strip" id="strip">${photoStrip(work)}</div>
@@ -260,6 +264,7 @@
       });
       bindForm(el, `/api/puppies/${encodeURIComponent(key)}`, (f) => ({
         name: val(f, 'name'), sex: val(f, 'sex'), color: val(f, 'color'), note: val(f, 'note'),
+        price: val(f, 'price') === '' ? '' : num(f, 'price'), cash_price: val(f, 'cash_price') === '' ? '' : num(f, 'cash_price'),
         photos: work.photos, page_photos: work.page_photos, version: S.puppies.find((x) => x.key === key).version,
       }));
     });
@@ -310,13 +315,35 @@
       ? `<h3>When the litter is done</h3><p class="fine">Moving it to past litters takes its puppy pages off the site (old links go to the puppies page) and keeps its photos in the gallery. ${allAdopted ? '' : 'It becomes available once every puppy is adopted.'}</p>
          <button type="button" class="btn btn-small" id="retire" ${allAdopted ? '' : 'disabled'}>Move to past litters</button>`
       : '<h3>Past litter</h3><p class="fine">Bring it back if it was moved by mistake.</p><button type="button" class="btn btn-small" id="unretire">Make it current again</button>';
+    let newPhoto = null;
     openDrawer(`Litter born ${fmt(d.born)}`, `<form>${litterFields(d)}
+      <h3>Litter photo</h3><p class="fine">Shown at the top of the puppies page. A wide photo of the whole litter works best.</p>
+      <div style="max-width:20rem" id="litPhoto">${imgTag(d.photo, '', 'puppies')}</div>
+      <label class="btn btn-small upload" style="margin-top:.5rem">Replace the photo<input type="file" accept="image/*" id="litUp"></label>
+      <label class="f">Describe the photo<span class="hint">Read aloud to visitors who cannot see it, such as "The litter asleep in a row on a blanket".</span>
+        <input name="photo_alt" maxlength="140" value="${esc(d.photo_alt || '')}" placeholder="Our Munchkin Bernedoodle litter asleep side by side"></label>
+      <p class="fine" id="litMsg">The old photo is kept, never deleted.</p>
       <div class="btn-row"><button class="btn btn-primary" type="submit">Save</button></div></form>
       <div style="margin-top:2rem">${statusBlock}</div>`, (el) => {
-      bindForm(el, `/api/litters/${encodeURIComponent(key)}`, (f) => ({
-        born: val(f, 'born'), home: val(f, 'home'), size: val(f, 'size'), parents_phrase: val(f, 'parents_phrase'),
-        parents_short: val(f, 'parents_short'), price: num(f, 'price'), cash_price: num(f, 'cash_price'), deposit: num(f, 'deposit'),
-        version: S.litters.find((x) => x.key === key).version }));
+      $('#litUp', el).addEventListener('change', async (e) => {
+        if (!e.target.files[0]) return;
+        $('#litMsg', el).textContent = 'Sending…';
+        try {
+          [newPhoto] = await uploadAll([e.target.files[0]], 'litters', key);
+          await load();
+          $('#litPhoto', el).innerHTML = imgTag(newPhoto, '', 'puppies');
+          const alt = $('form', el).elements.photo_alt; alt.value = ''; alt.required = true; alt.focus();
+          $('#litMsg', el).textContent = 'New photo ready. Describe it, save, then publish.';
+        } catch (err) { $('#litMsg', el).textContent = ''; toast(err.message, true); }
+      });
+      bindForm(el, `/api/litters/${encodeURIComponent(key)}`, (f) => {
+        const b = { born: val(f, 'born'), home: val(f, 'home'), size: val(f, 'size'), parents_phrase: val(f, 'parents_phrase'),
+          parents_short: val(f, 'parents_short'), price: num(f, 'price'), cash_price: num(f, 'cash_price'), deposit: num(f, 'deposit'),
+          version: S.litters.find((x) => x.key === key).version };
+        if (newPhoto) b.photo = newPhoto;
+        if (newPhoto || val(f, 'photo_alt')) b.photo_alt = val(f, 'photo_alt');
+        return b;
+      });
       const st = async (status) => {
         try { await post(`/api/litters/${encodeURIComponent(key)}`, { status, version: S.litters.find((x) => x.key === key).version });
           await load(); closeDrawer(); render(); toast(status === 'past' ? 'Moved to past litters. Publish to update the site.' : 'The litter is current again.'); }

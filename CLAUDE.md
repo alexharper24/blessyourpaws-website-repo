@@ -244,7 +244,9 @@ hand edit to one is undone by the next publish. Change them in the editor, or th
 migration in `admin/migrations/` run against the live database, then bring the file into step.
 Prices and the deposit are on each litter (`price`, `cash_price`, `deposit`, since 2026-10-17), so
 a puppy page quotes its own litter and the hand-written pages quote the newest shown one. The tax
-rate, the Dobermans and every legal page stay in the generator. A puppy with no photograph is not published until it has one, a litter whose
+rate, the Dobermans and every legal page stay in the generator. A puppy may carry its own `price`
+and `cash_price` (both or neither), a litter its own `photo` and `photo_alt`, and the size note
+under each puppy reads the parents' Weight facts from `data/adults.json` (2026-10-17). A puppy with no photograph is not published until it has one, a litter whose
 `status` is `past` retires (its puppy pages 301 to `/puppies` through a generated block at the
 end of `_redirects`, and its photographs stay in the gallery), and `scripts/encode_uploads.py`
 builds the image sizes for anything the editor commits under `uploads/`. The gate for any
