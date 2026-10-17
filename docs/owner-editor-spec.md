@@ -3,7 +3,7 @@ doc: owner-editor-spec
 site: blessyourpaws-website-repo
 written: 2026-10-01
 revised: 2026-10-01, with Alex's answers on sign-in, Stripe, parents and deleting
-status: spec, waiting on D2 (how each project gets its own sign-in) before Phase 2. Phase 0 can start now
+status: spec, nothing blocking. Phase 0 can start; sign-in is settled as Cloudflare Access in the Bless Your Paws account
 model: teapup-website-repo/admin (single-breeder editor, D1 + R2 + publish-to-commit)
 skill: breeder-site-backend
 phases:
@@ -11,12 +11,12 @@ phases:
   - {id: P1, name: "Schema, seed and round-trip gate", status: not-started}
   - {id: P2, name: "Editor Worker, sign-in and screens", status: not-started}
   - {id: P3, name: "Publish pipeline and CI build", status: not-started}
-  - {id: P4, name: "A separate sign-in for every project", status: not-started}
+  - {id: P4, name: "A separate sign-in for every project", status: "account and Zero Trust done 2026-10-16; the Access application, policy and branded login page come with Phase 2"}
   - {id: P5, name: "Handover to Hope and Joy", status: not-started}
 decisions:
   - {id: D1, blocked_on: none, item: "Editor host. Defaulting to admin.blessyourpawspuppies.com as its own Worker, over the /admin route reserved on the site Worker, unless Alex says otherwise"}
-  - {id: D2, blocked_on: alex, item: "How each project gets its own sign-in. Either a Cloudflare account per project, or each editor running its own sign-in page"}
 closed:
+  - {id: D2, closed: 2026-10-16, evidence: "Account per project. Bless Your Paws moved to its own Cloudflare account (fed7bd3e491a8d6dbae0f421eeb62768) on 2026-10-16 with Zero Trust Free on and team blessyourpaws (blessyourpaws.cloudflareaccess.com). See docs/account-move.md"}
   - {id: D3, closed: 2026-10-01, evidence: "Alex: Hope and Joy both sign in. Hope's address is the one already on file for the business, Joy's comes from Alex at handover"}
   - {id: D4, closed: 2026-10-01, evidence: "Alex: hold Stripe and price changes for a later rebuild where the editor and Stripe talk to each other. New puppies take the normal price"}
   - {id: D5, closed: 2026-10-01, evidence: "Alex: the parents stay as they are on the pages today, and the editor edits that information where it sits"}
