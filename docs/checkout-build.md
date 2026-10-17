@@ -27,6 +27,7 @@ tasks:
   - {id: c4-links, status: open, item: "Swap the buy.stripe.com links for checkout links; thanks page; analytics event; gate shows only the intended pages change"}
   - {id: c5-webhook, status: open, item: "Webhook, signature check, reserve via service binding, targeted commit, repeat-safe"}
   - {id: c6-email, status: open, item: "Reservation email"}
+  - {id: c7-stripe-test-setup, status: "done 2026-10-17 except Alex's two clicks", evidence: "test mode (sandbox banner) of acct_1U7mPsB2pxbGhCAi: restricted key form filled as blessyourpaws-checkout-test with Checkout Sessions Write only, waiting on Alex to Create; webhook destination blessyourpaws-reserve-test we_1URZ6DB2pxbGhCAil8C2wyvQ, Active, https://blessyourpawspuppies.com/api/stripe-webhook, event checkout.session.completed, snapshot payload; signing secret left unrevealed for Alex", item: "Stripe test key and webhook"}
   - {id: c7-test, status: open, item: "Stripe sandbox key and webhook from Alex; full test-mode run locally and on a preview"}
   - {id: c8-cutover, status: open, item: "Live key and webhook from Alex; deploy; one live payment and refund; deactivate the three old Payment Links; docs"}
 ---
