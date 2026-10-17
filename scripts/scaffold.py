@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 191
+V = 192
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -260,7 +260,7 @@ def litter_money(lt):
 # puppy's own litter prices and marks the puppy reserved or adopted when the payment clears
 # (docs/checkout-build.md). Turn it on only after a full test-mode run has passed, and only
 # turn the old Payment Links off after a live payment has gone through this way.
-CHECKOUT_LIVE = False
+CHECKOUT_LIVE = True
 PAYMENT_LINKS = {
     "deposit": "https://buy.stripe.com/4gM14meuRfQecvPfO2ew802",
     "full": "https://buy.stripe.com/8x2eVc86tfQegM5eJYew804",
