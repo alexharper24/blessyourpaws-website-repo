@@ -15,9 +15,11 @@ function header(v) {
 }
 
 export async function notify(env, info) {
-  if (!env.MAIL || !env.NOTIFY_TO) return;
+  // Test-mode payments email NOTIFY_TEST_TO only, never the owners. Unset, they email nobody.
+  const list = info.live ? env.NOTIFY_TO : env.NOTIFY_TEST_TO;
+  if (!env.MAIL || !list) return;
   const { subject, body } = compose(info);
-  for (const to of env.NOTIFY_TO.split(",").map((a) => a.trim()).filter(Boolean)) {
+  for (const to of list.split(",").map((a) => a.trim()).filter(Boolean)) {
     const raw = [
       `From: Bless Your Paws website <${FROM}>`,
       `To: ${to}`,

@@ -62,7 +62,10 @@
     { "name": "MAIL", "allowed_destination_addresses": ["hpwtwin1@gmail.com"] }
   ],
   "vars": {
-    "NOTIFY_TO": "hpwtwin1@gmail.com"
+    "NOTIFY_TO": "hpwtwin1@gmail.com",
+    // Where TEST-mode payment emails go instead. Empty sends none. It must also be a verified
+    // Email Routing destination and in allowed_destination_addresses above.
+    "NOTIFY_TEST_TO": ""
   }
   // Secrets, entered by Alex and never in this file: STRIPE_KEY (restricted, Checkout
   // Sessions write only) and STRIPE_WEBHOOK_SECRET. Both are TEST-mode values until cutover.
