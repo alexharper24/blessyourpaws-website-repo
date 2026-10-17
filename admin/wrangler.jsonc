@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // The Bless Your Paws owner editor. A separate Worker from the site on purpose: Access
+  // covers this whole Worker, and a mistake here can only break an editor nobody else reaches.
+  "name": "blessyourpaws-admin",
+  "account_id": "fed7bd3e491a8d6dbae0f421eeb62768",
+  "main": "worker/index.js",
+  // 2026-08-18 because the workerd copied into node_modules for local runs refuses newer
+  // dates (same as Teapup). A deployed Worker accepts it either way.
+  "compatibility_date": "2026-08-18",
+  "observability": { "enabled": true },
+  "preview_urls": false,
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "admin.blessyourpawspuppies.com", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "public",
+    "binding": "ASSETS",
+    // Every request goes through the Worker first, so an address that got past Access but
+    // was never invited is turned away before the editor's page loads.
+    "run_worker_first": true,
+    // Serve /index.html as /index.html. The default 307s it to /, which the Worker maps back.
+    "html_handling": "none"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "blessyourpaws", "database_id": "c5b7075d-e7ef-4c75-8cc6-60769532f38a" }
+  ],
+  "vars": {
+    "SITE_URL": "https://blessyourpawspuppies.com",
+    "GITHUB_REPO": "alexharper24/blessyourpaws-website-repo",
+    "GITHUB_BRANCH": "main",
+    // The Zero Trust team, renamed to blessyourpaws on 2026-10-16. ACCESS_AUD is the audience of
+    // the "Bless Your Paws editor" Access application, created 2026-10-16. Without both, nobody gets in.
+    "ACCESS_TEAM_DOMAIN": "blessyourpaws",
+    "ACCESS_AUD": "826ecf5d2d1b1037d619b1b344176311ff2670d88b92a5b3988389967f2a1e48"
+  }
+  // Secret, entered by Alex and never in this file:  wrangler secret put GITHUB_TOKEN
+  // A fine-grained token for alexharper24/blessyourpaws-website-repo only, Contents read and write.
+}

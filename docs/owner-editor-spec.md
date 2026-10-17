@@ -3,16 +3,16 @@ doc: owner-editor-spec
 site: blessyourpaws-website-repo
 written: 2026-10-01
 revised: 2026-10-01, with Alex's answers on sign-in, Stripe, parents and deleting
-status: spec, nothing blocking. Phase 0 can start; sign-in is settled as Cloudflare Access in the Bless Your Paws account
+status: built and deployed 2026-10-16; waiting on Alex for the GitHub token and a test publish. Build log in docs/editor-build.md
 model: teapup-website-repo/admin (single-breeder editor, D1 + R2 + publish-to-commit)
 skill: breeder-site-backend
 phases:
-  - {id: P0, name: "Data out of the generator", status: not-started}
-  - {id: P1, name: "Schema, seed and round-trip gate", status: not-started}
-  - {id: P2, name: "Editor Worker, sign-in and screens", status: not-started}
-  - {id: P3, name: "Publish pipeline and CI build", status: not-started}
-  - {id: P4, name: "A separate sign-in for every project", status: "account and Zero Trust done 2026-10-16; the Access application, policy and branded login page come with Phase 2"}
-  - {id: P5, name: "Handover to Hope and Joy", status: not-started}
+  - {id: P0, name: "Data out of the generator", status: "done 2026-10-16"}
+  - {id: P1, name: "Schema, seed and round-trip gate", status: "done 2026-10-16"}
+  - {id: P2, name: "Editor Worker, sign-in and screens", status: "done 2026-10-16, deployed to admin.blessyourpawspuppies.com"}
+  - {id: P3, name: "Publish pipeline and CI build", status: "CI build live 2026-10-16; publish waits on GITHUB_TOKEN"}
+  - {id: P4, name: "A separate sign-in for every project", status: "done 2026-10-16"}
+  - {id: P5, name: "Handover to Hope and Joy", status: "guide written; invites wait on Alex"}
 decisions:
   - {id: D1, blocked_on: none, item: "Editor host. Defaulting to admin.blessyourpawspuppies.com as its own Worker, over the /admin route reserved on the site Worker, unless Alex says otherwise"}
 closed:
@@ -22,6 +22,11 @@ closed:
   - {id: D5, closed: 2026-10-01, evidence: "Alex: the parents stay as they are on the pages today, and the editor edits that information where it sits"}
   - {id: D6, closed: 2026-10-01, evidence: "Alex: no deleting puppies or photos. Owners mark a puppy adopted and the site updates the way the generator does now"}
   - {id: shared-sign-in, closed: 2026-10-01, evidence: "Alex: every project gets its own authentication and the projects stay separate, so one sign-in page shared across projects is ruled out"}
+deviations:
+  - "Records are stored as their own JSON in one records table rather than a column per field, which keeps key order through saves (2026-10-16)"
+  - "Photos are held in D1 until published, not R2, because R2 needs a paid subscription Alex has not approved; the browser resizes so each fits D1's 2 MB row"
+  - "Guide pages keep calling page_lead(), so they follow the owner's chosen cover; no copies under img/guides/ because the editor never deletes an image"
+  - "A litter retires when the owner moves it to past litters, which the editor allows only once every puppy is adopted, rather than automatically"
 excluded:
   - "Creating or editing breeds. The breed is fixed to Munchkin Bernedoodle and SHOW_DOBERMANS stays a generator flag"
   - "Prices, the deposit and the Stripe links. They stay in the generator until a later rebuild connects the editor to Stripe"

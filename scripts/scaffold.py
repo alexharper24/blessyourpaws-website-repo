@@ -243,7 +243,11 @@ GBP_URL = f"https://www.google.com/maps?cid={GBP_CID}"   # the partner's own fil
 # because a Stripe Payment Link cannot add a tax rate itself.
 M_PRICE_TAXED = round(M_PRICE * (1 + IN_TAX_RATE), 2)
 # The newest current litter supplies the single-litter facts the hand-written pages quote.
-M_LITTER = CURRENT_LITTERS[-1] if CURRENT_LITTERS else LITTERS[-1]
+# A current litter is SHOWN once it has a published puppy, so a litter started in the editor
+# before any puppy has a photo does not put "0 puppies" or an empty grid on the site.
+SHOWN_LITTERS = [l for l in CURRENT_LITTERS
+                 if any(PUP[m[0]]["litter"] == l["slug"] for m in MUNCHKINS)]
+M_LITTER = (SHOWN_LITTERS or CURRENT_LITTERS or LITTERS)[-1]
 M_BORN, M_HOME = _fmt_date(M_LITTER["born"]), _fmt_date(M_LITTER["home"])
 D_BORN, D_HOME = "April 14, 2026", "Ready now"
 
@@ -2868,11 +2872,11 @@ def build_pages():
     # One litter: the grid sits under the hero exactly as it always has. More than one:
     # each litter gets its own heading and grid, newest first, and the hero describes the
     # newest litter.
-    if len(CURRENT_LITTERS) <= 1:
+    if len(SHOWN_LITTERS) <= 1:
         litter_grids = f'  <div class="pgrid cols-4" style="margin-top:clamp(2.75rem,4.5vw,4rem)">{m_cards}</div>'
     else:
         blocks, k0 = [], 0
-        for lt in reversed(CURRENT_LITTERS):
+        for lt in reversed(SHOWN_LITTERS):
             pups = litter_puppies(lt)
             cards_html = "\n".join(card(s, n, x, c, M_PRICE, "Munchkin Bernedoodle",
                                          first=(k0 == 0 and k == 0))
@@ -2890,7 +2894,7 @@ def build_pages():
         litter_grids = "\n".join(blocks)
     # the parents block under the grid: this litter's two, or every parent of a current litter
     _par = []
-    for lt in reversed(CURRENT_LITTERS or [M_LITTER]):
+    for lt in reversed(SHOWN_LITTERS or [M_LITTER]):
         for a in (lt["dam"], lt["sire"]):
             if a not in _par:
                 _par.append(a)

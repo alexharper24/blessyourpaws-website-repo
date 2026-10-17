@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex, nofollow">
+<title>Editor &middot; Bless Your Paws</title>
+<link rel="icon" href="/paw.png">
+<link rel="apple-touch-icon" href="/mark.png">
+<link rel="stylesheet" href="/admin.css?v=1">
+</head>
+<body>
+<header class="top">
+  <button class="menu" id="menu" aria-label="Sections" aria-expanded="false"><span></span><span></span><span></span></button>
+  <a class="brand" href="/" aria-label="Bless Your Paws editor"><img src="/mark.png" alt="" width="34" height="34"><span>Bless Your Paws <em>editor</em></span></a>
+  <a class="btn btn-primary publish-btn" href="#publish" id="publishTop">Publish</a>
+</header>
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="Sections">
+    <p class="rail-h">Every day</p>
+    <a href="#puppies" data-view="puppies">Puppies <b id="nPuppies"></b></a>
+    <a href="#publish" data-view="publish">Publish</a>
+    <p class="rail-h">The dogs</p>
+    <a href="#litters" data-view="litters">Litters <b id="nLitters"></b></a>
+    <a href="#parents" data-view="parents">Parents</a>
+    <p class="rail-h">The site</p>
+    <a href="#reviews" data-view="reviews">Reviews <b id="nReviews"></b></a>
+    <a href="#history" data-view="history">History</a>
+    <a href="#people" data-view="people" id="peopleLink" hidden>People</a>
+    <p class="rail-foot"><span id="who"></span><br><a href="/cdn-cgi/access/logout">Sign out</a> &middot; <a id="siteLink" href="https://blessyourpawspuppies.com" target="_blank" rel="noopener">View the site</a></p>
+  </nav>
+  <main class="work" id="work" tabindex="-1"><p class="loading">Loading&hellip;</p></main>
+</div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawerTitle">
+  <div class="drawer-head">
+    <h2 id="drawerTitle"></h2>
+    <button class="x" id="drawerClose" aria-label="Close">&times;</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+<div class="scrim" id="scrim"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/admin.js?v=1" defer></script>
+</body>
+</html>
