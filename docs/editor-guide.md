@@ -9,6 +9,12 @@ two minutes.
 
 ## When a puppy is reserved or adopted
 
+A family who pays the deposit or the full price online does this for you. The puppy is marked
+Reserved or Adopted on the site within a few minutes, you get an email with a link to the payment
+in Stripe, and **History** shows the change from **stripe**. A balance payment changes nothing.
+
+For a payment taken by phone or in cash:
+
 1. Open **Puppies**.
 2. Tap **Reserved** or **Adopted** beside the puppy.
 3. Open **Publish** and tap **Publish to the site**.
@@ -28,11 +34,18 @@ and photos are never deleted.
 ## When a new litter is born
 
 1. Open **Litters** and tap **Start a new litter**.
-2. Choose the mom and dad, then enter the birth date and the expected size.
+2. Choose the mom and dad, then enter the birth date and the expected size. The prices start at
+   the last litter's, so change them only if this litter's price is different.
 3. In **Puppies**, tap **Add a puppy to this litter** for each puppy.
 4. Add a photo to each puppy, then publish.
 
 A puppy shows on the site once it has a photo.
+
+## To change the price or the deposit
+
+Open the litter in **Litters**, change **Price**, **Cash price** or **Deposit**, tap **Save**, then
+publish. Use whole dollars before sales tax. Every puppy in the litter and the online payments
+change together.
 
 ## When every puppy in a litter is adopted
 
