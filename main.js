@@ -173,9 +173,18 @@
     var where = a.closest('.chat-panel') ? 'chat' : a.closest('.site-foot') ? 'footer'
       : a.closest('.site-head, .nav') ? 'header' : 'page';
     if (method) track('contact', { method: method, link_location: where });
-    else if (h.indexOf('buy.stripe.com') !== -1) track('deposit_click', { link_text: a.textContent.trim().slice(0, 60) });
+    else if (h.indexOf('buy.stripe.com') !== -1 || h.indexOf('/api/checkout') !== -1) {
+      var pm = /[?&]pay=([a-z]+)/.exec(h);
+      track('deposit_click', { link_text: a.textContent.trim().slice(0, 60), method: pm ? pm[1] : 'link' });
+    }
     else if (where === 'chat') track('chat_link', { destination: h });
   });
+
+  // the page Stripe Checkout returns to after a payment clears
+  if (/^[/]thanks([.]html)?$/.test(location.pathname)) {
+    var pq = /[?&]pay=([a-z]+)/.exec(location.search);
+    track('payment_complete', { method: pq ? pq[1] : '' });
+  }
 
   // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
   document.querySelectorAll('form[data-guard]').forEach(function(f){
@@ -413,6 +422,7 @@
     if (!a || a.origin !== location.origin) return;
     if (a.pathname === location.pathname) return;
     if (/[.](pdf|zip)$/i.test(a.pathname)) return;   // a download, not a navigation
+    if (a.pathname.indexOf('/api/') === 0) return;   // an action (checkout), never warmed
     // A character class, not a backslash-escaped dot: this JS lives inside a plain
     // Python string, where that escape is invalid and warns on every build.
     doc(a.href);

@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 190
+V = 191
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -254,6 +254,20 @@ def litter_money(lt):
         "taxed": round(price * (1 + IN_TAX_RATE), 2),
         "cash_taxed": round(cash * (1 + IN_TAX_RATE), 2),
     }
+
+# Online payment. False: the puppy pages use the three Stripe Payment Links, which charge
+# fixed amounts. True: they go through /api/checkout on the site Worker, which charges each
+# puppy's own litter prices and marks the puppy reserved or adopted when the payment clears
+# (docs/checkout-build.md). Turn it on only after a full test-mode run has passed, and only
+# turn the old Payment Links off after a live payment has gone through this way.
+CHECKOUT_LIVE = False
+PAYMENT_LINKS = {
+    "deposit": "https://buy.stripe.com/4gM14meuRfQecvPfO2ew802",
+    "full": "https://buy.stripe.com/8x2eVc86tfQegM5eJYew804",
+    "balance": "https://buy.stripe.com/7sY3cudqNbzY67r59oew805",
+}
+def pay_href(slug, pay):
+    return f"/api/checkout?puppy={slug}&amp;pay={pay}" if CHECKOUT_LIVE else PAYMENT_LINKS[pay]
 
 _M = litter_money(M_LITTER)
 M_PRICE, M_PRICE_CASH, DEPOSIT = _M["price"], _M["cash"], _M["deposit"]
@@ -1699,9 +1713,18 @@ JS = """// Bless Your Paws Puppies - v2
     var where = a.closest('.chat-panel') ? 'chat' : a.closest('.site-foot') ? 'footer'
       : a.closest('.site-head, .nav') ? 'header' : 'page';
     if (method) track('contact', { method: method, link_location: where });
-    else if (h.indexOf('buy.stripe.com') !== -1) track('deposit_click', { link_text: a.textContent.trim().slice(0, 60) });
+    else if (h.indexOf('buy.stripe.com') !== -1 || h.indexOf('/api/checkout') !== -1) {
+      var pm = /[?&]pay=([a-z]+)/.exec(h);
+      track('deposit_click', { link_text: a.textContent.trim().slice(0, 60), method: pm ? pm[1] : 'link' });
+    }
     else if (where === 'chat') track('chat_link', { destination: h });
   });
+
+  // the page Stripe Checkout returns to after a payment clears
+  if (/^[/]thanks([.]html)?$/.test(location.pathname)) {
+    var pq = /[?&]pay=([a-z]+)/.exec(location.search);
+    track('payment_complete', { method: pq ? pq[1] : '' });
+  }
 
   // ---- forms: a friendly guard while there is no endpoint, otherwise submit in place
   document.querySelectorAll('form[data-guard]').forEach(function(f){
@@ -1939,6 +1962,7 @@ JS = """// Bless Your Paws Puppies - v2
     if (!a || a.origin !== location.origin) return;
     if (a.pathname === location.pathname) return;
     if (/[.](pdf|zip)$/i.test(a.pathname)) return;   // a download, not a navigation
+    if (a.pathname.indexOf('/api/') === 0) return;   // an action (checkout), never warmed
     // A character class, not a backslash-escaped dot: this JS lives inside a plain
     // Python string, where that escape is invalid and warns on every build.
     doc(a.href);
@@ -4804,6 +4828,22 @@ def build_pages():
   </div>
 </div></section>""")
 
+    # Where Stripe Checkout returns after a payment clears (success_url in worker/pricing.js).
+    # Not indexed and not in the sitemap. It says only what is true for every payment.
+    page("thanks.html", "Thank You | Bless Your Paws Puppies",
+      "Your payment to Bless Your Paws Puppies went through.",
+      f"""<section><div class="wrap center">
+  <p class="eyebrow">Payment received</p>
+  <h1>Thank you</h1>
+  <p class="lede">Your payment went through and Hope has been told. The puppy's page will
+    show the change within a few minutes.</p>
+  <p>Questions in the meantime? Call or text Hope at <a href="{PHONE_HREF}">{PHONE_DISPLAY}</a>.</p>
+  <div class="btn-row" style="justify-content:center">
+    <a class="btn btn-primary" href="process.html">What happens next</a>
+    <a class="btn btn-ghost" href="puppies.html">See the litter</a>
+  </div>
+</div></section>""", extra_head='<meta name="robots" content="noindex, nofollow">\n')
+
     # ---- per-puppy pages
     def puppy_page(slug, name, sex, colour, note, price, breed, born, home, kit,
                    parents_html, extra_facts):
@@ -4846,7 +4886,7 @@ def build_pages():
               'site so you can see the whole litter, not because '
               f'{subj.lower()} is available.</p>'
               f'<p class="fine balance-note">Reserved {name}? '
-              '<a class="pay-link" href="https://buy.stripe.com/7sY3cudqNbzY67r59oew805">Pay your balance</a>.</p>'
+              f'<a class="pay-link" href="{pay_href(slug, "balance")}">Pay your balance</a>.</p>'
               f'<p class="fine">Hoping for one like {obj}? '
               '<a href="puppies.html">See who is available</a> or '
               '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
@@ -4861,11 +4901,11 @@ def build_pages():
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
         <div class="pay-row" hidden>
-          <a class="btn btn-primary pay-link" href="https://buy.stripe.com/4gM14meuRfQecvPfO2ew802">Deposit &middot; ${p_deposit}</a>
-          <a class="btn btn-ghost pay-link" href="https://buy.stripe.com/8x2eVc86tfQegM5eJYew804">Full payment &middot; ${p_taxed:,.2f}</a>
+          <a class="btn btn-primary pay-link" href="{pay_href(slug, 'deposit')}">Deposit &middot; ${p_deposit}</a>
+          <a class="btn btn-ghost pay-link" href="{pay_href(slug, 'full')}">Full payment &middot; ${p_taxed:,.2f}</a>
         </div>
         <p class="fine balance-note">Already reserved {name}?
-          <a class="pay-link" href="https://buy.stripe.com/7sY3cudqNbzY67r59oew805">Pay your balance</a>.</p>
+          <a class="pay-link" href="{pay_href(slug, 'balance')}">Pay your balance</a>.</p>
         <p class="guard-msg">Online payments are almost ready. To reserve {name}
           today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
         <p class="fine talk-first">Prefer to talk first? <a href="contact.html">Start an
@@ -5131,7 +5171,7 @@ def build_meta():
     # the list covered "-preview.html" and "-options.html", so floral-applied.html was
     # submitted for indexing for as long as it existed. A page that was never generated
     # cannot be in the list, which is a rule that does not need maintaining.
-    skip = ("404.html", "sign.html", "guarantee-links.html")
+    skip = ("404.html", "sign.html", "guarantee-links.html", "thanks.html")
     pages = [p for p in sorted(GENERATED) if p not in skip]
     urls = "\n".join(f"  <url><loc>{BASE}/{pretty_path(p)}</loc></url>" for p in pages)
     open("sitemap.xml", "w", encoding="utf-8").write(
