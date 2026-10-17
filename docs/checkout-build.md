@@ -22,7 +22,7 @@ design:
   never: ["Claude creates or enters a Stripe key or webhook secret", "buyer names, emails or phones stored anywhere of ours", "the three live Payment Links turned off before the new checkout passes a full test-mode run"]
 tasks:
   - {id: c1-prices, status: "done 2026-10-17", evidence: "litters carry price 2060, cash_price 2000, deposit 500 in data/litters.json and in live D1 (admin/migrations/001-litter-prices.sql; live-check.mjs --disk all four files same); compare_build 36 same, 0 diff", item: "Prices on litters, generator reads them, gate byte-identical"}
-  - {id: c2-editor, status: open, item: "Price fields in the editor; roundtrip clean; redeploy editor"}
+  - {id: c2-editor, status: "done 2026-10-17", evidence: "Price, Cash price, Deposit on the litter drawer and new-litter form, whole dollars, cash <= price, deposit < cash; unit test refuses all three bad cases, unchanged save exports identical; roundtrip clean; editor deployed version 2d9d6674. Not yet clicked through signed in", item: "Price fields in the editor; roundtrip clean; redeploy editor"}
   - {id: c3-checkout, status: open, item: "Checkout route and public price file; unit-test amounts 500 / 2204.20 / 1704.20"}
   - {id: c4-links, status: open, item: "Swap the buy.stripe.com links for checkout links; thanks page; analytics event; gate shows only the intended pages change"}
   - {id: c5-webhook, status: open, item: "Webhook, signature check, reserve via service binding, targeted commit, repeat-safe"}

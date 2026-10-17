@@ -273,14 +273,18 @@
       const left = pups.filter((p) => p.doc.status !== 'adopted').length;
       return `<div class="card"><h3>${esc(adult(d.dam).name)} and ${esc(adult(d.sire).name)}${d.status === 'current' ? '' : ' <span class="tag past">Past litter</span>'}</h3>
         <p class="fine" style="margin:.2rem 0 .6rem">Born ${fmt(d.born)} &middot; can go home ${fmt(d.home)} &middot; ${esc(d.size)}<br>
+        ${usd(d.price)} &middot; ${usd(d.cash_price)} cash &middot; ${usd(d.deposit)} deposit<br>
         ${pups.length} puppies, ${left ? `${left} not yet adopted` : 'every one adopted'}</p>
         <button class="btn btn-small" data-edit="${esc(l.key)}">Edit</button></div>`;
     }).join('');
-    w.innerHTML = `<div class="head"><div><h1>Litters</h1><p class="muted">Dates and size show on the puppies page and every puppy's page.</p></div>
+    w.innerHTML = `<div class="head"><div><h1>Litters</h1><p class="muted">Dates, size and prices show on the puppies page and every puppy's page.</p></div>
       <button class="btn btn-primary" id="newLitter">Start a new litter</button></div><div class="cards">${rows}</div>`;
     w.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => editLitter(b.dataset.edit)));
     $('#newLitter', w).addEventListener('click', newLitter);
   }
+
+  const usd = (n) => (Number.isFinite(n) ? `$${n.toLocaleString('en-US')}` : '');
+  const num = (f, n) => Number(val(f, n));
 
   function litterFields(d) {
     return `<div class="row2"><label class="f">Born<input type="date" name="born" required value="${esc(d.born || '')}"></label>
@@ -289,7 +293,12 @@
       <label class="f">Parents sentence<span class="hint">Read as "Eight puppies from …" at the top of the puppies page.</span>
         <input name="parents_phrase" required maxlength="200" value="${esc(d.parents_phrase || '')}"></label>
       <label class="f">Short parents line<span class="hint">Read as "from …" in search results.</span>
-        <input name="parents_short" required maxlength="120" value="${esc(d.parents_short || '')}"></label>`;
+        <input name="parents_short" required maxlength="120" value="${esc(d.parents_short || '')}"></label>
+      <h3>Prices</h3>
+      <p class="fine">Whole dollars, before sales tax. Every puppy in the litter shows them, and online payments charge them. Sales tax is added at checkout.</p>
+      <div class="row3"><label class="f">Price<input name="price" type="number" inputmode="numeric" required min="300" max="20000" step="1" value="${esc(d.price ?? '')}"></label>
+      <label class="f">Cash price<input name="cash_price" type="number" inputmode="numeric" required min="300" max="20000" step="1" value="${esc(d.cash_price ?? '')}"></label>
+      <label class="f">Deposit<input name="deposit" type="number" inputmode="numeric" required min="50" max="5000" step="1" value="${esc(d.deposit ?? '')}"></label></div>`;
   }
 
   function editLitter(key) {
@@ -306,7 +315,8 @@
       <div style="margin-top:2rem">${statusBlock}</div>`, (el) => {
       bindForm(el, `/api/litters/${encodeURIComponent(key)}`, (f) => ({
         born: val(f, 'born'), home: val(f, 'home'), size: val(f, 'size'), parents_phrase: val(f, 'parents_phrase'),
-        parents_short: val(f, 'parents_short'), version: S.litters.find((x) => x.key === key).version }));
+        parents_short: val(f, 'parents_short'), price: num(f, 'price'), cash_price: num(f, 'cash_price'), deposit: num(f, 'deposit'),
+        version: S.litters.find((x) => x.key === key).version }));
       const st = async (status) => {
         try { await post(`/api/litters/${encodeURIComponent(key)}`, { status, version: S.litters.find((x) => x.key === key).version });
           await load(); closeDrawer(); render(); toast(status === 'past' ? 'Moved to past litters. Publish to update the site.' : 'The litter is current again.'); }
@@ -323,7 +333,7 @@
     const opt = (list) => list.map((a) => `<option value="${esc(a.key)}">${esc(a.doc.name)}</option>`).join('');
     openDrawer('Start a new litter', `<form>
       <div class="row2"><label class="f">Mom<select name="dam">${opt(moms)}</select></label><label class="f">Dad<select name="sire">${opt(dads)}</select></label></div>
-      ${litterFields({ size: S.litters.length ? S.litters[S.litters.length - 1].doc.size : '' })}
+      ${litterFields((({ size = '', price, cash_price, deposit } = {}) => ({ size, price, cash_price, deposit }))(S.litters.length ? S.litters[S.litters.length - 1].doc : {}))}
       <p class="fine">Leave the two sentences blank to have them written from the parents' names. Puppies are added after, from the Puppies screen.</p>
       <div class="btn-row"><button class="btn btn-primary" type="submit">Start the litter</button></div></form>`, (el) => {
       const f = $('form', el);
@@ -334,7 +344,8 @@
         f.elements.home.value = t.toISOString().slice(0, 10);
       });
       bindForm(el, '/api/litters', (ff) => ({ dam: val(ff, 'dam'), sire: val(ff, 'sire'), born: val(ff, 'born'), home: val(ff, 'home'),
-        size: val(ff, 'size'), parents_phrase: val(ff, 'parents_phrase'), parents_short: val(ff, 'parents_short') }), 'Litter started. Add its puppies under Puppies.');
+        size: val(ff, 'size'), parents_phrase: val(ff, 'parents_phrase'), parents_short: val(ff, 'parents_short'),
+        price: num(ff, 'price'), cash_price: num(ff, 'cash_price'), deposit: num(ff, 'deposit') }), 'Litter started. Add its puppies under Puppies.');
     });
   }
 

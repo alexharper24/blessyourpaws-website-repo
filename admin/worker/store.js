@@ -92,6 +92,25 @@ function isoDate(v, label) {
   return v;
 }
 
+/** Whole dollars in a sensible range. The site shows them as $2,060, so no cents. */
+function dollars(v, label, min, max) {
+  const n = typeof v === 'string' ? Number(v.replace(/[$,\s]/g, '')) : v;
+  if (!Number.isInteger(n)) throw new HttpError(400, `${label} should be whole dollars, like 2060.`);
+  if (n < min || n > max) throw new HttpError(400, `${label} should be between $${min.toLocaleString('en-US')} and $${max.toLocaleString('en-US')}.`);
+  return n;
+}
+
+/** The three amounts on a litter, checked against each other. */
+function money(body, cur = {}) {
+  const price = 'price' in body ? dollars(body.price, 'Price', 300, 20000) : cur.price;
+  const cash = 'cash_price' in body ? dollars(body.cash_price, 'Cash price', 300, 20000) : cur.cash_price;
+  const deposit = 'deposit' in body ? dollars(body.deposit, 'Deposit', 50, 5000) : cur.deposit;
+  if (price === undefined || cash === undefined || deposit === undefined) throw new HttpError(400, 'A litter needs a price, a cash price and a deposit.');
+  if (cash > price) throw new HttpError(400, 'The cash price should not be more than the price.');
+  if (deposit >= cash) throw new HttpError(400, 'The deposit should be less than the cash price.');
+  return { price, cash_price: cash, deposit };
+}
+
 function slugify(name) {
   return name.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-')
     .replace(/-+/g, '-').replace(/^-|-$/g, '');
@@ -175,6 +194,10 @@ export async function updateLitter(env, slug, body, actor) {
   if ('size' in body) ch.size = text(body.size, 'Expected adult size', 40, { required: true });
   if ('parents_phrase' in body) ch.parents_phrase = text(body.parents_phrase, 'Parents sentence', 200, { required: true });
   if ('parents_short' in body) ch.parents_short = text(body.parents_short, 'Short parents line', 120, { required: true });
+  if ('price' in body || 'cash_price' in body || 'deposit' in body) {
+    const m = money(body, cur.doc);
+    for (const k of Object.keys(m)) if (m[k] !== cur.doc[k]) ch[k] = m[k];
+  }
   if ('status' in body) {
     if (!['current', 'past'].includes(body.status)) throw new HttpError(400, 'That is not a litter status.');
     if (body.status === 'past' && cur.doc.status !== 'past') {
@@ -205,6 +228,9 @@ export async function createLitter(env, body, actor) {
   const home = isoDate(body.home, 'Can go home');
   if (home < born) throw new HttpError(400, 'Can go home should be after Born.');
   const size = text(body.size, 'Expected adult size', 40, { required: true });
+  // A new litter starts at the newest litter's prices unless the form says otherwise.
+  const prev = (await all(env, 'litters')).map((l) => l.doc).pop() || {};
+  const m = money(body, prev);
   const taken = new Set((await db(env).all("SELECT key FROM records WHERE file = 'litters'")).map((r) => r.key));
   const base = `${body.dam}-${body.sire}-${born.slice(0, 7)}`;
   let slug = base;
@@ -223,6 +249,7 @@ export async function createLitter(env, body, actor) {
       'Short parents line', 120, { required: true }),
     photo: 'litter-01',
     status: 'current',
+    ...m,
   };
   return insert(env, 'litters', slug, doc, actor, 'add-litter', slug);
 }

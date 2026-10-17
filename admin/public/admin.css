@@ -35,6 +35,7 @@ input, select, textarea { font: inherit; font-size: 16px; color: var(--ink); wid
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--sage-deep); outline-offset: 1px; border-color: var(--sage-deep) }
 textarea { min-height: 7rem; resize: vertical }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem }
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem }
 
 /* status segmented control: the one tap that matters most */
 .seg { display: inline-flex; border: 1.5px solid var(--forest); border-radius: var(--radius); overflow: hidden }
@@ -141,5 +142,5 @@ table.hist td, table.hist th { text-align: left; padding: .45rem .55rem; border-
   .item .acts { grid-column: 1 / -1; justify-content: flex-start }
   input, select, textarea { font-size: 16px !important }
 }
-@media (max-width: 420px) { .row2 { grid-template-columns: 1fr } .brand em { display: none } }
+@media (max-width: 420px) { .row2, .row3 { grid-template-columns: 1fr } .brand em { display: none } }
 @media (prefers-reduced-motion: reduce) { .drawer, .rail, .scrim, .toast { transition: none } }
