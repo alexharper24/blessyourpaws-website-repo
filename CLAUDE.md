@@ -242,8 +242,9 @@ Since 2026-10-16 `scripts/scaffold.py` reads `data/puppies.json`, `data/litters.
 is live, **its database owns those four files**: every publish replaces each file whole, so a
 hand edit to one is undone by the next publish. Change them in the editor, or through a
 migration in `admin/migrations/` run against the live database, then bring the file into step.
-The Dobermans, prices, the deposit, the Stripe links and every legal page stay in the
-generator. A puppy with no photograph is not published until it has one, a litter whose
+Prices and the deposit are on each litter (`price`, `cash_price`, `deposit`, since 2026-10-17), so
+a puppy page quotes its own litter and the hand-written pages quote the newest shown one. The tax
+rate, the Dobermans and every legal page stay in the generator. A puppy with no photograph is not published until it has one, a litter whose
 `status` is `past` retires (its puppy pages 301 to `/puppies` through a generated block at the
 end of `_redirects`, and its photographs stay in the gallery), and `scripts/encode_uploads.py`
 builds the image sizes for anything the editor commits under `uploads/`. The gate for any
