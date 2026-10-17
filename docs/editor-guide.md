@@ -1,7 +1,8 @@
 # Your website editor
 
-Go to **admin.blessyourpawspuppies.com** on your phone or computer. Type your email address, and
-Cloudflare emails you a code to sign in. You stay signed in for 30 days.
+Go to **admin.blessyourpawspuppies.com** on your phone or computer and tap **Google** to sign in
+with your Gmail account. If that ever gives you trouble, type your email address instead and
+Cloudflare emails you a code. You stay signed in for 30 days.
 
 Nothing you change shows on the website until you press **Publish**. Then the site updates in about
 two minutes.

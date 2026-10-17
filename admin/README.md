@@ -8,7 +8,7 @@ in the Bless Your Paws Puppies Cloudflare account, behind Cloudflare Access.
 
 | Piece | Where |
 |---|---|
-| Sign-in | Access application "Bless Your Paws editor", email code only, team `blessyourpaws` |
+| Sign-in | Access application "Bless Your Paws editor", team `blessyourpaws`: Sign in with Google (Google Cloud project `bless-your-paws-editor`, client "Cloudflare Access sign-in", in production) or an emailed code |
 | Who may edit | Access policy "Bless Your Paws editors" AND the `people` table. Both are needed |
 | Content | D1 `blessyourpaws` (`c5b7075d-e7ef-4c75-8cc6-60769532f38a`), table `records`, one row per record |
 | Photos | Resized in the browser to 2400px, held in R2 `blessyourpaws-photos` until published |
