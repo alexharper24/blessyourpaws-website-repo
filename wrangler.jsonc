@@ -47,7 +47,7 @@
 
     // Only these paths cost a Worker invocation. Every page, the stylesheet, the images
     // and the PDFs are served straight from the edge.
-    "run_worker_first": ["/admin", "/admin/*", "/api/*"]
+    "run_worker_first": ["/admin", "/admin/*", "/api/*", "/img/video/*"]
   },
 
   // Stripe Checkout per puppy (docs/checkout-build.md). The webhook hands a cleared payment

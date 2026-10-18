@@ -17,6 +17,7 @@
  */
 import { checkout } from "./checkout.js";
 import { webhook } from "./webhook.js";
+import { video } from "./video.js";
 
 export default {
   async fetch(request, env, ctx) {
@@ -25,6 +26,9 @@ export default {
     // Stripe Checkout per puppy (docs/checkout-build.md).
     if (url.pathname === "/api/checkout") return checkout(request, env);
     if (url.pathname === "/api/stripe-webhook") return webhook(request, env, ctx);
+
+    // Puppy videos, served with byte ranges so an iPhone will play them (video.js).
+    if (url.pathname.startsWith("/img/video/")) return video(request, env);
 
     // Not built yet. A 404 rather than a placeholder page, so nothing suggests there is
     // something here to find.
