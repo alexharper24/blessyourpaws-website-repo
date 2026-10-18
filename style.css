@@ -545,6 +545,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .frame>.is-on{opacity:1;z-index:1}
 .frame>video{background:#000}
 .on-video .count{display:none}   /* it sat on the video's own controls */
+.video-playing .cnav{display:none}   /* back when the video is paused or ends */
 @media (prefers-reduced-motion: reduce){
   .frame>img,.frame>.video-tap,.frame>video{transition:none}
 }

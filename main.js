@@ -69,9 +69,11 @@
     function canPlay(){
       return !reduce.matches && !paused && !playing && inView && !document.hidden;
     }
-    car.addEventListener('play', function(){ playing = true; sync(); }, true);
+    // the arrows come off while the video plays, because on a phone they cover a good part
+    // of it and the video's own controls; they come back when it is paused or ends
+    car.addEventListener('play', function(){ playing = true; car.classList.add('video-playing'); sync(); }, true);
     ['pause', 'ended'].forEach(function(ev){
-      car.addEventListener(ev, function(){ playing = false; sync(); }, true); });
+      car.addEventListener(ev, function(){ playing = false; car.classList.remove('video-playing'); sync(); }, true); });
     function start(){
       if (timer || !canPlay()) return;
       timer = setInterval(function(){ show(i+1); }, DWELL);
@@ -89,10 +91,19 @@
       if (e.key === 'ArrowLeft'){ show(i-1); restart(); }
       if (e.key === 'ArrowRight'){ show(i+1); restart(); }
     });
-    ['mouseenter','focusin'].forEach(function(ev){
-      car.addEventListener(ev, function(){ paused = true; sync(); }); });
-    ['mouseleave','focusout'].forEach(function(ev){
-      car.addEventListener(ev, function(){ paused = false; sync(); }); });
+    // Hover pauses it for a mouse, and focus pauses it for a keyboard. A tap on a phone did
+    // both (a phone sends a mouse hover with the tap and the tapped button takes focus), and
+    // neither ended until the visitor tapped somewhere else on the page, so the rotation
+    // stopped after the first tap on an arrow or thumbnail.
+    car.addEventListener('pointerenter', function(e){ if (e.pointerType === 'mouse'){ paused = true; sync(); } });
+    car.addEventListener('pointerleave', function(e){ if (e.pointerType === 'mouse'){ paused = false; sync(); } });
+    car.addEventListener('focusin', function(e){
+      var kb = false;
+      try { kb = e.target.matches(':focus-visible'); } catch (err) {}
+      if (kb){ paused = true; sync(); }
+    });
+    car.addEventListener('focusout', function(e){
+      if (!car.contains(e.relatedTarget)){ paused = false; sync(); } });
     document.addEventListener('visibilitychange', sync);
     reduce.addEventListener('change', sync);
 

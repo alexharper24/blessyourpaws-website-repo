@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 194
+V = 195
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -977,6 +977,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .frame>.is-on{opacity:1;z-index:1}
 .frame>video{background:#000}
 .on-video .count{display:none}   /* it sat on the video's own controls */
+.video-playing .cnav{display:none}   /* back when the video is paused or ends */
 @media (prefers-reduced-motion: reduce){
   .frame>img,.frame>.video-tap,.frame>video{transition:none}
 }
@@ -1648,9 +1649,11 @@ JS = """// Bless Your Paws Puppies - v2
     function canPlay(){
       return !reduce.matches && !paused && !playing && inView && !document.hidden;
     }
-    car.addEventListener('play', function(){ playing = true; sync(); }, true);
+    // the arrows come off while the video plays, because on a phone they cover a good part
+    // of it and the video's own controls; they come back when it is paused or ends
+    car.addEventListener('play', function(){ playing = true; car.classList.add('video-playing'); sync(); }, true);
     ['pause', 'ended'].forEach(function(ev){
-      car.addEventListener(ev, function(){ playing = false; sync(); }, true); });
+      car.addEventListener(ev, function(){ playing = false; car.classList.remove('video-playing'); sync(); }, true); });
     function start(){
       if (timer || !canPlay()) return;
       timer = setInterval(function(){ show(i+1); }, DWELL);
@@ -1668,10 +1671,19 @@ JS = """// Bless Your Paws Puppies - v2
       if (e.key === 'ArrowLeft'){ show(i-1); restart(); }
       if (e.key === 'ArrowRight'){ show(i+1); restart(); }
     });
-    ['mouseenter','focusin'].forEach(function(ev){
-      car.addEventListener(ev, function(){ paused = true; sync(); }); });
-    ['mouseleave','focusout'].forEach(function(ev){
-      car.addEventListener(ev, function(){ paused = false; sync(); }); });
+    // Hover pauses it for a mouse, and focus pauses it for a keyboard. A tap on a phone did
+    // both (a phone sends a mouse hover with the tap and the tapped button takes focus), and
+    // neither ended until the visitor tapped somewhere else on the page, so the rotation
+    // stopped after the first tap on an arrow or thumbnail.
+    car.addEventListener('pointerenter', function(e){ if (e.pointerType === 'mouse'){ paused = true; sync(); } });
+    car.addEventListener('pointerleave', function(e){ if (e.pointerType === 'mouse'){ paused = false; sync(); } });
+    car.addEventListener('focusin', function(e){
+      var kb = false;
+      try { kb = e.target.matches(':focus-visible'); } catch (err) {}
+      if (kb){ paused = true; sync(); }
+    });
+    car.addEventListener('focusout', function(e){
+      if (!car.contains(e.relatedTarget)){ paused = false; sync(); } });
     document.addEventListener('visibilitychange', sync);
     reduce.addEventListener('change', sync);
 
