@@ -158,6 +158,17 @@ a{color:var(--forest)}
    whatever box the classes on the picture produce. */
 picture{display:block;overflow:hidden}
 picture>img{display:block;width:100%;height:100%;object-fit:cover}
+.video-tap{position:relative;display:block;margin-top:1rem;aspect-ratio:16/9;border-radius:6px;
+  overflow:hidden;border:1.5px solid var(--forest);background:var(--forest)}
+.video-tap img{display:block;width:100%;height:100%;object-fit:cover}
+.video-tap .play{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;
+  border-radius:50%;background:rgba(34,61,44,.82);box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.video-tap .play::after{content:"";position:absolute;left:29px;top:22px;border-style:solid;
+  border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff}
+.video-tap:hover .play,.video-tap:focus-visible .play{background:var(--forest)}
+.video-tap:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+.puppy-video{display:block;width:100%;aspect-ratio:16/9;margin-top:1rem;border-radius:6px;background:#000}
+.video-cap{margin:.4rem 0 0}
 .framed{width:100%;max-width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}

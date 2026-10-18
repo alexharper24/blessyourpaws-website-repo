@@ -180,6 +180,26 @@
     else if (where === 'chat') track('chat_link', { destination: h });
   });
 
+  // a puppy video: the poster link becomes the player only when tapped, so nothing of the
+  // video is downloaded before then
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a.video-tap');
+    if (!a) return;
+    e.preventDefault();
+    var v = document.createElement('video');
+    v.className = 'puppy-video';
+    v.controls = true; v.playsInline = true; v.muted = true; v.autoplay = true;
+    v.setAttribute('playsinline', '');
+    var im = a.querySelector('img');
+    if (im && im.currentSrc) v.poster = im.currentSrc;
+    v.src = a.getAttribute('href');
+    v.setAttribute('aria-label', a.getAttribute('aria-label').replace('Play a video', 'Video'));
+    a.replaceWith(v);
+    var pr = v.play && v.play();
+    if (pr && pr.catch) pr.catch(function(){});
+    track('video_play', { destination: a.getAttribute('data-puppy') || '' });
+  });
+
   // the page Stripe Checkout returns to after a payment clears
   if (/^[/]thanks([.]html)?$/.test(location.pathname)) {
     var pq = /[?&]pay=([a-z]+)/.exec(location.search);
@@ -421,7 +441,7 @@
     var a = e.target && e.target.closest && e.target.closest('a[href]');
     if (!a || a.origin !== location.origin) return;
     if (a.pathname === location.pathname) return;
-    if (/[.](pdf|zip)$/i.test(a.pathname)) return;   // a download, not a navigation
+    if (/[.](pdf|zip|mp4)$/i.test(a.pathname)) return;   // a download or a video, not a navigation
     if (a.pathname.indexOf('/api/') === 0) return;   // an action (checkout), never warmed
     // A character class, not a backslash-escaped dot: this JS lives inside a plain
     // Python string, where that escape is invalid and warns on every build.

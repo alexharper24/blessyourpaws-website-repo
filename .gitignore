@@ -12,6 +12,9 @@ source-photos/
 *.mov
 *.MOV
 *.mp4
+*.MP4
+# Web-encoded puppy videos are site assets: 720p H.264, no audio, metadata stripped.
+!img/video/*.mp4
 
 # Secrets — never commit, never print into a transcript
 .env

@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 192
+V = 193
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -104,6 +104,11 @@ AREA = "northern Indiana"   # visible copy. Precise towns stay in areaServed sch
 COUNTS = json.load(open("img/photo-counts.json"))
 # a puppy whose best head-on shot is not the first file in the gallery
 PRIMARY = {"malcolm": 2}
+# Puppy videos, one-off (Alex, 2026-10-18). img/video/<stem>.mp4 is a 720p H.264 encode with
+# no audio and its metadata stripped, and <stem>-poster.jpg / -640.webp / -1280.webp is the
+# frame shown before the tap. Nothing of the video downloads until the visitor taps it, and
+# the poster is lazy. The editor does not manage videos; add a slug here.
+PUPPY_VIDEOS = {"eden": "eden"}
 
 # ---------------------------------------------------------------------------
 # Content the owner editor owns (2026-10-16). Puppies, litters, parents and reviews live
@@ -585,6 +590,17 @@ a{color:var(--forest)}
    whatever box the classes on the picture produce. */
 picture{display:block;overflow:hidden}
 picture>img{display:block;width:100%;height:100%;object-fit:cover}
+.video-tap{position:relative;display:block;margin-top:1rem;aspect-ratio:16/9;border-radius:6px;
+  overflow:hidden;border:1.5px solid var(--forest);background:var(--forest)}
+.video-tap img{display:block;width:100%;height:100%;object-fit:cover}
+.video-tap .play{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;
+  border-radius:50%;background:rgba(34,61,44,.82);box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.video-tap .play::after{content:"";position:absolute;left:29px;top:22px;border-style:solid;
+  border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff}
+.video-tap:hover .play,.video-tap:focus-visible .play{background:var(--forest)}
+.video-tap:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+.puppy-video{display:block;width:100%;aspect-ratio:16/9;margin-top:1rem;border-radius:6px;background:#000}
+.video-cap{margin:.4rem 0 0}
 .framed{width:100%;max-width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
@@ -1743,6 +1759,26 @@ JS = """// Bless Your Paws Puppies - v2
     else if (where === 'chat') track('chat_link', { destination: h });
   });
 
+  // a puppy video: the poster link becomes the player only when tapped, so nothing of the
+  // video is downloaded before then
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a.video-tap');
+    if (!a) return;
+    e.preventDefault();
+    var v = document.createElement('video');
+    v.className = 'puppy-video';
+    v.controls = true; v.playsInline = true; v.muted = true; v.autoplay = true;
+    v.setAttribute('playsinline', '');
+    var im = a.querySelector('img');
+    if (im && im.currentSrc) v.poster = im.currentSrc;
+    v.src = a.getAttribute('href');
+    v.setAttribute('aria-label', a.getAttribute('aria-label').replace('Play a video', 'Video'));
+    a.replaceWith(v);
+    var pr = v.play && v.play();
+    if (pr && pr.catch) pr.catch(function(){});
+    track('video_play', { destination: a.getAttribute('data-puppy') || '' });
+  });
+
   // the page Stripe Checkout returns to after a payment clears
   if (/^[/]thanks([.]html)?$/.test(location.pathname)) {
     var pq = /[?&]pay=([a-z]+)/.exec(location.search);
@@ -1984,7 +2020,7 @@ JS = """// Bless Your Paws Puppies - v2
     var a = e.target && e.target.closest && e.target.closest('a[href]');
     if (!a || a.origin !== location.origin) return;
     if (a.pathname === location.pathname) return;
-    if (/[.](pdf|zip)$/i.test(a.pathname)) return;   // a download, not a navigation
+    if (/[.](pdf|zip|mp4)$/i.test(a.pathname)) return;   // a download or a video, not a navigation
     if (a.pathname.indexOf('/api/') === 0) return;   // an action (checkout), never warmed
     // A character class, not a backslash-escaped dot: this JS lives inside a plain
     // Python string, where that escape is invalid and warns on every build.
@@ -2584,6 +2620,22 @@ def page(path, title, desc, body, extra_head="", og_image="img/og-card.png"):
     GENERATED.append(path)
 
 @functools.lru_cache(maxsize=None)
+def video_block(slug, name):
+    """Tap to play: a poster link that main.js swaps for a <video> on the tap. Without
+    JavaScript the link opens the file itself."""
+    stem = PUPPY_VIDEOS.get(slug)
+    if not stem:
+        return ""
+    d = f"img/video/{stem}"
+    mp4 = f"{d}.mp4{asset_v(d + '.mp4')}"
+    srcset = (f"{d}-poster-640.webp{asset_v(d + '-poster-640.webp')} 640w, "
+              f"{d}-poster-1280.webp{asset_v(d + '-poster-1280.webp')} 1280w")
+    return (f'<a class="video-tap" href="{mp4}" data-puppy="{slug}" aria-label="Play a video of {name}">'
+            f'<img src="{d}-poster.jpg{asset_v(d + "-poster.jpg")}" srcset="{srcset}" '
+            f'sizes="(max-width:900px) 94vw, 54vw" width="1280" height="720" alt="" loading="lazy" decoding="async">'
+            f'<span class="play" aria-hidden="true"></span></a>'
+            f'<p class="fine video-cap">A short video of {name}, with no sound.</p>')
+
 def asset_v(path):
     """?v= for one asset, from its own bytes. Empty string if the file is missing."""
     try:
@@ -5030,6 +5082,7 @@ def build_pages():
       <div class="cthumbs">
 {thumbs}
       </div>
+      {video_block(slug, name)}
     </div>
     <div class="puppy-info">
       <div class="name-row"><h1>{name}</h1>{'<span class="status status-adopted">Adopted!</span>' if slug in ADOPTED else '<span class="status status-reserved">Reserved</span>' if slug in RESERVED else f'<span class="price">${price:,}</span>'}</div>
