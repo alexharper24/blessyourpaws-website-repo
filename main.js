@@ -23,7 +23,9 @@
 
   // ---- puppy photo carousel: prev/next, thumbs, arrow keys
   document.querySelectorAll('.carousel').forEach(function(car){
-    var slides = [].slice.call(car.querySelectorAll('.frame img'));
+    // a slide is a photo, the video's poster link, or the video once tapped
+    var SLIDE = '.frame>img,.frame>.video-tap,.frame>video';
+    var slides = [].slice.call(car.querySelectorAll(SLIDE));
     var thumbs = [].slice.call(car.querySelectorAll('.cthumbs button'));
     var counter = car.querySelector('.count');
     if (slides.length < 2){
@@ -33,7 +35,11 @@
     }
     var i = 0;
     function show(n){
+      slides = [].slice.call(car.querySelectorAll(SLIDE));
+      var was = slides[i];
       i = (n + slides.length) % slides.length;
+      if (was && was !== slides[i] && was.tagName === 'VIDEO') was.pause();
+      car.classList.toggle('on-video', slides[i].tagName === 'VIDEO');
       slides.forEach(function(s,k){
         s.hidden = false;                       // stacked, so fade rather than pop
         s.classList.toggle('is-on', k === i);
@@ -59,9 +65,13 @@
     var DWELL = 4000;
     var timer = null, paused = false, inView = true;
     function stop(){ if (timer){ clearInterval(timer); timer = null; } }
+    var playing = false;   // a playing video holds the carousel on its slide
     function canPlay(){
-      return !reduce.matches && !paused && inView && !document.hidden;
+      return !reduce.matches && !paused && !playing && inView && !document.hidden;
     }
+    car.addEventListener('play', function(){ playing = true; sync(); }, true);
+    ['pause', 'ended'].forEach(function(ev){
+      car.addEventListener(ev, function(){ playing = false; sync(); }, true); });
     function start(){
       if (timer || !canPlay()) return;
       timer = setInterval(function(){ show(i+1); }, DWELL);
@@ -187,7 +197,7 @@
     if (!a) return;
     e.preventDefault();
     var v = document.createElement('video');
-    v.className = 'puppy-video';
+    v.className = 'puppy-video' + (a.classList.contains('is-on') ? ' is-on' : '');
     v.controls = true; v.playsInline = true; v.muted = true; v.autoplay = true;
     v.setAttribute('playsinline', '');
     var im = a.querySelector('img');
@@ -195,6 +205,8 @@
     v.src = a.getAttribute('href');
     v.setAttribute('aria-label', a.getAttribute('aria-label').replace('Play a video', 'Video'));
     a.replaceWith(v);
+    var car = v.closest('.carousel');
+    if (car) car.classList.add('on-video');
     var pr = v.play && v.play();
     if (pr && pr.catch) pr.catch(function(){});
     track('video_play', { destination: a.getAttribute('data-puppy') || '' });

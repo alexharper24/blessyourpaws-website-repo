@@ -15,7 +15,7 @@ import functools, glob, hashlib, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-V = 193
+V = 194
 # The live host. GitHub Pages was disabled on 2026-08-26 and BASE was left pointing at it,
 # which 404'd every canonical, the whole sitemap, the share links and og:image: a texted
 # link showed no card at all and the messaging app scraped a transparent logo instead.
@@ -590,17 +590,14 @@ a{color:var(--forest)}
    whatever box the classes on the picture produce. */
 picture{display:block;overflow:hidden}
 picture>img{display:block;width:100%;height:100%;object-fit:cover}
-.video-tap{position:relative;display:block;margin-top:1rem;aspect-ratio:16/9;border-radius:6px;
-  overflow:hidden;border:1.5px solid var(--forest);background:var(--forest)}
-.video-tap img{display:block;width:100%;height:100%;object-fit:cover}
-.video-tap .play{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;
-  border-radius:50%;background:rgba(34,61,44,.82);box-shadow:0 2px 12px rgba(0,0,0,.3)}
-.video-tap .play::after{content:"";position:absolute;left:29px;top:22px;border-style:solid;
-  border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff}
+.video-tap .play,.vthumb .play{position:absolute;left:50%;top:50%;width:72px;height:72px;
+  margin:-36px 0 0 -36px;border-radius:50%;background:rgba(34,61,44,.82);box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.video-tap .play::after,.vthumb .play::after{content:"";position:absolute;left:29px;top:22px;
+  border-style:solid;border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff}
+.vthumb{position:relative}
+.vthumb .play{transform:scale(.4)}
 .video-tap:hover .play,.video-tap:focus-visible .play{background:var(--forest)}
-.video-tap:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
-.puppy-video{display:block;width:100%;aspect-ratio:16/9;margin-top:1rem;border-radius:6px;background:#000}
-.video-cap{margin:.4rem 0 0}
+.video-tap:focus-visible{outline:3px solid var(--paper);outline-offset:-6px}
 .framed{width:100%;max-width:100%;border-radius:6px;border:1.5px solid var(--forest);
   box-shadow:0 2px 0 var(--sage-light)}
 .hero-split .framed{aspect-ratio:3/2;object-fit:cover}
@@ -970,15 +967,18 @@ a[href^="mailto:"]{overflow-wrap:anywhere}
 .carousel{position:relative}
 .frame{position:relative;border:1.5px solid var(--forest);border-radius:6px;
   overflow:hidden;background:#fff}
-.frame img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}   /* 3:2 matches the source files, so the carousel crops nothing */
-/* stacked slides, crossfaded. the first keeps position:relative so the frame still
-   derives its height from a real image rather than collapsing. */
-.frame img{position:absolute;inset:0;height:100%;opacity:0;
-  transition:opacity .7s ease-in-out}
-.frame img:first-of-type{position:relative}
-.frame img.is-on{opacity:1;z-index:1}
+.frame{aspect-ratio:3/2}   /* 3:2 matches the photo files, so the carousel crops nothing */
+/* stacked slides, crossfaded: photos, the video's poster link, and the video once tapped.
+   The frame holds the 3:2 box, so no slide has to stay in flow to give it a height. A 16:9
+   video is cropped to fill it, the same as its poster. */
+.frame>img,.frame>.video-tap,.frame>video{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;opacity:0;transition:opacity .7s ease-in-out}
+.frame>.video-tap img{width:100%;height:100%;object-fit:cover;display:block}
+.frame>.is-on{opacity:1;z-index:1}
+.frame>video{background:#000}
+.on-video .count{display:none}   /* it sat on the video's own controls */
 @media (prefers-reduced-motion: reduce){
-  .frame img{transition:none}
+  .frame>img,.frame>.video-tap,.frame>video{transition:none}
 }
 .carousel{display:flex;flex-direction:column}
 .cnav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;
@@ -1602,7 +1602,9 @@ JS = """// Bless Your Paws Puppies - v2
 
   // ---- puppy photo carousel: prev/next, thumbs, arrow keys
   document.querySelectorAll('.carousel').forEach(function(car){
-    var slides = [].slice.call(car.querySelectorAll('.frame img'));
+    // a slide is a photo, the video's poster link, or the video once tapped
+    var SLIDE = '.frame>img,.frame>.video-tap,.frame>video';
+    var slides = [].slice.call(car.querySelectorAll(SLIDE));
     var thumbs = [].slice.call(car.querySelectorAll('.cthumbs button'));
     var counter = car.querySelector('.count');
     if (slides.length < 2){
@@ -1612,7 +1614,11 @@ JS = """// Bless Your Paws Puppies - v2
     }
     var i = 0;
     function show(n){
+      slides = [].slice.call(car.querySelectorAll(SLIDE));
+      var was = slides[i];
       i = (n + slides.length) % slides.length;
+      if (was && was !== slides[i] && was.tagName === 'VIDEO') was.pause();
+      car.classList.toggle('on-video', slides[i].tagName === 'VIDEO');
       slides.forEach(function(s,k){
         s.hidden = false;                       // stacked, so fade rather than pop
         s.classList.toggle('is-on', k === i);
@@ -1638,9 +1644,13 @@ JS = """// Bless Your Paws Puppies - v2
     var DWELL = 4000;
     var timer = null, paused = false, inView = true;
     function stop(){ if (timer){ clearInterval(timer); timer = null; } }
+    var playing = false;   // a playing video holds the carousel on its slide
     function canPlay(){
-      return !reduce.matches && !paused && inView && !document.hidden;
+      return !reduce.matches && !paused && !playing && inView && !document.hidden;
     }
+    car.addEventListener('play', function(){ playing = true; sync(); }, true);
+    ['pause', 'ended'].forEach(function(ev){
+      car.addEventListener(ev, function(){ playing = false; sync(); }, true); });
     function start(){
       if (timer || !canPlay()) return;
       timer = setInterval(function(){ show(i+1); }, DWELL);
@@ -1766,7 +1776,7 @@ JS = """// Bless Your Paws Puppies - v2
     if (!a) return;
     e.preventDefault();
     var v = document.createElement('video');
-    v.className = 'puppy-video';
+    v.className = 'puppy-video' + (a.classList.contains('is-on') ? ' is-on' : '');
     v.controls = true; v.playsInline = true; v.muted = true; v.autoplay = true;
     v.setAttribute('playsinline', '');
     var im = a.querySelector('img');
@@ -1774,6 +1784,8 @@ JS = """// Bless Your Paws Puppies - v2
     v.src = a.getAttribute('href');
     v.setAttribute('aria-label', a.getAttribute('aria-label').replace('Play a video', 'Video'));
     a.replaceWith(v);
+    var car = v.closest('.carousel');
+    if (car) car.classList.add('on-video');
     var pr = v.play && v.play();
     if (pr && pr.catch) pr.catch(function(){});
     track('video_play', { destination: a.getAttribute('data-puppy') || '' });
@@ -2619,23 +2631,29 @@ def page(path, title, desc, body, extra_head="", og_image="img/og-card.png"):
     open(path, "w", encoding="utf-8").write(prettify_links(html))
     GENERATED.append(path)
 
-@functools.lru_cache(maxsize=None)
-def video_block(slug, name):
-    """Tap to play: a poster link that main.js swaps for a <video> on the tap. Without
-    JavaScript the link opens the file itself."""
+def video_slide(slug, name):
+    """The video as the carousel's first slide: a poster link that main.js swaps for a
+    <video> on the tap, and its thumbnail. ("", "") when the puppy has no video. Without
+    JavaScript the link opens the file itself. The poster is the page's first image, so it
+    loads at once; the video loads only on the tap."""
     stem = PUPPY_VIDEOS.get(slug)
     if not stem:
-        return ""
+        return "", ""
     d = f"img/video/{stem}"
     mp4 = f"{d}.mp4{asset_v(d + '.mp4')}"
     srcset = (f"{d}-poster-640.webp{asset_v(d + '-poster-640.webp')} 640w, "
               f"{d}-poster-1280.webp{asset_v(d + '-poster-1280.webp')} 1280w")
-    return (f'<a class="video-tap" href="{mp4}" data-puppy="{slug}" aria-label="Play a video of {name}">'
-            f'<img src="{d}-poster.jpg{asset_v(d + "-poster.jpg")}" srcset="{srcset}" '
-            f'sizes="(max-width:900px) 94vw, 54vw" width="1280" height="720" alt="" loading="lazy" decoding="async">'
-            f'<span class="play" aria-hidden="true"></span></a>'
-            f'<p class="fine video-cap">A short video of {name}, with no sound.</p>')
+    slide = (f'        <a class="video-tap is-on" href="{mp4}" data-puppy="{slug}" '
+             f'aria-label="Play a video of {name}, no sound">'
+             f'<img src="{d}-poster.jpg{asset_v(d + "-poster.jpg")}" srcset="{srcset}" '
+             f'sizes="{PUPPY_HERO_SIZES}" width="1280" height="720" alt="" fetchpriority="high" decoding="sync">'
+             f'<span class="play" aria-hidden="true"></span></a>')
+    thumb = (f'        <button aria-current="true" aria-label="Video" class="vthumb">'
+             f'<img src="{d}-poster-640.webp{asset_v(d + "-poster-640.webp")}" alt="" loading="lazy">'
+             f'<span class="play" aria-hidden="true"></span></button>')
+    return slide, thumb
 
+@functools.lru_cache(maxsize=None)
 def asset_v(path):
     """?v= for one asset, from its own bytes. Empty string if the file is missing."""
     try:
@@ -5006,17 +5024,19 @@ def build_pages():
         # the counter reads "1 / N" over the carousel, so N is how many photos the
         # carousel actually holds, not how many the puppy has in total now that the
         # gallery carries the younger ones as well
-        cnt = len(order)
-        slides = "\n".join(
+        vslide, vthumb = video_slide(slug, name)
+        v0 = 1 if vslide else 0          # a video takes the first slot, ahead of the photos
+        cnt = len(order) + v0
+        slides = "\n".join(([vslide] if vslide else []) + [
             "        " + img_tag(i, alt=f"{name}, photo {k+1}",
-                                 lazy=(k > 0), hidden=(k > 0), priority=(k == 0),
+                                 lazy=(k + v0 > 0), hidden=(k + v0 > 0), priority=(k + v0 == 0),
                                  sizes=PUPPY_HERO_SIZES)
-            for k, i in enumerate(order))
-        thumbs = "\n".join(
-            f'        <button aria-current="{"true" if k==0 else "false"}" '
+            for k, i in enumerate(order)])
+        thumbs = "\n".join(([vthumb] if vthumb else []) + [
+            f'        <button aria-current="{"true" if k + v0 == 0 else "false"}" '
             f'aria-label="Photo {k+1}"><img src="img/r/{i}-320.webp'
             f'{asset_v(f"img/r/{i}-320.webp")}" alt="" '
-            f'loading="lazy"></button>' for k, i in enumerate(order))
+            f'loading="lazy"></button>' for k, i in enumerate(order)])
         sibs = ([m for m in MUNCHKINS if PUP[m[0]]["litter"] == PUP[slug]["litter"]]
                 if breed.startswith("Munchkin") else DOBERMANS)
         sib = " &middot; ".join(f'<a href="puppy-{s}.html">{n}</a>'
@@ -5082,7 +5102,6 @@ def build_pages():
       <div class="cthumbs">
 {thumbs}
       </div>
-      {video_block(slug, name)}
     </div>
     <div class="puppy-info">
       <div class="name-row"><h1>{name}</h1>{'<span class="status status-adopted">Adopted!</span>' if slug in ADOPTED else '<span class="status status-reserved">Reserved</span>' if slug in RESERVED else f'<span class="price">${price:,}</span>'}</div>
