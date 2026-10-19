@@ -474,7 +474,13 @@
       e.target.disabled = true;
       $('#pubMsg', w).textContent = 'Publishing…';
       try {
-        const res = await post('/api/publish', {});
+        // A big batch of photos goes up in rounds of 30, each its own request, and the last
+        // round makes the single commit. Keep calling until it does.
+        let res = await post('/api/publish', {});
+        while (res.partial) {
+          $('#pubMsg', w).textContent = `Sending photos, ${res.staged} of ${res.total}…`;
+          res = await post('/api/publish', {});
+        }
         if (res.nothing) { toast(res.message); renderPublish(w); return; }
         await load();
         w.innerHTML = `<div class="head"><div><h1>Published</h1></div></div><p class="note">Sent to the site. It updates in about two minutes, and you can

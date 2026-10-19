@@ -48,6 +48,10 @@ CREATE TABLE IF NOT EXISTS uploads (
   owner_key   TEXT NOT NULL,
   bytes       INTEGER NOT NULL,
   committed   INTEGER NOT NULL DEFAULT 0,
+  -- Set when a publish round has sent the photo to GitHub as a blob, so the next round and the
+  -- final commit reuse it (2026-10-18, publishing in rounds; see worker/publish.js).
+  blob_sha    TEXT,
+  staged_at   TEXT,
   created_at  TEXT NOT NULL,
   created_by  TEXT NOT NULL
 );

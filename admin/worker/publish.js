@@ -76,7 +76,13 @@ function stemsIn(files) {
   return out;
 }
 
-/** The site as it is now, and what a publish would change. Shared by preview and publish. */
+/** The site as it is now, and what a publish would change. Shared by preview and publish.
+ *
+ * Photo bytes are NOT read here. A batch of 46 photos once held every one in memory and then
+ * sent one GitHub request per photo, which ran past the Workers limit of 50 outside requests in
+ * one invocation (2026-10-18, "Too many subrequests"). Photos are now staged in rounds by
+ * stagePhotos() below, and only their records are listed here.
+ */
 async function plan(env) {
   const files = await exportAll(db(env));
   const head = await gh(env, `/git/ref/heads/${env.GITHUB_BRANCH}`);
@@ -84,7 +90,7 @@ async function plan(env) {
   const { treeSha, paths, truncated } = await tree(env, parent);
   if (truncated) throw new Error('The repository listing came back truncated, so what changed cannot be known.');
 
-  const uploads = await db(env).all('SELECT key, repo_path, stem, committed FROM uploads');
+  const uploads = await db(env).all('SELECT key, repo_path, stem, committed, blob_sha, staged_at FROM uploads');
   const byStem = Object.fromEntries(uploads.map((u) => [u.stem, u]));
   const enc = new TextEncoder();
   const changed = [];
@@ -98,14 +104,38 @@ async function plan(env) {
   }
   for (const [path, text] of Object.entries(files)) {
     const bytes = enc.encode(text);
-    if (paths.get(path) !== await gitBlobSha(bytes)) changed.push({ path, bytes, binary: false });
+    if (paths.get(path) !== await gitBlobSha(bytes)) changed.push({ path, text });
   }
-  for (const u of photos) {
+  return { files, parent, treeSha, paths, changed, photos, missing };
+}
+
+// How many photos one request sends to GitHub. Each is one outside request, the commit needs
+// about six more, and the Free plan allows 50 per invocation.
+const PHOTOS_PER_ROUND = 30;
+// A blob GitHub has but no commit points at may be cleaned away eventually, so a staged photo
+// older than this is sent again rather than trusted.
+const STAGED_FRESH_HOURS = 24;
+
+function isFresh(u) {
+  return u.blob_sha && u.staged_at && (Date.now() - Date.parse(u.staged_at)) < STAGED_FRESH_HOURS * 3600e3;
+}
+
+/** Send up to one round of photos to GitHub as blobs, and record each blob's sha. */
+async function stagePhotos(env, photos) {
+  const todo = photos.filter((u) => !isFresh(u)).slice(0, PHOTOS_PER_ROUND);
+  const missing = [];
+  for (const u of todo) {
     const obj = await env.FILES.get(u.key);
     if (!obj) { missing.push(u.stem); continue; }
-    changed.push({ path: u.repo_path, bytes: await obj.arrayBuffer(), binary: true, key: u.key });
+    const blob = await gh(env, '/git/blobs', {
+      method: 'POST',
+      body: JSON.stringify({ content: toBase64(await obj.arrayBuffer()), encoding: 'base64' }),
+    });
+    await db(env).run('UPDATE uploads SET blob_sha = ?, staged_at = ? WHERE key = ?', [blob.sha, NOW(), u.key]);
+    u.blob_sha = blob.sha;
+    u.staged_at = NOW();
   }
-  return { files, parent, treeSha, paths, changed, missing };
+  return { sent: todo.length - missing.length, missing };
 }
 
 const LABEL = {
@@ -163,9 +193,17 @@ export async function pending(env) {
     list.push(...diffFile(file, was, now, keys));
   }
   const [last] = await db(env).all("SELECT actor, finished_at FROM publishes WHERE outcome = 'ok' ORDER BY id DESC LIMIT 1");
-  return { ok: true, changes: list, photos: p.changed.filter((c) => c.binary).length, missing: p.missing, last: last || null };
+  return { ok: true, changes: list, photos: p.photos.length, missing: p.missing, last: last || null };
 }
 
+/**
+ * Publish, in rounds when there are many photos.
+ *
+ * Each call either sends the next round of photos to GitHub and answers { partial: true }, or,
+ * once every photo is staged, writes the data and makes ONE commit with everything. The editor
+ * calls again until it gets a commit, so the site still changes in a single step and never
+ * names a photo it does not have.
+ */
 export async function publish(env, who) {
   if (!env.GITHUB_TOKEN) return { ok: false, code: 503, error: 'Publishing is not set up yet. Alex needs to add the repository token.' };
   const running = await db(env).all(
@@ -176,38 +214,43 @@ export async function publish(env, who) {
   if (p.missing.length) {
     return { ok: false, code: 409, error: `These photos are named but missing, so the site would not build: ${p.missing.join(', ')}. Nothing was published.` };
   }
-  const summary = { files: p.changed.map((c) => c.path), photos: p.changed.filter((c) => c.binary).length };
-  if (!p.changed.length) return { ok: true, nothing: true, message: 'Everything here is already on the site.' };
+  const total = p.photos.length;
+  if (p.photos.some((u) => !isFresh(u))) {
+    const r = await stagePhotos(env, p.photos);
+    if (r.missing.length) {
+      return { ok: false, code: 409, error: `These photos could not be found, so nothing was published: ${r.missing.join(', ')}.` };
+    }
+    const staged = p.photos.filter(isFresh).length;
+    if (staged < total) return { ok: true, partial: true, staged, total };
+  }
+  if (!p.changed.length && !total) return { ok: true, nothing: true, message: 'Everything here is already on the site.' };
 
+  const summary = { files: [...p.changed.map((c) => c.path), ...p.photos.map((u) => u.repo_path)], photos: total };
   const [{ id }] = await db(env).all(
     'INSERT INTO publishes (actor, summary_json, started_at) VALUES (?, ?, ?) RETURNING id',
     [who.email, JSON.stringify(summary), NOW()]);
   try {
-    const entries = [];
-    for (const c of p.changed) {
-      const blob = await gh(env, '/git/blobs', {
-        method: 'POST',
-        body: JSON.stringify(c.binary
-          ? { content: toBase64(c.bytes), encoding: 'base64' }
-          : { content: new TextDecoder().decode(c.bytes), encoding: 'utf-8' }),
-      });
-      entries.push({ path: c.path, mode: '100644', type: 'blob', sha: blob.sha });
-    }
+    // Text files go into the tree inline, so they cost no request of their own.
+    const entries = [
+      ...p.changed.map((c) => ({ path: c.path, mode: '100644', type: 'blob', content: c.text })),
+      ...p.photos.map((u) => ({ path: u.repo_path, mode: '100644', type: 'blob', sha: u.blob_sha })),
+    ];
     const newTree = await gh(env, '/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: p.treeSha, tree: entries }) });
-    const n = summary.photos;
+    const n = total;
+    const d = p.changed.length;
     const commit = await gh(env, '/git/commits', {
       method: 'POST',
       body: JSON.stringify({
         message: `Update from the editor\n\nPublished by ${who.person.display_name || who.email} from the Bless Your Paws editor.\n`
-          + `${p.changed.length - n} data file${p.changed.length - n === 1 ? '' : 's'}${n ? `, ${n} photo${n === 1 ? '' : 's'}` : ''}.`,
+          + `${d} data file${d === 1 ? '' : 's'}${n ? `, ${n} photo${n === 1 ? '' : 's'}` : ''}.`,
         tree: newTree.sha,
         parents: [p.parent],
       }),
     });
     await gh(env, `/git/refs/heads/${env.GITHUB_BRANCH}`, { method: 'PATCH', body: JSON.stringify({ sha: commit.sha, force: false }) });
-    for (const c of p.changed) if (c.key) await db(env).run('UPDATE uploads SET committed = 1 WHERE key = ?', [c.key]);
+    for (const u of p.photos) await db(env).run('UPDATE uploads SET committed = 1 WHERE key = ?', [u.key]);
     await db(env).run("UPDATE publishes SET commit_sha = ?, finished_at = ?, outcome = 'ok' WHERE id = ?", [commit.sha, NOW(), id]);
-    await audit(env, { action: 'publish', detail: `${commit.sha.slice(0, 7)}: ${p.changed.length} files`, actor: who.email });
+    await audit(env, { action: 'publish', detail: `${commit.sha.slice(0, 7)}: ${d} files, ${n} photos`, actor: who.email });
     return { ok: true, commit: commit.sha, summary };
   } catch (err) {
     await db(env).run("UPDATE publishes SET finished_at = ?, outcome = 'failed', summary_json = ? WHERE id = ?",
