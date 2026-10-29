@@ -2484,7 +2484,7 @@ NAV = f"""<nav class="nav" aria-label="Main">
 def header():
     return f"""<header class="site-head"><div class="wrap head-row">
   <a class="brand" href="index.html" aria-label="Bless Your Paws Puppies, home">
-    <img src="img/brand/logo-primary.png?v={V}"
+    <img src="img/brand/logo-primary-168.png{asset_v('img/brand/logo-primary-168.png')}"
       srcset="img/brand/logo-primary-60.png{asset_v('img/brand/logo-primary-60.png')} 202w, img/brand/logo-primary-84.png{asset_v('img/brand/logo-primary-84.png')} 283w, img/brand/logo-primary-120.png{asset_v('img/brand/logo-primary-120.png')} 404w, img/brand/logo-primary-168.png{asset_v('img/brand/logo-primary-168.png')} 566w"
       sizes="(max-width:900px) 145px, 190px"
       alt="Bless Your Paws Puppies" width="1596" height="474" decoding="async">
@@ -2497,7 +2497,7 @@ def footer():
     return f"""<footer class="site-foot"><div class="wrap">
   <div class="foot-top">
     <div class="foot-brand">
-      <img src="img/brand/mark-paw-heart.png{asset_v('img/brand/mark-paw-heart.png')}" alt="">
+      <img src="img/brand/mark-paw-heart-168.png{asset_v('img/brand/mark-paw-heart-168.png')}" alt="" width="168" height="168" loading="lazy" decoding="async">
       <span><span class="fb-name">Bless Your Paws</span>
         <span class="fb-sub">Puppies</span></span>
     </div>
@@ -3196,11 +3196,9 @@ def build_pages():
         "description": f"Family-raised {BREEDS_PHRASE} puppies in northern Indiana.",
         "telephone": "+1-574-377-8023", "email": EMAIL,
         "areaServed": [
-            {"@type": "City",  "name": "Warsaw",       "addressRegion": "IN",
-             "addressCountry": "US"},
-            {"@type": "City",  "name": "Winona Lake",  "addressRegion": "IN",
-             "addressCountry": "US"},
-            {"@type": "State", "name": "Indiana",      "addressCountry": "US"}],
+            {"@type": "City",  "name": "Warsaw, Indiana"},
+            {"@type": "City",  "name": "Winona Lake, Indiana"},
+            {"@type": "State", "name": "Indiana"}],
         # The verified Google Business Profile, by its CID. Read from the Business Profile
         # Manager and verified by loading the Maps URL, which returns this business with
         # this site as its website. Several unrelated businesses share the name, so the
@@ -4137,7 +4135,7 @@ def build_pages():
 </div></section>""")
 
     page("about.html", "About Hope and Joy | Bless Your Paws Puppies",
-      f"Two sisters raising {BREEDS_PHRASE}s in their northern Indiana home.",
+      f"Two sisters raising {BREEDS_PHRASE}s in their northern Indiana home. Meet Hope and Joy and see how we raise our puppies.",
       f"""<section><div class="wrap">
   <div class="grid-2 narrow-left hic">
     <div class="col-title hic-head">
@@ -4359,7 +4357,7 @@ def build_pages():
 </div></section>""")
 
     page("contact.html", "Contact | Bless Your Paws Puppies",
-      "Ask about an available puppy or plan a visit. Call or text Hope, email us, or send the inquiry form.",
+      "Ask about an available puppy or plan a visit. Call or text Hope, email us, or send the inquiry form. We are in Warsaw and Winona Lake, Indiana.",
       f"""<section><div class="wrap">
   <div class="contact-grid">
     <div class="cg-head">
@@ -4511,7 +4509,7 @@ def build_pages():
 </div></section>""")
 
     page("waitlist.html", "Join the Waitlist | Bless Your Paws Puppies",
-      "Hear about new litters before they are listed. Waitlist families get first pick.",
+      "Join the waitlist to hear about new Munchkin Bernedoodle litters before they are listed. Waitlist families get first pick.",
       f"""<section><div class="wrap">
   <p class="eyebrow">The waitlist</p>
   <h1>Hear about litters first</h1>
@@ -4995,7 +4993,7 @@ def build_pages():
               'site so you can see the whole litter, not because '
               f'{subj.lower()} is available.</p>'
               f'<p class="fine balance-note">Reserved {name}? '
-              f'<a class="pay-link" href="{pay_href(slug, "balance")}">Pay your balance</a>.</p>'
+              f'<a class="pay-link" rel="nofollow" href="{pay_href(slug, "balance")}">Pay your balance</a>.</p>'
               f'<p class="fine">Hoping for one like {obj}? '
               '<a href="puppies.html">See who is available</a> or '
               '<a href="waitlist.html">join the waitlist</a> for a future litter.</p>'
@@ -5010,11 +5008,11 @@ def build_pages():
           <a class="btn btn-primary" href="apply.html?puppy={name}">Apply to reserve {name}</a>
         </div>
         <div class="pay-row" hidden>
-          <a class="btn btn-primary pay-link" href="{pay_href(slug, 'deposit')}">Deposit &middot; ${p_deposit}</a>
-          <a class="btn btn-ghost pay-link" href="{pay_href(slug, 'full')}">Full payment &middot; ${p_taxed:,.2f}</a>
+          <a class="btn btn-primary pay-link" rel="nofollow" href="{pay_href(slug, 'deposit')}">Deposit &middot; ${p_deposit}</a>
+          <a class="btn btn-ghost pay-link" rel="nofollow" href="{pay_href(slug, 'full')}">Full payment &middot; ${p_taxed:,.2f}</a>
         </div>
         <p class="fine balance-note">Already reserved {name}?
-          <a class="pay-link" href="{pay_href(slug, 'balance')}">Pay your balance</a>.</p>
+          <a class="pay-link" rel="nofollow" href="{pay_href(slug, 'balance')}">Pay your balance</a>.</p>
         <p class="guard-msg">Online payments are almost ready. To reserve {name}
           today, call or text {owner} at <a href="{owner_href}">{owner_phone}</a>.</p>
         <p class="fine talk-first">Prefer to talk first? <a href="contact.html">Start an
@@ -5100,7 +5098,7 @@ def build_pages():
            f"{name} is a {colour.lower()} {breed} puppy from our litter, reserved by a family, "
            f"and here so you can see the whole litter."
            if slug in RESERVED else
-           f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${p_deposit} deposit to reserve."),
+           f"{name} is a {colour.lower()} {breed} puppy. ${price:,} with a ${p_deposit} deposit to reserve. Family-raised in northern Indiana."),
           f"""<section><div class="wrap">
   <p class="eyebrow">{crumb_html}</p>
   <div class="puppy-top">
